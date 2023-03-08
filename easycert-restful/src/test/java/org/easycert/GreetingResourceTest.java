@@ -1,4 +1,4 @@
-package org.acme;
+package org.easycert;
 
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;

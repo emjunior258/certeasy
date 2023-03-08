@@ -8,3 +8,4 @@ easycert-console/target
 easycert-console/.idea
 easycert-restful/.idea
 easycert-restful/target
+easycert-restful/bin
