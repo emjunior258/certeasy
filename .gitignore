@@ -5,4 +5,6 @@ easycert-core/.idea
 easycert-rest/target
 easycert-rest/.idea
 easycert-console/target
-easycert-console.idea
+easycert-console/.idea
+easycert-restful/.idea
+easycert-restful/target
