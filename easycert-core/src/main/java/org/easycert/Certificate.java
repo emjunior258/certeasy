@@ -12,6 +12,7 @@ import java.io.OutputStream;
 import java.security.PrivateKey;
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -23,6 +24,8 @@ public class Certificate {
     private final CertificateSubject subject;
     private final KeyStrength keyStrength;
     private final Set<KeyUsage> keyUsages;
+    private ExtendedKeyUsageDefinition extendedKeyUsageDefinition;
+
     private final PrivateKey privateKey;
     private final byte[] derBytes;
 
@@ -30,7 +33,7 @@ public class Certificate {
     private CertificateSummary summary;
     private CertificateType type;
 
-    public Certificate(String serial, CertificateSubject subject, LocalDate expiryDate, KeyStrength keyStrength, Set<KeyUsage> keyUsages, PrivateKey privateKey, byte[] derBytes){
+    public Certificate(String serial, CertificateSubject subject, LocalDate expiryDate, KeyStrength keyStrength, Set<KeyUsage> keyUsages, ExtendedKeyUsageDefinition extendedKeyUsageDefinition, PrivateKey privateKey, byte[] derBytes){
         if(serial==null || serial.isEmpty())
             throw new IllegalArgumentException("serial MUST not be null nor empty");
         if(subject==null)
@@ -50,6 +53,7 @@ public class Certificate {
         this.expiryDate = expiryDate;
         this.keyStrength = keyStrength;
         this.keyUsages = Collections.unmodifiableSet(keyUsages);
+        this.extendedKeyUsageDefinition = extendedKeyUsageDefinition;
         this.privateKey = privateKey;
         this.derBytes = derBytes;
         this.figureType();
@@ -57,18 +61,6 @@ public class Certificate {
     }
 
 
-
-    private void figureType(){
-        if(subject instanceof EmployeeIdentitySubject)
-            this.type = CertificateType.Employee;
-        else if(subject instanceof PersonalIdentitySubject)
-            this.type = CertificateType.Personal;
-        else if(subject instanceof TLSServerSubject)
-            this.type = CertificateType.TLSServer;
-        else if(subject instanceof CertificateAuthoritySubject)
-            this.type = CertificateType.Authority;
-        else this.type = CertificateType.Custom;
-    }
     public Certificate(CertificateSpec spec, String serial, PrivateKey privateKey, byte[] derBytes){
         if(spec==null)
             throw new IllegalArgumentException("spec MUST not be null nor empty");
@@ -82,11 +74,24 @@ public class Certificate {
         this.expiryDate = spec.getExpiryDate();
         this.keyStrength = spec.getKeyStrength();
         this.keyUsages = spec.getPublicKeyUsages();
+        spec.getExtendedKeyUsage().ifPresent(keyUsageDefinition -> this.extendedKeyUsageDefinition = keyUsageDefinition);
         this.serial = serial;
         this.privateKey = privateKey;
         this.derBytes = derBytes;
         this.figureType();
         this.makeSummary();
+    }
+
+    private void figureType(){
+        if(subject instanceof EmployeeIdentitySubject)
+            this.type = CertificateType.Employee;
+        else if(subject instanceof PersonalIdentitySubject)
+            this.type = CertificateType.Personal;
+        else if(subject instanceof TLSServerSubject)
+            this.type = CertificateType.TLSServer;
+        else if(subject instanceof CertificateAuthoritySubject)
+            this.type = CertificateType.Authority;
+        else this.type = CertificateType.Custom;
     }
 
     public String getSerial() {
@@ -154,6 +159,10 @@ public class Certificate {
     private void makeSummary(){
         this.summary = new CertificateSummary(this.subject.getCommonName(), serial,type,
                 hasExpired() ? CertificateStatus.Expired : CertificateStatus.Active);
+    }
+
+    public Optional<ExtendedKeyUsageDefinition> getExtendedKeyUsage(){
+        return Optional.ofNullable(extendedKeyUsageDefinition);
     }
 
     public CertificateSummary getSummary(){
