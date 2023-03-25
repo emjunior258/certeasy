@@ -7,107 +7,348 @@ info:
 servers:
   - url: http://petstore.swagger.io/v1
 paths:
-  /pets:
+
+
+  /attributes:
     get:
-      summary: List all pets
-      operationId: listPets
+      summary: List attributes 
+      operationId: listAttributes
+      description: Get List of attributes that may be used on the Distinguished name
       tags:
-        - pets
-      parameters:
-        - name: limit
-          in: query
-          description: How many items to return at one time (max 100)
-          required: false
-          schema:
-            type: integer
-            maximum: 100
-            format: int32
+        - Attributes
       responses:
         '200':
-          description: A paged array of pets
-          headers:
-            x-next:
-              description: A link to the next page of responses
-              schema:
-                type: string
+          description: An array of attributes
           content:
             application/json:    
               schema:
-                $ref: "#/components/schemas/Pets"
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-    post:
-      summary: Create a pet
-      operationId: createPets
-      tags:
-        - pets
-      responses:
-        '201':
-          description: Null response
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-  /pets/{petId}:
+                type: array
+                items: 
+                  type: object
+                  properties:
+                    id: 
+                      type: string
+                      description: Unique identifier of the attribute
+                      example: "common-name"
+                    display_name:
+                      type: string
+                      description: The name to be displayed on User interface 
+                      example: Common Name
+                    description:
+                      type: string
+                      description: The purpose/intent of the attribute
+                      example: The name used to refer to the subject
+                    multivalue: 
+                      type: boolean
+                      description: Indicates wether the attribute is an array
+                      example: false
+                    max_items: 
+                      type: integer
+                      description: Maximum number of items allowed. Applicable only when attribute is multivalue
+                      example: 3
+                    required: 
+                      type: boolean
+                      description: Indicates whether the attribute is required
+                      example: true
+                  required:
+                    - id
+                    - display_name
+                    - description
+                    - multivalue
+                    - required
+                minItems: 1
+        500:
+          $ref: "#/components/responses/ServerError"
+
+  
+  /ca/certificate/files:
     get:
-      summary: Info for a specific pet
-      operationId: showPetById
+      summary: Get CA Certificate files
+      operationId: downloadCaCertificateFiles
+      description: Download CA Certificate files
       tags:
-        - pets
-      parameters:
-        - name: petId
-          in: path
-          required: true
-          description: The id of the pet to retrieve
-          schema:
-            type: string
+        - CA-Cert
       responses:
-        '200':
-          description: Expected response to a valid request
+        200:
+          description: Operation performed successfully.
+          content:
+            application/zip:
+              schema:
+                type: string
+                format: binary
+        404:
+          $ref:  "#/components/responses/CaCertificateNotFound"
+        500:
+          $ref: "#/components/responses/ServerError"
+       
+
+
+  /ca/certificate:
+    get:
+      summary: Get CA Certificate Info
+      operationId: getCaCertificateInfo
+      description: Get CA Certificate Information
+      tags:
+        - CA-Cert
+      responses:
+        200:
+          description: CA Certificate Info retrieve successfully
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Pet"
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+                $ref: "#/components/schemas/CaCertificate"
+        404:
+          $ref:  "#/components/responses/CaCertificateNotFound"
+        500:
+          $ref: "#/components/responses/ServerError"
+    put:
+      summary: Set existing CA Certificate
+      operationId: setCaCertificate
+      description: Use an existing CA Certificate
+      tags:
+        - CA-Cert
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:      
+              type: object
+              properties:  
+                cert_file:  
+                  type: string
+                  format: binary
+                  description: The file containing the CA certificate PEM encoded
+                key_file: 
+                  type: string
+                  format: binary
+                  description: The file containing the CA private key PEM encoded
+              required:
+                - cert_file
+                - key_file
+      responses:
+        201:
+          description: Ca Certificate set successfully
+        500:
+          $ref: "#/components/responses/ServerError"
+          
+    post:
+      summary: Create Certificate Authority
+      operationId: createCaCertificate
+      description: Create a new CA Certificate
+      tags:
+        - CA-Cert
+      requestBody:
+        description: The Certificate Authority configurations
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CaCertificate"
+
+      responses:
+        201:
+          description: CA Certificate created successfully
+        500:
+          $ref: "#/components/responses/ServerError"
+        
+      
+
+
+# /certificates
+# GET (Lists certificates)
+
+# /certificates/custom
+# POST
+
+# /certificates/tls-server
+# POST
+
+# /certificates/tls-server
+# POST
+
+# /certificates/personal
+# POST
+
+# /certificates/employee
+# POST
+
+# /certificates/{serial}
+# GET (JSON)
+
+# /certificates/{serial}/files/compressed
+# GET (Zip file)
+
+
 components:
   schemas:
-    Pet:
+
+    CertValidity:
       type: object
-      required:
-        - id
-        - name
+      description: The validity of a certificate
       properties:
-        id:
-          type: integer
-          format: int64
+        from: 
+          type: string
+          format: date
+          description: The date from which the certificate is validate
+          example: "2023-01-01"
+        until:
+          type: string
+          format: date
+          description: The date from which the certificate should be considered expired
+          example: "2023-12-31"
+      required:
+        - from
+        - to
+
+    GeographicLocation:
+      type: object
+      description: Represents a Geographic location
+      properties:
+        country:
+          type: string
+          description: The ISO alpha-2 contry code
+          example: MZ
+        state:
+          type: string
+          description: The name of the the state/province in the country
+          example: Maputo
+        locality:
+          type: string
+          description: The locality or district of the state
+          example: Boane
+        street_address:
+          type: string
+          description: The name of the street plus the number and name of the building
+          example: 1234 Main Street
+      required:
+        - country
+        - state
+        - locality
+        - street_address
+
+    CaCertificate:
+      type: object
+      properties:
         name:
           type: string
-        tag:
+          description: The common name of the authority
+          example: myca
+        key_strength:
           type: string
-    Pets:
-      type: array
-      maxItems: 100
-      items:
-        $ref: "#/components/schemas/Pet"
-    Error:
+          description: The strength of the key pair to be generated.
+          enum:
+            - Low
+            - Medium
+            - High
+            - Very-High
+        validity:
+          $ref: "#/components/schemas/CertValidity"
+        location:
+          $ref: "#/components/schemas/GeographicLocation"
+
+
+    TLSServerCertificateRequest:
       type: object
-      required:
-        - code
-        - message
       properties:
-        code:
+        validity:
+          type: object
+          schema:
+            $ref:  "#/components/schemas/CertValidity"
+        key_strength:
+        common_name:
+        domains:
+
+
+
+    Problem:
+      type: object
+      properties:
+        type:
+          type: string
+          format: uri
+          description: |
+            An absolute URI that identifies the problem type.  When dereferenced,
+            it SHOULD provide human-readable documentation for the problem type
+            (e.g., using HTML).
+          default: 'about:blank'
+          example: 'https://zalando.github.io/problem/constraint-violation'
+        title:
+          type: string
+          description: |
+            A short, summary of the problem type. Written in english and readable
+            for engineers (usually not suited for non technical stakeholders and
+            not localized); example: Service Unavailable
+        status:
           type: integer
           format: int32
-        message:
+          description: |
+            The HTTP status code generated by the origin server for this occurrence
+            of the problem.
+          minimum: 100
+          maximum: 600
+          exclusiveMaximum: true
+          example: 503
+        detail:
           type: string
+          description: |
+            A human readable explanation specific to this occurrence of the
+            problem.
+          example: Connection to database timed out
+        instance:
+          type: string
+          format: uri
+          description: |
+            An absolute URI that identifies the specific occurrence of the problem.
+            It may or may not yield further information if dereferenced.
+
+  responses:
+    ServerError:  # Can be referenced as '#/components/responses/ServerError'
+      description: An error occurred.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          example:
+            type: /problems/server-error
+            title: Server error
+            status: 500
+            detail: An internal server error occurred
+      
+  
+    ConstraintViolation:
+      description: Constraint violation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          example:
+            type: /problems/constraint-violation
+            title: Constraint Violation
+            status: 422
+            violations:
+              - field": billing_address.first_name
+                message": may not be empty
+              - field": groups
+                message": must not contain multiple different delivery addresses
+
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          example:
+            type: /problems/bad-request
+            title: Bad Request
+            status: 400
+            detail: JSON Payload missing
+
+    CaCertificateNotFound:
+      description: Not Found
+      content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Problem'
+            example:
+              type: /problems/not-found
+              title: Not found
+              status: 404
+              detail: CA Certificate not found
