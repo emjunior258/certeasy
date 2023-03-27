@@ -9,9 +9,9 @@ servers:
 paths:
 
 
-  /attributes:
+  /dn-attributes:
     get:
-      summary: List attributes 
+      summary: List DN attributes 
       operationId: listAttributes
       description: Get List of attributes that may be used on the Distinguished name
       tags:
@@ -61,13 +61,13 @@ paths:
           $ref: "#/components/responses/ServerError"
 
   
-  /ca/certificate/files:
+  /authority/certificate/files:
     get:
       summary: Get CA Certificate files
       operationId: downloadCaCertificateFiles
       description: Download CA Certificate files
       tags:
-        - CA-Cert
+        - Certificate Authority
       responses:
         200:
           description: Operation performed successfully.
@@ -83,13 +83,13 @@ paths:
        
 
 
-  /ca/certificate:
+  /authority/certificate:
     get:
       summary: Get CA Certificate Info
       operationId: getCaCertificateInfo
       description: Get CA Certificate Information
       tags:
-        - CA-Cert
+        - Certificate Authority
       responses:
         200:
           description: CA Certificate Info retrieve successfully
@@ -106,7 +106,7 @@ paths:
       operationId: setCaCertificate
       description: Use an existing CA Certificate
       tags:
-        - CA-Cert
+        - Certificate Authority
       requestBody:
         content:
           multipart/form-data:
@@ -135,7 +135,7 @@ paths:
       operationId: createCaCertificate
       description: Create a new CA Certificate
       tags:
-        - CA-Cert
+        - Certificate Authority
       requestBody:
         description: The Certificate Authority configurations
         content:
@@ -158,13 +158,13 @@ paths:
 # /certificates/custom
 # POST
 
-  /certificates/tls-server:
+  /cert-requests/tls-server:
     post:
       summary: Issue TLS-Server certificate
       operationId: issueTlsServerCert
       description: Issues a new Certificate to identify a TLS-Server
       tags:
-        - Issuing
+        - Certificate Requests
       requestBody:
         description: The Certificate details
         content:
@@ -182,13 +182,13 @@ paths:
           
           
   
-  /certificates/personal:
+  /cert-requests/personal:
     post:
       summary: Issue Personal Certificate
       operationId: issuePersonalCert
       description: Issues a new Certificate to identify a Person
       tags:
-        - Issuing
+        - Certificate Requests
       requestBody:
         description: The Certificate details
         content:
@@ -205,13 +205,13 @@ paths:
           $ref: "#/components/responses/ServerError"
         
         
-  /certificates/employee:
+  /cert-requests/employee:
     post:
       summary: Issue Employee Certificate
       operationId: issueEmployeeCert
       description: Issues a new Certificate to identify an Employee of an organization
       tags:
-        - Issuing
+        - Certificate Requests
       requestBody:
         description: The Certificate details
         content:
@@ -228,13 +228,13 @@ paths:
           $ref: "#/components/responses/ServerError"
           
   
-  /certificates/sub-ca:
+  /cert-requests/sub-ca:
     post:
       summary: Issue Sub Certificate-Authority Certificate
       operationId: issueSubCACert
       description: Issues a Sub Certificate-Authority Certificate
       tags:
-        - Issuing
+        - Certificate Requests
       requestBody:
         description: The Certificate details
         content:
@@ -251,13 +251,13 @@ paths:
           $ref: "#/components/responses/ServerError"
           
   
-  /certificates/custom:
+  /cert-requests/custom:
     post:
       summary: Issue Customized Certificate
       operationId: issueCustomCert
       description: Issues a new Customized Certificate
       tags:
-        - Issuing
+        - Certificate Requests
       requestBody:
         description: The Certificate details
         content:
@@ -275,7 +275,34 @@ paths:
           
       
 
-# POST
+  /certificates/{serial}:
+    get:
+      summary: Get Certificate Information
+      operationId: GetCertInfo
+      description: Get information of a certificate issued by the CA
+      tags:
+        - Issued Certificates
+      parameters: 
+        - name: serial
+          in: path
+          description: The serial number of the certificate
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Certificate Information Retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IssuedCertInfo'
+        404: 
+          $ref: '#/components/responses/CertificateNotFound'
+        500:
+          $ref: "#/components/responses/ServerError"
+                
+        
+    
 
 
 # /certificates/{serial}
@@ -287,6 +314,57 @@ paths:
 
 components:
   schemas:
+
+    SubjectAlternativeName:
+      type: object
+      description: A Certificate Subject Alternative name
+      properties:
+        type: 
+          type: string
+          description: The type of alternative name
+          enum:
+            - DNS
+            - EMAIL
+            - IP_ADDRESS
+            - URI
+            - DIRECTORY_NAME
+            - OTHER_NAME
+        value:
+          type: string
+          description: The value of the alternative name
+      required:
+        - type
+        - value
+        
+        
+    KeyUsage:
+      type: string
+      description: Represents an peration for which the  Certificate public key is intended to be used.
+      enum:
+        - DigitalSignature
+        - KeyEncipherment
+        - DataEncipherment
+        - KeyAgreement
+        - DecipherOnly
+        - EncipherOnly
+        - CertificateSign
+        - SignCRL
+        - NonRepudiation
+        
+    
+    ExtendedKeyUsage:
+      type: string
+      description: A second degree of restriction in terms of how the public key of a Certificate is intended to be used
+      enum:
+        - TLS_WEB_SERVER_AUTH
+        - TLS_WEB_CLIENT_AUTH
+        - SIGN_CODE
+        - EMAIL_PROTECTION
+        - TIMESTAMPING
+        - OCSP_SIGNING
+        - IPSEC_END_SYSTEM
+        - IPSEC_TUNNEL
+        - IPSEC_USER
 
     CertValidity:
       type: object
@@ -331,6 +409,58 @@ components:
         - state
         - locality
         - street_address
+        
+        
+    IssuedCertInfo:
+      type: object
+      readOnly: true
+      description: Information of an issued certificate
+      properties:
+        serial:
+          type: string
+          description: The serial number of the issued Certificate
+          example: d9028c1c-6778-403a-b888-c72d7de5aeb3
+        name:
+          type: string
+          description: Name of the issued certified. It is obtained from the Certificate Common-Name. 
+          example: my-cert
+        key_algorithm:
+          type: string
+          description: The Algorithm for which the Certificate Key-Pair was generated 
+          enum:
+            - RSA
+            - DSA
+        key_size:
+          type: integer
+          description: The size of the Certificate Private Key in bytes
+          example: 512
+        distinguished_name:
+          type: string
+          description: The subject X.500 Distinguished name
+          example: CN=John Smith, OU=Test, O=IBM, C=GB
+        subject_alt_names:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubjectAlternativeName'
+        key_usage:
+          type: array
+          items:
+            $ref: '#/components/schemas/KeyUsage'
+        extended_key_usage: 
+          type: array
+          items:
+            $ref: '#/components/schemas/ExtendedKeyUsage'
+        validity:
+          $ref: '#/components/schemas/CertValidity'
+      required:
+        - name
+        - key_algorithm
+        - key_size
+        - distinguished_name
+        - key_usage
+        - validity
+
+      
 
     CaCertificate:
       type: object
@@ -399,58 +529,19 @@ components:
               type: array
               description: Defines the operations for which the  Certificate public key is intended to be used.
               items:
-                type: string
-                enum:
-                  - DigitalSignature
-                  - KeyEncipherment
-                  - DataEncipherment
-                  - KeyAgreement
-                  - DecipherOnly
-                  - EncipherOnly
-                  - CertificateSign
-                  - SignCRL
-                  - NonRepudiation
-                minItems: 1
+                $ref: '#/components/schemas/KeyUsage'
+              minItems: 1
             extended_key_usage:
               type: array
               description: A second degree of restriction in terms of how the public key of a Certificate is intended to be used. The extended key usage is not about the operations that can be performed with the key, it is instead about the context in which those operations can be performed.
               items:
-                type: string
-                enum:
-                  - TLS_WEB_SERVER_AUTH
-                  - TLS_WEB_CLIENT_AUTH
-                  - SIGN_CODE
-                  - EMAIL_PROTECTION
-                  - TIMESTAMPING
-                  - OCSP_SIGNING
-                  - IPSEC_END_SYSTEM
-                  - IPSEC_TUNNEL
-                  - IPSEC_USER
-                minItems: 1
+                $ref: '#/components/schemas/ExtendedKeyUsage'
+              minItems: 1
             subject_alt_names:
               type: array
               description: The subject alternative names to associate to the certificate
               items:
-                type: object
-                description: An Alternative name
-                properties:
-                  type: 
-                    type: string
-                    description: The type of alternative name
-                    enum:
-                      - DNS
-                      - EMAIL
-                      - IP_ADDRESS
-                      - URI
-                      - DIRECTORY_NAME
-                      - OTHER_NAME
-                    
-                  value:
-                    type: string
-                    description: The value of the alternative name
-                required:
-                  - type
-                  - value
+                $ref: '#/components/schemas/SubjectAlternativeName'
               
               
           required:
@@ -674,3 +765,16 @@ components:
               title: Not found
               status: 404
               detail: CA Certificate not found
+              
+              
+    CertificateNotFound:
+      description: Not Found
+      content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Problem'
+            example:
+              type: /problems/not-found
+              title: Not found
+              status: 404
+              detail: Certificate not found          
