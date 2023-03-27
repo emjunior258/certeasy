@@ -274,7 +274,26 @@ paths:
           $ref: "#/components/responses/ServerError"
           
       
-
+  /certificates:
+    get:
+      summary: List issued certificates
+      operationId: listIssedCerts
+      description: List all the certificates issued by this server
+      tags:
+        - Issued Certificates
+      responses:
+        200:
+          description: Certificates List Retrieved Successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/IssuedCertSummary'
+        500:
+          $ref: "#/components/responses/ServerError"
+                  
+        
   /certificates/{serial}:
     get:
       summary: Get Certificate Information
@@ -410,48 +429,64 @@ components:
         - locality
         - street_address
         
-        
-    IssuedCertInfo:
+    
+    IssuedCertSummary:
       type: object
-      readOnly: true
-      description: Information of an issued certificate
+      description: A summary of a certificate issued by this server
       properties:
-        serial:
-          type: string
-          description: The serial number of the issued Certificate
-          example: d9028c1c-6778-403a-b888-c72d7de5aeb3
         name:
           type: string
           description: Name of the issued certified. It is obtained from the Certificate Common-Name. 
           example: my-cert
-        key_algorithm:
+        serial:
           type: string
-          description: The Algorithm for which the Certificate Key-Pair was generated 
-          enum:
-            - RSA
-            - DSA
-        key_size:
-          type: integer
-          description: The size of the Certificate Private Key in bytes
-          example: 512
-        distinguished_name:
-          type: string
-          description: The subject X.500 Distinguished name
-          example: CN=John Smith, OU=Test, O=IBM, C=GB
-        subject_alt_names:
-          type: array
-          items:
-            $ref: '#/components/schemas/SubjectAlternativeName'
-        key_usage:
-          type: array
-          items:
-            $ref: '#/components/schemas/KeyUsage'
-        extended_key_usage: 
-          type: array
-          items:
-            $ref: '#/components/schemas/ExtendedKeyUsage'
-        validity:
-          $ref: '#/components/schemas/CertValidity'
+          description: The serial number of the issued Certificate
+          example: d9028c1c-6778-403a-b888-c72d7de5aeb3
+        issue_date:
+          format: date
+          description: When was the certficiate issued
+          example: "2023-12-31"
+      required:
+        - name
+        - serial
+        - issue_date
+        
+    IssuedCertInfo:
+      allOf:
+        - $ref: '#/components/schemas/IssuedCertSummary'
+        - type: object
+          readOnly: true
+          description: Information of an issued certificate
+          properties:
+            key_algorithm:
+              type: string
+              description: The Algorithm for which the Certificate Key-Pair was generated 
+              enum:
+                - RSA
+                - DSA
+            key_size:
+              type: integer
+              description: The size of the Certificate Private Key in bytes
+              example: 512
+            distinguished_name:
+              type: string
+              description: The subject X.500 Distinguished name
+              example: CN=John Smith, OU=Test, O=IBM, C=GB
+            subject_alt_names:
+              type: array
+              items:
+                $ref: '#/components/schemas/SubjectAlternativeName'
+            key_usage:
+              type: array
+              items:
+                $ref: '#/components/schemas/KeyUsage'
+            extended_key_usage: 
+              type: array
+              items:
+                $ref: '#/components/schemas/ExtendedKeyUsage'
+            validity:
+              $ref: '#/components/schemas/CertValidity'
+          
       required:
         - name
         - key_algorithm
@@ -459,6 +494,7 @@ components:
         - distinguished_name
         - key_usage
         - validity
+        - issue_date
 
       
 
@@ -496,8 +532,16 @@ components:
             - Medium
             - High
             - Very-High
-        location:
-          $ref: '#/components/schemas/GeographicLocation'
+          
+    
+    BaseCertificateRequestWithLocation:
+      allOf:
+        - $ref: '#/components/schemas/BaseCertificateRequest'
+        - type: object
+          properties:
+            location:
+              $ref: '#/components/schemas/GeographicLocation'
+          
       
 
     CustomCertificateRequest:
@@ -547,14 +591,13 @@ components:
           required:
             - validity
             - key_strength
-            - location
             - subject_distinguished_name
             - key_usage
       
 
     PersonalCertificateRequest:
       allOf:
-        - $ref: "#/components/schemas/BaseCertificateRequest"
+        - $ref: "#/components/schemas/BaseCertificateRequestWithLocation"
         - type: object
           description: A Request to generate a certificate to identify an individual
           properties:
@@ -621,7 +664,7 @@ components:
               type: string
               description: The name of the Sub Certificate Authority
               example: my-subca
-        - $ref: "#/components/schemas/BaseCertificateRequest"
+        - $ref: "#/components/schemas/BaseCertificateRequestWithLocation"
           required:
             - validity
             - key_strength
@@ -630,7 +673,7 @@ components:
 
     TLSServerCertificateRequest:
       allOf:
-        - $ref: "#/components/schemas/BaseCertificateRequest"
+        - $ref: "#/components/schemas/BaseCertificateRequestWithLocation"
         - type: object
           description: A Request to generate a Certificate to identify a TLS Server
           properties:
