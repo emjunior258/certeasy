@@ -1,7 +1,7 @@
 openapi: "3.0.0"
 info:
   version: 1.0.0
-  title: Swagger Petstore
+  title: Easycert
   license:
     name: MIT
 servers:
@@ -26,7 +26,7 @@ paths:
                 items: 
                   type: object
                   properties:
-                    id: 
+                    key: 
                       type: string
                       description: Unique identifier of the attribute
                       example: "common-name"
@@ -51,7 +51,7 @@ paths:
                       description: Indicates whether the attribute is required
                       example: true
                   required:
-                    - id
+                    - key
                     - display_name
                     - description
                     - multivalue
@@ -158,17 +158,125 @@ paths:
 # /certificates/custom
 # POST
 
-# /certificates/tls-server
+  /certificates/tls-server:
+    post:
+      summary: Issue TLS-Server certificate
+      operationId: issueTlsServerCert
+      description: Issues a new Certificate to identify a TLS-Server
+      tags:
+        - Issuing
+      requestBody:
+        description: The Certificate details
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TLSServerCertificateRequest"
+
+      responses:
+        200:
+          $ref: '#/components/responses/SuccessfullyIssuedCert'
+        400: 
+          $ref: '#/components/responses/ConstraintViolation'
+        500:
+          $ref: "#/components/responses/ServerError"
+          
+          
+  
+  /certificates/personal:
+    post:
+      summary: Issue Personal Certificate
+      operationId: issuePersonalCert
+      description: Issues a new Certificate to identify a Person
+      tags:
+        - Issuing
+      requestBody:
+        description: The Certificate details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PersonalCertificateRequest'
+
+      responses:
+        200:
+          $ref: '#/components/responses/SuccessfullyIssuedCert'
+        400: 
+          $ref: '#/components/responses/ConstraintViolation'
+        500:
+          $ref: "#/components/responses/ServerError"
+        
+        
+  /certificates/employee:
+    post:
+      summary: Issue Employee Certificate
+      operationId: issueEmployeeCert
+      description: Issues a new Certificate to identify an Employee of an organization
+      tags:
+        - Issuing
+      requestBody:
+        description: The Certificate details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeCertificateRequest'
+
+      responses:
+        200:
+          $ref: '#/components/responses/SuccessfullyIssuedCert'
+        400: 
+          $ref: '#/components/responses/ConstraintViolation'
+        500:
+          $ref: "#/components/responses/ServerError"
+          
+  
+  /certificates/sub-ca:
+    post:
+      summary: Issue Sub Certificate-Authority Certificate
+      operationId: issueSubCACert
+      description: Issues a Sub Certificate-Authority Certificate
+      tags:
+        - Issuing
+      requestBody:
+        description: The Certificate details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubCACertificateRequest'
+
+      responses:
+        200:
+          $ref: '#/components/responses/SuccessfullyIssuedCert'
+        400: 
+          $ref: '#/components/responses/ConstraintViolation'
+        500:
+          $ref: "#/components/responses/ServerError"
+          
+  
+  /certificates/custom:
+    post:
+      summary: Issue Customized Certificate
+      operationId: issueCustomCert
+      description: Issues a new Customized Certificate
+      tags:
+        - Issuing
+      requestBody:
+        description: The Certificate details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomCertificateRequest'
+
+      responses:
+        200:
+          $ref: '#/components/responses/SuccessfullyIssuedCert'
+        400: 
+          $ref: '#/components/responses/ConstraintViolation'
+        500:
+          $ref: "#/components/responses/ServerError"
+          
+      
+
 # POST
 
-# /certificates/tls-server
-# POST
-
-# /certificates/personal
-# POST
-
-# /certificates/employee
-# POST
 
 # /certificates/{serial}
 # GET (JSON)
@@ -196,7 +304,7 @@ components:
           example: "2023-12-31"
       required:
         - from
-        - to
+        - until
 
     GeographicLocation:
       type: object
@@ -245,16 +353,221 @@ components:
           $ref: "#/components/schemas/GeographicLocation"
 
 
-    TLSServerCertificateRequest:
+    BaseCertificateRequest:
       type: object
       properties:
         validity:
-          type: object
-          schema:
-            $ref:  "#/components/schemas/CertValidity"
+          $ref: "#/components/schemas/CertValidity"
         key_strength:
-        common_name:
-        domains:
+          type: string
+          description: The cryptography strength of the key-pair to be generated
+          enum:
+            - Low
+            - Medium
+            - High
+            - Very-High
+        location:
+          $ref: '#/components/schemas/GeographicLocation'
+      
+
+    CustomCertificateRequest:
+      allOf:
+        - $ref: "#/components/schemas/BaseCertificateRequest"
+        - type: object
+          description: A Request to generate a customized certificate
+          properties:
+            subject_distinguished_name:
+              type: array
+              description: Set of attributes that compose the Subject distinguished name. The order of the attributes matter
+              items:
+                type: object
+                description: A Relative Distinguished Name
+                properties:
+                  key:
+                    type: string
+                    description: The unique identifier of the attribute
+                    example: common-name
+                  value:
+                    type: string
+                    description: A value for the attribute
+                    example: example.com
+                required:
+                  - key
+                  - value
+                minItems: 1
+            key_usage:
+              type: array
+              description: Defines the operations for which the  Certificate public key is intended to be used.
+              items:
+                type: string
+                enum:
+                  - DigitalSignature
+                  - KeyEncipherment
+                  - DataEncipherment
+                  - KeyAgreement
+                  - DecipherOnly
+                  - EncipherOnly
+                  - CertificateSign
+                  - SignCRL
+                  - NonRepudiation
+                minItems: 1
+            extended_key_usage:
+              type: array
+              description: A second degree of restriction in terms of how the public key of a Certificate is intended to be used. The extended key usage is not about the operations that can be performed with the key, it is instead about the context in which those operations can be performed.
+              items:
+                type: string
+                enum:
+                  - TLS_WEB_SERVER_AUTH
+                  - TLS_WEB_CLIENT_AUTH
+                  - SIGN_CODE
+                  - EMAIL_PROTECTION
+                  - TIMESTAMPING
+                  - OCSP_SIGNING
+                  - IPSEC_END_SYSTEM
+                  - IPSEC_TUNNEL
+                  - IPSEC_USER
+                minItems: 1
+            subject_alt_names:
+              type: array
+              description: The subject alternative names to associate to the certificate
+              items:
+                type: object
+                description: An Alternative name
+                properties:
+                  type: 
+                    type: string
+                    description: The type of alternative name
+                    enum:
+                      - DNS
+                      - EMAIL
+                      - IP_ADDRESS
+                      - URI
+                      - DIRECTORY_NAME
+                      - OTHER_NAME
+                    
+                  value:
+                    type: string
+                    description: The value of the alternative name
+                required:
+                  - type
+                  - value
+              
+              
+          required:
+            - validity
+            - key_strength
+            - location
+            - subject_distinguished_name
+            - key_usage
+      
+
+    PersonalCertificateRequest:
+      allOf:
+        - $ref: "#/components/schemas/BaseCertificateRequest"
+        - type: object
+          description: A Request to generate a certificate to identify an individual
+          properties:
+            first_name:
+              type: string
+              description: The person's first name
+              example: Yaka
+            surname: 
+              type: string
+              description: The person's surname
+              example: Matavele
+            telephone: 
+              type: string
+              description: The person's telephone number
+            email_addresses: 
+              type: array
+              description: The email addresses of the person
+              items:
+                type: string
+                description: An email address
+                minItems: 1
+            usernames: 
+              type: array
+              description: The usernames of the person. Computer and online usernames are expected to be Listed.
+              items:
+                type: string
+                description: A username
+                minItems: 1
+          required:
+            - validity
+            - key_strength
+            - location
+            - first_name
+            - surname
+            - telephone
+            - email_addresses
+    
+    
+    EmployeeCertificateRequest:
+      allOf:
+        - $ref: "#/components/schemas/PersonalCertificateRequest"
+        - type: object
+          description: A Request to generate a certificate to identify an individual as an employee.
+          properties:
+            company:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: The name of the company to which the person is employed
+                department:
+                  type: string
+                  description: The name of the department to which the employee belongs
+              required:
+                - name
+                - department
+    
+    SubCACertificateRequest:
+      allOf:
+        - type: object
+          description: A Request to generate a Sub Certificate-Authority certificate
+          properties:
+            name:
+              type: string
+              description: The name of the Sub Certificate Authority
+              example: my-subca
+        - $ref: "#/components/schemas/BaseCertificateRequest"
+          required:
+            - validity
+            - key_strength
+            - location
+            - name
+
+    TLSServerCertificateRequest:
+      allOf:
+        - $ref: "#/components/schemas/BaseCertificateRequest"
+        - type: object
+          description: A Request to generate a Certificate to identify a TLS Server
+          properties:
+            domains:
+              type: array
+              description: The domains that are associated to the server. All listed domains will be added to the certificate as DNS Subject Alternative Names and The first domain in the array will be used as common-name.
+              items:
+                type: string
+                description: A domain name
+                example: example.com
+              minItems: 1
+          required:
+            - domains
+            - validity
+            - key_strength
+            - location
+            
+            
+    IssuedCert:
+      type: object
+      description: Represents an issued certificate
+      properties:
+        serial:
+          type: string
+          description: The issued certificate serial number
+          example: 448d28c6-814b-4d5d-863c-fc1a2fc8f355
+      required:
+        - serial
 
 
 
@@ -300,6 +613,15 @@ components:
             It may or may not yield further information if dereferenced.
 
   responses:
+  
+    SuccessfullyIssuedCert:
+      description: Certificate issued successfully
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/IssuedCert'
+      
+  
     ServerError:  # Can be referenced as '#/components/responses/ServerError'
       description: An error occurred.
       content:
@@ -324,10 +646,10 @@ components:
             title: Constraint Violation
             status: 422
             violations:
-              - field": billing_address.first_name
-                message": may not be empty
-              - field": groups
-                message": must not contain multiple different delivery addresses
+              - field: billing_address.first_name
+                message: may not be empty
+              - field: groups
+                message: must not contain multiple different delivery addresses
 
     BadRequest:
       description: Bad Request
