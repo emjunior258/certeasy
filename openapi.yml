@@ -351,6 +351,7 @@ components:
         value:
           type: string
           description: The value of the alternative name
+          example: example.com
       required:
         - type
         - value
