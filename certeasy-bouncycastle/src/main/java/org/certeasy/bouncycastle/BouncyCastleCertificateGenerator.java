@@ -4,6 +4,7 @@ import org.bouncycastle.asn1.*;
 import org.bouncycastle.asn1.x500.RDN;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.*;
+import org.bouncycastle.asn1.x509.ExtendedKeyUsage;
 import org.bouncycastle.cert.CertIOException;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
@@ -17,6 +18,7 @@ import org.certeasy.Certificate;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
@@ -72,6 +74,11 @@ public class BouncyCastleCertificateGenerator implements CertificateGenerator {
             if(spec.getSubject().hasAlternativeNames())
                 builder.addExtension(Extension.subjectAlternativeName, false, toGeneralNames(spec.getSubject().getAlternativeNames()));
             builder.addExtension(Extension.keyUsage, true, makeKeyUsage(spec));
+            if(spec.getExtendedKeyUsage().isPresent()){
+                ExtendedKeyUsageDefinition extendedKeyUsageDef = spec.getExtendedKeyUsage().get();
+                boolean critical  = ExtendedKeyUsageEffect.Enforce == extendedKeyUsageDef.effect();
+                builder.addExtension(Extension.extendedKeyUsage, critical,  makeExtendedKeyUsage(spec));
+            }
             X509CertificateHolder holder = builder.build(contentSigner);
             return new Certificate(spec, String.valueOf(holder.getSerialNumber()), keyPair.getPrivate(),
                     holder.getEncoded());
@@ -118,6 +125,32 @@ public class BouncyCastleCertificateGenerator implements CertificateGenerator {
         }catch (NoSuchAlgorithmException ex){
             throw new CertGenerationException("RSA key pairs generator not found", ex);
         }
+    }
+
+
+    private ExtendedKeyUsage makeExtendedKeyUsage(CertificateSpec spec){
+        Set<KeyPurposeId> keyPurposeIdSet = new HashSet<>();
+        ExtendedKeyUsageDefinition extendedKeyUsageDefinition = spec.getExtendedKeyUsage().get();
+        for(org.certeasy.ExtendedKeyUsage item: extendedKeyUsageDefinition.extendedKeyUsages()){
+            keyPurposeIdSet.add(toKeyPurpose(item));
+        }
+        KeyPurposeId[] keyPurposeIdsArray = new KeyPurposeId[keyPurposeIdSet.size()];
+        keyPurposeIdSet.toArray(keyPurposeIdsArray);
+        return new ExtendedKeyUsage(keyPurposeIdsArray);
+    }
+
+    private KeyPurposeId toKeyPurpose(org.certeasy.ExtendedKeyUsage keyUsage){
+        return switch (keyUsage) {
+            case SIGN_CODE -> KeyPurposeId.id_kp_codeSigning;
+            case EMAIL_PROTECTION -> KeyPurposeId.id_kp_emailProtection;
+            case IPSEC_END_SYSTEM -> KeyPurposeId.id_kp_ipsecEndSystem;
+            case IPSEC_TUNNEL -> KeyPurposeId.id_kp_ipsecTunnel;
+            case IPSEC_USER -> KeyPurposeId.id_kp_ipsecUser;
+            case OCSP_SIGNING -> KeyPurposeId.id_kp_OCSPSigning;
+            case TIMESTAMPING -> KeyPurposeId.id_kp_timeStamping;
+            case TLS_WEB_CLIENT_AUTH -> KeyPurposeId.id_kp_clientAuth;
+            case TLS_WEB_SERVER_AUTH -> KeyPurposeId.id_kp_serverAuth;
+        };
     }
 
 
