@@ -1,18 +1,19 @@
 openapi: "3.0.0"
 info:
   version: 1.0.0
-  title: Certeasy
+  title: Certeasy-API
+  description: API to Configure the Certeasy Certificate Authority and issue certificates
   license:
     name: Apache License 2.0
 servers:
-  - url: http://petstore.swagger.io/v1
+  - url: http://localhost:8086/api/
 paths:
 
   /dn-attributes:
     get:
-      summary: List DN attributes 
+      summary: List Distinguished Name attributes 
       operationId: listAttributes
-      description: Get List of attributes that may be used on the Distinguished name
+      description: Get List of attributes that may be used on the Certificate Subject Distinguished name. This is only applicable to custom certificates.
       tags:
         - Attributes
       responses:
@@ -64,7 +65,7 @@ paths:
     get:
       summary: Get CA Certificate files
       operationId: downloadCaCertificateFiles
-      description: Download CA Certificate files
+      description: Download CA Certificate files (Cert file, Private-Key). A compressed ZIP archive will be returned.
       tags:
         - Certificate Authority
       responses:
@@ -132,7 +133,7 @@ paths:
     post:
       summary: Create Certificate Authority
       operationId: createCaCertificate
-      description: Create a new CA Certificate
+      description: Create a new CA Certificate. An RSA Key-pair will be generated and used for the Certificate.
       tags:
         - Certificate Authority
       requestBody:
@@ -157,13 +158,13 @@ paths:
 # /certificates/custom
 # POST
 
-  /cert-requests/tls-server:
+  /certificates/tls-server:
     post:
       summary: Issue TLS-Server certificate
       operationId: issueTlsServerCert
-      description: Issues a new Certificate to identify a TLS-Server
+      description: Issues a new Certificate to identify a TLS-Server. An RSA Key-pair will be generated and used for the Certificate.
       tags:
-        - Certificate Requests
+        - Certificates
       requestBody:
         description: The Certificate details
         content:
@@ -181,13 +182,13 @@ paths:
           
           
   
-  /cert-requests/personal:
+  /certificates/personal:
     post:
       summary: Issue Personal Certificate
       operationId: issuePersonalCert
       description: Issues a new Certificate to identify a Person
       tags:
-        - Certificate Requests
+        - Certificates
       requestBody:
         description: The Certificate details
         content:
@@ -204,13 +205,13 @@ paths:
           $ref: "#/components/responses/ServerError"
         
         
-  /cert-requests/employee:
+  /certificates/employee:
     post:
       summary: Issue Employee Certificate
       operationId: issueEmployeeCert
-      description: Issues a new Certificate to identify an Employee of an organization
+      description: Issues a new Certificate to identify an Employee of an organization. An RSA Key-pair will be generated and used for the Certificate.
       tags:
-        - Certificate Requests
+        - Certificates
       requestBody:
         description: The Certificate details
         content:
@@ -227,13 +228,13 @@ paths:
           $ref: "#/components/responses/ServerError"
           
   
-  /cert-requests/sub-ca:
+  /certificates/sub-ca:
     post:
       summary: Issue Sub Certificate-Authority Certificate
       operationId: issueSubCACert
-      description: Issues a Sub Certificate-Authority Certificate
+      description: Issues a Sub Certificate-Authority Certificate. An RSA Key-pair will be generated and used for the Certificate.
       tags:
-        - Certificate Requests
+        - Certificates
       requestBody:
         description: The Certificate details
         content:
@@ -250,13 +251,13 @@ paths:
           $ref: "#/components/responses/ServerError"
           
   
-  /cert-requests/custom:
+  /certificates/custom:
     post:
       summary: Issue Customized Certificate
       operationId: issueCustomCert
-      description: Issues a new Customized Certificate
+      description: Issues a new Customized Certificate. An RSA Key-pair will be generated and used for the Certificate.
       tags:
-        - Certificate Requests
+        - Certificates
       requestBody:
         description: The Certificate details
         content:
@@ -279,7 +280,7 @@ paths:
       operationId: listIssedCerts
       description: List all the certificates issued by this server
       tags:
-        - Issued Certificates
+        - Certificates
       responses:
         200:
           description: Certificates List Retrieved Successfully
@@ -299,7 +300,7 @@ paths:
       operationId: GetCertInfo
       description: Get information of a certificate issued by the CA
       tags:
-        - Issued Certificates
+        - Certificates
       parameters: 
         - name: serial
           in: path
@@ -318,8 +319,26 @@ paths:
           $ref: '#/components/responses/CertificateNotFound'
         500:
           $ref: "#/components/responses/ServerError"
+  /certificates/{serial}/files:
+    get:
+      summary: Get Certificate files
+      operationId: downloadCertificateFiles
+      description: Download Certificate files. A compressed ZIP archive will be returned.
+      tags:
+        - Certificates
+      responses:
+        200:
+          description: Files retrieve successfully.
+          content:
+            application/zip:
+              schema:
+                type: string
+                format: binary
+        404:
+          $ref:  "#/components/responses/CertificateNotFound"
+        500:
+          $ref: "#/components/responses/ServerError"
                 
-        
     
 
 
@@ -633,7 +652,6 @@ components:
             - first_name
             - surname
             - telephone
-            - email_addresses
     
     
     EmployeeCertificateRequest:
@@ -780,7 +798,7 @@ components:
             title: Constraint Violation
             status: 422
             violations:
-              - field: billing_address.first_name
+              - field: location.country
                 message: may not be empty
               - field: groups
                 message: must not contain multiple different delivery addresses
