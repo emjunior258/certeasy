@@ -1,2 +1,2 @@
-# Easycert
-The perfect certificate authority for development and experiments
+# certeasy
+The easiest certificate authority for development and experiments
