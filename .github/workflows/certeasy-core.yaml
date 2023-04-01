@@ -1,5 +1,9 @@
 name: certeasy-core
 
+defaults:
+ run:
+  working-directory: ./certeasy-core
+
 on: [push]
 
 jobs:
