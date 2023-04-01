@@ -1,5 +1,5 @@
-# TinyCA-core
-The core of the TinyCA project.
+# certeasy-core
+The core of the certeasy server.
 
 
 ## Core model
