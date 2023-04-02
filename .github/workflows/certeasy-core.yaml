@@ -4,10 +4,10 @@ defaults:
  run:
   working-directory: ./certeasy-core
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
-  build:
+  maven-build-and-deploy:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -21,8 +21,13 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: maven
-      - name: Publish package
-        run: mvn --batch-mode deploy -X
+      - name: Maven build
+        run: mvn --batch-mode build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Maven deploy
+        run: mvn --batch-mode deploy
+        if: ${{ github.event_name != 'pull_request' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
