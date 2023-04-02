@@ -40,7 +40,7 @@ paths:
                       example: The name used to refer to the subject
                     repeatable: 
                       type: boolean
-                      description: Indicates wether the attribute may appear multiple times in a distinguished nam
+                      description: Indicates wether the attribute may appear multiple times in a distinguished name
                       example: false
                     max_items: 
                       type: integer
