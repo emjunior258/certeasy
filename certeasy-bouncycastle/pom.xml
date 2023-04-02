@@ -30,4 +30,11 @@
 
     </dependencies>
 
+    <repositories>
+        <repository>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/emjunior258/certeasy</url>
+        </repository>
+    </repositories>
+
 </project>
