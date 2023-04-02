@@ -38,9 +38,9 @@ paths:
                       type: string
                       description: The purpose/intent of the attribute
                       example: The name used to refer to the subject
-                    multivalue: 
+                    repeatable: 
                       type: boolean
-                      description: Indicates wether the attribute is an array
+                      description: Indicates wether the attribute may appear multiple times in a distinguished nam
                       example: false
                     max_items: 
                       type: integer
@@ -54,7 +54,7 @@ paths:
                     - key
                     - display_name
                     - description
-                    - multivalue
+                    - repeatable
                     - required
                 minItems: 1
         500:
