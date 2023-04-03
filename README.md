@@ -31,12 +31,13 @@ But How can we expect engineers to use TLS in production if they never used it i
 
 * You don’t get to choose the algorithm, all certificates are RSA based
 
-## Organization
+## Directory structure
 
 The cereasy project is a monorepo, with multiple sub-projects hosted under the same repo:
 
 | Path               | Description        | Technologies |
 | :---               | :---               | :---         |
+| ./.github | Contains Github configuration files | Yaml  |
 | ./certeasy-core | Defines the core concepts related to certificates issuance | Java  |
 | ./certeasy-bouncycastle | Implements a certificate generator using bouncycastle library | Java |
 | ./certeasy-backend-app | Implements all the functionality and exposes a Restful API | Java/Quarkus |
