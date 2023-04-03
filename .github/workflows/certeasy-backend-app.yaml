@@ -1,4 +1,4 @@
-name: certeasy-restful
+name: certeasy-backend-app
 
 defaults:
  run:
@@ -11,13 +11,13 @@ env:
 on: 
   push:
     paths:
-      - 'certeasy-restful/**'
-      - '.github/workflows/certeasy-restful.yaml'
+      - 'certeasy-backend-app/**'
+      - '.github/workflows/certeasy-backend-app.yaml'
 
   pull_request:
     paths:
-      - 'certeasy-restful/**'
-      - '.github/workflows/certeasy-restful.yaml'
+      - 'certeasy-backend-app/**'
+      - '.github/workflows/certeasy-backend-app.yaml'
 
 jobs:
   build-and-deploy:
@@ -59,7 +59,7 @@ jobs:
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
         if: ${{ github.event_name != 'pull_request' }}
         with:
-          context: ./certeasy-restful
+          context: ./certeasy-backend-app
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
