@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         name: Git checkout
-      - name: Set up JDK 17
+      - name: Set up JDK
         uses: actions/setup-java@v3
         with:
           java-version: '17'
@@ -46,11 +46,11 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-      - name: Docker buind and push
+      - name: Docker build and push
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
         if: ${{ github.event_name != 'pull_request' }}
         with:
-          context: .
+          context: ./certeasy-restful
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
