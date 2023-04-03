@@ -2,7 +2,7 @@ name: certeasy-backend-app
 
 defaults:
  run:
-  working-directory: ./certeasy-restful
+  working-directory: ./certeasy-backend-app
 
 env:
   REGISTRY: ghcr.io
