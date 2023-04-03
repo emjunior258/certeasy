@@ -19,7 +19,7 @@ But How can we expect engineers to use TLS in production if they never used it i
 * Predefined types of certificates, encapsulating X509 complexity
 * Exporting certificates in PEM Format
 
-## Project Limitations
+## Limitations
 
 * Only a range of pre-selected attributes/extensions can be used/set on certificates
 
