@@ -8,7 +8,16 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
-on: [push, pull_request]
+on: 
+  push:
+    paths:
+      - 'certeasy-restful/**'
+      - '.github/workflows/certeasy-restful.yaml'
+
+  pull_request:
+    paths:
+      - 'certeasy-restful/**'
+      - '.github/workflows/certeasy-restful.yaml'
 
 jobs:
   build-and-deploy:
