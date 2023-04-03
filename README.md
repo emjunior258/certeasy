@@ -7,7 +7,7 @@ Security Analysts expect client-server communication to be secured by TLS.
 But How can we expect engineers to use TLS in production if they never used it in their very own localhost? But why haven’t they? Because it’s not straightforward. Setting up a CA and issuing certificates is certainly painful at this point. We must make it easier for engineers to use TLS in software they build and deploy locally. To make it easier we MUST simplify the issuance of certificates.
 
 
-## Project goals
+## Goals
 * Make it easier to issue certificates without understanding the X509 specification
 * Provide a self hosted easy to use certificate authority software to be used for experiments and testing in general.
 
@@ -31,20 +31,17 @@ But How can we expect engineers to use TLS in production if they never used it i
 
 * You don’t get to choose the algorithm, all certificates are RSA based
 
-## Project structure
+## Organization
 
-The cereasy project is a monorepo, with multiple sub-projects hosted under the same repo. 
+The cereasy project is a monorepo, with multiple sub-projects hosted under the same repo:
 
-The table below presents the sub-projects that make up the project:
-
-| Name               | Description        | Technologies |
+| Path               | Description        | Technologies |
 | :---               | :---               | :---         |
 | ./certeasy-core | Defines the core concepts related to certificates issuance | Java  |
 | ./certeasy-bouncycastle | Implements a certificate generator using bouncycastle library | Java |
 | ./certeasy-backend-app | Implements all the functionality and exposes a Restful API | Java/Quarkus |
 | ./certeasy-frontend-app | Implements the certeasy web GUI | ReactJS |
 | ./site | The Website of the project | ReactJS |
-
 
 
 ## Help wanted
