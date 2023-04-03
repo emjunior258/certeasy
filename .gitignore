@@ -6,6 +6,6 @@ certeasy-rest/target
 certeasy-rest/.idea
 certeasy-console/target
 certeasy-console/.idea
-certeasy-restful/.idea
-certeasy-restful/target
-certeasy-restful/bin
+certeasy-backend-app/.idea
+certeasy-backend-app/target
+certeasy-backend-app/bin

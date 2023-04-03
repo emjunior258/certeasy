@@ -16,7 +16,6 @@ public class AttributesResource {
 
     private static final Set<DistinguishedNameAttribute> ATTRIBUTE_SET = new HashSet<>();
 
-
     public void initialize(@Observes StartupEvent ev){
         ATTRIBUTE_SET.add(new DistinguishedNameAttribute("common-name", "Common Name", "The name commonly used to refer to the subject", false, 1, true));
         ATTRIBUTE_SET.add(new DistinguishedNameAttribute("title", "Title", "The title used to refer to the subject", false, 1, false));
