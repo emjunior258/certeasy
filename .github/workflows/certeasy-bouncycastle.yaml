@@ -4,7 +4,16 @@ defaults:
  run:
   working-directory: ./certeasy-bouncycastle
 
-on: [push, pull_request]
+on: 
+  push:
+    paths:
+      - 'certeasy-bouncycastle/**'
+      - '.github/workflows/certeasy-bouncycastle.yaml'
+
+  pull_request:
+    paths:
+      - 'certeasy-bouncycastle/**'
+      - '.github/workflows/certeasy-bouncycastle.yaml'
 
 jobs:
   build-and-deploy:

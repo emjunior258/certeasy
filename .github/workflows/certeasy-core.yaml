@@ -4,7 +4,16 @@ defaults:
  run:
   working-directory: ./certeasy-core
 
-on: [push, pull_request]
+on: 
+  push:
+    paths:
+      - 'certeasy-core/**'
+      - '.github/workflows/certeasy-core.yaml'
+
+  pull_request:
+    paths:
+      - 'certeasy-core/**'
+      - '.github/workflows/certeasy-core.yaml'
 
 jobs:
   build-and-deploy:
