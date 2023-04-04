@@ -14,10 +14,10 @@ But How can we expect engineers to use TLS in production if they never used it i
 
 ## Features
 
-* RESTFul API
-* Web GUI
-* Predefined types of certificates, encapsulating X509 complexity
-* Exporting certificates in PEM Format
+* REST API
+* User friendly Web GUI
+* Predefined types/templates of certificates
+* Exporting certificates and keys in PEM Format
 
 ## Limitations
 
