@@ -3,7 +3,7 @@ package org.certeasy;
 import org.certeasy.certspec.CertificateAuthoritySpec;
 
 /**
- * Generates {@link Certificate}s from {@link CertificateSpec}s.
+ * Generates {@link Certificate}s from {@link CertificateSpec}s and Loads {@link Certificate}s from bytes.
  */
 public interface CertificateGenerator {
 
@@ -15,9 +15,9 @@ public interface CertificateGenerator {
      * @throws IllegalArgumentException if the provided spec is null
      * @throws IllegalArgumentException if the provided authorityCertificate is not a CA
      * @throws IllegalArgumentException if the provided authorityCertificate is null
-     * @throws CertGenerationException if an internal error occurs while generating the certificate
+     * @throws CertificateGeneratorException if an internal error occurs while generating the certificate
      */
-    Certificate generate(CertificateSpec spec, Certificate authorityCertificate) throws CertGenerationException;
+    Certificate generate(CertificateSpec spec, Certificate authorityCertificate) throws CertificateGeneratorException;
 
 
     /**
@@ -25,8 +25,9 @@ public interface CertificateGenerator {
      * @param spec the specification of the certificate authority
      * @return the Generated CA Root {@link Certificate}
      * @throws IllegalArgumentException if the spec is null
-     * @throws CertGenerationException if an internal error occurs while generating the certificate
+     * @throws CertificateGeneratorException if an internal error occurs while generating the certificate
      */
-    Certificate generate(CertificateAuthoritySpec spec) throws CertGenerationException;
+    Certificate generate(CertificateAuthoritySpec spec) throws CertificateGeneratorException;
+
 
 }

@@ -9,3 +9,5 @@ certeasy-console/.idea
 certeasy-backend-app/.idea
 certeasy-backend-app/target
 certeasy-backend-app/bin
+certeasy-rest/*.cer
+certeasy-rest/*.der

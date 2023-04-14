@@ -1,11 +1,15 @@
 package org.certeasy.rest;
 
-import org.certeasy.bouncycastle.BouncyCastleCertificateGenerator;
 import org.certeasy.*;
+import org.certeasy.bouncycastle.BouncyCastleCertGenerator;
+import org.certeasy.bouncycastle.BouncyCastlePEMCoder;
 import org.certeasy.certspec.*;
 
 import java.io.File;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.TextStyle;
+import java.util.Locale;
 import java.util.Set;
 
 public class Start {
@@ -15,9 +19,9 @@ public class Start {
         GeographicAddress address = new GeographicAddress("MZ", "Maputo", "Boane", "Belo Horizonte, Rua das Flores, Casa 48");
         CertificateAuthoritySubject authoritySubject = new CertificateAuthoritySubject("MyCA", address);
         CertificateAuthoritySpec authoritySpec = new CertificateAuthoritySpec(authoritySubject, KeyStrength.MEDIUM_STRENGTH,
-                LocalDate.of(2099, 12, 12));
+                new DateRange(LocalDate.of(2099, 12, 12)));
 
-        CertificateGenerator generator = new BouncyCastleCertificateGenerator();
+        CertificateGenerator generator = new BouncyCastleCertGenerator();
         Certificate authorityCert =  generator.generate(authoritySpec);
         authorityCert.exportDER(new File("example-ca.cer"));
 
@@ -29,7 +33,7 @@ public class Start {
 
         PersonalCertificateSpec personalCertificateSpec = new PersonalCertificateSpec(personalIdentitySubject,
                 KeyStrength.HIGH_STRENGTH,
-                LocalDate.of(2023,12,11));
+                new DateRange(LocalDate.of(2023,12,11)));
 
         Certificate personalCert = generator.generate(personalCertificateSpec, authorityCert);
         personalCert.exportDER(new File("mario.cer"));
@@ -41,10 +45,16 @@ public class Start {
 
         CertificateSpec employeeCertSpec = new EmployeeCertificateSpec(
                 employeeIdentitySubject,KeyStrength.MEDIUM_STRENGTH,
-                LocalDate.of(2023,12,11));
+                new DateRange(LocalDate.of(2023,12,11)));
 
         Certificate employeeCert = generator.generate(employeeCertSpec, authorityCert);
         employeeCert.exportDER(new File("mario-vm.cer"));
+
+        PEMCoder pemCoder = new BouncyCastlePEMCoder();
+        String privatePem = pemCoder.encodePrivateKey(employeeCert);
+        String certPem = pemCoder.encodeCert(employeeCert);
+
+        Certificate decoded = pemCoder.decodeCertificate(certPem, privatePem);
 
     }
 

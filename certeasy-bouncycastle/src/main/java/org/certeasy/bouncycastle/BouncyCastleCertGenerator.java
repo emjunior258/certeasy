@@ -16,13 +16,12 @@ import org.certeasy.KeyUsage;
 import org.certeasy.certspec.*;
 import org.certeasy.Certificate;
 
+import javax.swing.plaf.PanelUI;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
-import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Collection;
 import java.util.Date;
@@ -30,7 +29,11 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class BouncyCastleCertificateGenerator implements CertificateGenerator {
+public class BouncyCastleCertGenerator implements CertificateGenerator {
+
+    public BouncyCastleCertGenerator() {
+        BouncyCastleSecurityProvider.install();
+    }
 
     @Override
     public Certificate generate(CertificateSpec spec, Certificate authorityCertificate) {
@@ -38,12 +41,12 @@ public class BouncyCastleCertificateGenerator implements CertificateGenerator {
             throw new IllegalArgumentException("spec MUST not be null");
         if(authorityCertificate==null)
             throw new IllegalArgumentException("authority certificate MUST not be null");
-        X500Name issuerName = toX500Name(authorityCertificate.getSubject().getDistinguishedName());
+        X500Name issuerName = toX500Name(authorityCertificate.getDistinguishedName());
         try {
             ContentSigner signer = new JcaContentSignerBuilder("SHA256WithRSA").build(authorityCertificate.getPrivateKey());
             return makeCertificate(spec, issuerName, makeKeyPair(spec), signer);
         }catch (OperatorCreationException ex){
-            throw new CertGenerationException("error creating certificate content signer", ex);
+            throw new CertificateGeneratorException("error creating certificate content signer", ex);
         }
     }
 
@@ -57,16 +60,18 @@ public class BouncyCastleCertificateGenerator implements CertificateGenerator {
             ContentSigner signer = new JcaContentSignerBuilder("SHA256WithRSA").build(keyPair.getPrivate());
             return makeCertificate(spec, issuerName, makeKeyPair(spec), signer);
         }catch (OperatorCreationException ex){
-            throw new CertGenerationException("error creating certificate content signer", ex);
+            throw new CertificateGeneratorException("error creating certificate content signer", ex);
         }
     }
-
 
     private Certificate makeCertificate(CertificateSpec spec,X500Name issuerName, KeyPair keyPair, ContentSigner contentSigner){
         BigInteger serialNumber = BigInteger.valueOf(System.currentTimeMillis());
         X500Name subjectName = toX500Name(spec.getSubject().getDistinguishedName());
-        JcaX509v3CertificateBuilder builder = new JcaX509v3CertificateBuilder(issuerName, serialNumber, Date.from(Instant.now()),
-                Date.from(spec.getExpiryDate().atStartOfDay(ZoneId.systemDefault()).toInstant()),
+
+        Date validityStartDate = Date.from(spec.getValidityPeriod().start().atTime(0,0).atZone(ZoneId.systemDefault()).toInstant());
+        Date validityEndDate = Date.from(spec.getValidityPeriod().start().atTime(23,59).atZone(ZoneId.systemDefault()).toInstant());
+
+        JcaX509v3CertificateBuilder builder = new JcaX509v3CertificateBuilder(issuerName, serialNumber, validityStartDate, validityEndDate,
                 subjectName, keyPair.getPublic());
         try {
             if (spec.isCertificateAuthority())
@@ -74,8 +79,8 @@ public class BouncyCastleCertificateGenerator implements CertificateGenerator {
             if(spec.getSubject().hasAlternativeNames())
                 builder.addExtension(Extension.subjectAlternativeName, false, toGeneralNames(spec.getSubject().getAlternativeNames()));
             builder.addExtension(Extension.keyUsage, true, makeKeyUsage(spec));
-            if(spec.getExtendedKeyUsage().isPresent()){
-                ExtendedKeyUsageDefinition extendedKeyUsageDef = spec.getExtendedKeyUsage().get();
+            if(spec.getExtendedKeyUsages().isPresent()){
+                ExtendedKeyUsages extendedKeyUsageDef = spec.getExtendedKeyUsages().get();
                 boolean critical  = ExtendedKeyUsageEffect.Enforce == extendedKeyUsageDef.effect();
                 builder.addExtension(Extension.extendedKeyUsage, critical,  makeExtendedKeyUsage(spec));
             }
@@ -83,9 +88,9 @@ public class BouncyCastleCertificateGenerator implements CertificateGenerator {
             return new Certificate(spec, String.valueOf(holder.getSerialNumber()), keyPair.getPrivate(),
                     holder.getEncoded());
         }catch (CertIOException ex){
-            throw new CertGenerationException("error adding extensions to certificate", ex);
+            throw new CertificateGeneratorException("error adding extensions to certificate", ex);
         }catch (IOException ex){
-            throw new CertGenerationException("error reading encoded certificate", ex);
+            throw new CertificateGeneratorException("error reading encoded certificate", ex);
         }
     }
 
@@ -123,14 +128,13 @@ public class BouncyCastleCertificateGenerator implements CertificateGenerator {
             keyGen.initialize(spec.getKeyStrength().getSize());
             return keyGen.generateKeyPair();
         }catch (NoSuchAlgorithmException ex){
-            throw new CertGenerationException("RSA key pairs generator not found", ex);
+            throw new CertificateGeneratorException("RSA key pairs generator not found", ex);
         }
     }
 
-
     private ExtendedKeyUsage makeExtendedKeyUsage(CertificateSpec spec){
         Set<KeyPurposeId> keyPurposeIdSet = new HashSet<>();
-        ExtendedKeyUsageDefinition extendedKeyUsageDefinition = spec.getExtendedKeyUsage().get();
+        ExtendedKeyUsages extendedKeyUsageDefinition = spec.getExtendedKeyUsages().get();
         for(org.certeasy.ExtendedKeyUsage item: extendedKeyUsageDefinition.extendedKeyUsages()){
             keyPurposeIdSet.add(toKeyPurpose(item));
         }
@@ -156,7 +160,7 @@ public class BouncyCastleCertificateGenerator implements CertificateGenerator {
 
     private org.bouncycastle.asn1.x509.KeyUsage makeKeyUsage(CertificateSpec spec){
         int keyUsageInt = 0;
-        for(KeyUsage keyUsage: spec.getPublicKeyUsages()){
+        for(KeyUsage keyUsage: spec.getKeyUsages()){
             switch (keyUsage){
                 case DigitalSignature -> keyUsageInt += org.bouncycastle.asn1.x509.KeyUsage.digitalSignature;
                 case CertificateSign -> keyUsageInt += org.bouncycastle.asn1.x509.KeyUsage.keyCertSign;

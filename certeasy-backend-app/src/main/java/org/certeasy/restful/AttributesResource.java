@@ -1,8 +1,9 @@
-package org.certeasy;
+package org.certeasy.restful;
 
 
 
 import io.quarkus.runtime.StartupEvent;
+import org.certeasy.persistence.DistinguishedNameAttribute;
 
 import javax.enterprise.event.Observes;
 import javax.ws.rs.GET;

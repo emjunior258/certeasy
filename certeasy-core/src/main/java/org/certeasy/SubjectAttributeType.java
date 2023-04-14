@@ -52,4 +52,14 @@ public enum SubjectAttributeType {
     public boolean isMultiValue() {
         return multiValue;
     }
+
+    public static SubjectAttributeType fromOID(String oid){
+        for(SubjectAttributeType attributeType: SubjectAttributeType.values()){
+            if(attributeType.oid.equals(oid)){
+                return attributeType;
+            }
+        }
+        throw new IllegalArgumentException("Unknown attribute type");
+    }
+
 }

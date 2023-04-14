@@ -4,24 +4,19 @@ package org.certeasy;
  * Summarized information about an X509 V3 {@link Certificate}.
  * @param commonName the common name of the subject
  * @param serial the serial of the {@link Certificate}
- * @param type the type of {@link Certificate}
- * @param status the current status of the {@link Certificate}
+ * @param validityPeriod the period for which the  {@link Certificate} will remain valid
  */
-public record CertificateSummary(String commonName, String serial, CertificateType type, CertificateStatus status) {
+public record CertificateSummary(String commonName, String serial, DateRange validityPeriod) {
 
-    public CertificateSummary(String commonName, String serial, CertificateType type, CertificateStatus status){
+    public CertificateSummary(String commonName, String serial,
+                              DateRange validityPeriod){
         if(commonName ==null|| commonName.isEmpty())
             throw new IllegalArgumentException("commonName MUST not be null nor empty");
         if(serial==null || serial.isEmpty())
             throw new IllegalArgumentException("serial MUST not be null nor empty");
-        if(type==null)
-            throw new IllegalArgumentException("type MUST not be null");
-        if(status==null)
-            throw new IllegalArgumentException("status MUST not be null");
         this.commonName = commonName;
         this.serial = serial;
-        this.type = type;
-        this.status = status;
+        this.validityPeriod = validityPeriod;
     }
 
 }

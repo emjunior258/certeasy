@@ -1,4 +1,4 @@
-package org.certeasy;
+package org.certeasy.persistence;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

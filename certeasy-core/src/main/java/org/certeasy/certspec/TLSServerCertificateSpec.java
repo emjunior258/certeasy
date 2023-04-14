@@ -7,11 +7,9 @@ import java.util.Set;
 
 public class TLSServerCertificateSpec extends CertificateSpec {
 
-    public TLSServerCertificateSpec(TLSServerSubject subject, KeyStrength keyStrength, LocalDate expiryDate) {
-        super(subject, keyStrength, expiryDate, Set.of(KeyUsage.DigitalSignature, KeyUsage.KeyEncipherment),
-                new ExtendedKeyUsageDefinition(Set.of(ExtendedKeyUsage.TLS_WEB_SERVER_AUTH)),
-                false);
+    public TLSServerCertificateSpec(TLSServerSubject subject, KeyStrength keyStrength, DateRange validityPeriod) {
+        super(subject, keyStrength, validityPeriod, false, Set.of(KeyUsage.DigitalSignature, KeyUsage.KeyEncipherment),
+                new ExtendedKeyUsages(Set.of(ExtendedKeyUsage.TLS_WEB_SERVER_AUTH)));
     }
-
 
 }

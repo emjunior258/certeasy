@@ -1,16 +1,10 @@
 package org.certeasy;
 
-import org.certeasy.certspec.CertificateAuthoritySubject;
-import org.certeasy.certspec.EmployeeIdentitySubject;
-import org.certeasy.certspec.PersonalIdentitySubject;
-import org.certeasy.certspec.TLSServerSubject;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.security.PrivateKey;
-import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
@@ -21,42 +15,42 @@ import java.util.Set;
 public class Certificate {
 
     private final String serial;
-    private final CertificateSubject subject;
     private final KeyStrength keyStrength;
-    private final Set<KeyUsage> keyUsages;
-    private ExtendedKeyUsageDefinition extendedKeyUsageDefinition;
-
     private final PrivateKey privateKey;
     private final byte[] derBytes;
+    private final DateRange validityPeriod;
+    private final DistinguishedName distinguishedName;
 
-    private final LocalDate expiryDate;
+    private Set<KeyUsage> keyUsages;
+
+    private ExtendedKeyUsages extendedKeyUsages;
+
     private CertificateSummary summary;
-    private CertificateType type;
 
-    public Certificate(String serial, CertificateSubject subject, LocalDate expiryDate, KeyStrength keyStrength, Set<KeyUsage> keyUsages, ExtendedKeyUsageDefinition extendedKeyUsageDefinition, PrivateKey privateKey, byte[] derBytes){
+    public Certificate(String serial, DistinguishedName distinguishedName, DateRange validityPeriod, KeyStrength keyStrength, PrivateKey privateKey, byte[] derBytes,  Set<KeyUsage> keyUsages, ExtendedKeyUsages extendedKeyUsages){
         if(serial==null || serial.isEmpty())
             throw new IllegalArgumentException("serial MUST not be null nor empty");
-        if(subject==null)
-            throw new IllegalArgumentException("subject MUST not be null nor empty");
-        if(expiryDate==null)
-            throw new IllegalArgumentException("expiry date MUST not be null nor empty");
+        if(distinguishedName==null)
+            throw new IllegalArgumentException("distinguishedName MUST not be null nor empty");
+        if(validityPeriod==null)
+            throw new IllegalArgumentException("ExtendedKeyUsages extendedKeyUsages, validityPeriod MUST not be null");
         if(keyStrength==null)
             throw new IllegalArgumentException("key strength MUST not be null");
-        if(keyUsages==null || keyUsages.isEmpty())
-            throw new IllegalArgumentException("key usages set MUST not be null nor empty");
         if(privateKey==null)
             throw new IllegalArgumentException("privateKey MUST not be null");
+        if(keyUsages==null)
+            throw new IllegalArgumentException("keyUsages MUST not be null");
         if(derBytes==null || derBytes.length==0)
             throw new IllegalArgumentException("derBytes array MUST not be null nor empty");
         this.serial = serial;
-        this.subject = subject;
-        this.expiryDate = expiryDate;
+        this.distinguishedName = distinguishedName;
+        this.validityPeriod = validityPeriod;
         this.keyStrength = keyStrength;
         this.keyUsages = Collections.unmodifiableSet(keyUsages);
-        this.extendedKeyUsageDefinition = extendedKeyUsageDefinition;
+        if(extendedKeyUsages!=null)
+            this.extendedKeyUsages = extendedKeyUsages;
         this.privateKey = privateKey;
         this.derBytes = derBytes;
-        this.figureType();
         this.makeSummary();
     }
 
@@ -70,44 +64,33 @@ public class Certificate {
             throw new IllegalArgumentException("key pair MUST not be null nor empty");
         if(derBytes==null)
             throw new IllegalArgumentException("derBytes array MUST not be null");
-        this.subject = spec.getSubject();
-        this.expiryDate = spec.getExpiryDate();
+        this.distinguishedName = spec.getSubject().getDistinguishedName();
+        this.validityPeriod = spec.getValidityPeriod();
         this.keyStrength = spec.getKeyStrength();
-        this.keyUsages = spec.getPublicKeyUsages();
-        spec.getExtendedKeyUsage().ifPresent(keyUsageDefinition -> this.extendedKeyUsageDefinition = keyUsageDefinition);
+        this.keyUsages = spec.getKeyUsages();
+        if(spec.getExtendedKeyUsages().isPresent())
+            this.extendedKeyUsages = spec.getExtendedKeyUsages().get();
         this.serial = serial;
         this.privateKey = privateKey;
         this.derBytes = derBytes;
-        this.figureType();
         this.makeSummary();
     }
 
-    private void figureType(){
-        if(subject instanceof EmployeeIdentitySubject)
-            this.type = CertificateType.Employee;
-        else if(subject instanceof PersonalIdentitySubject)
-            this.type = CertificateType.Personal;
-        else if(subject instanceof TLSServerSubject)
-            this.type = CertificateType.TLSServer;
-        else if(subject instanceof CertificateAuthoritySubject)
-            this.type = CertificateType.Authority;
-        else this.type = CertificateType.Custom;
-    }
 
     public String getSerial() {
         return serial;
-    }
-
-    public CertificateSubject getSubject() {
-        return subject;
     }
 
     public KeyStrength getKeyStrength() {
         return keyStrength;
     }
 
-    public Set<KeyUsage> getKeyUsages() {
-        return keyUsages;
+    public DateRange getValidityPeriod() {
+        return validityPeriod;
+    }
+
+    public DistinguishedName getDistinguishedName() {
+        return distinguishedName;
     }
 
     public PrivateKey getPrivateKey() {
@@ -126,12 +109,12 @@ public class Certificate {
         try {
             file.createNewFile();
         } catch (IOException ex) {
-            throw new TinyCaException("failed to create file: "+file.getAbsolutePath(), ex);
+            throw new CertEasyException("failed to create file: "+file.getAbsolutePath(), ex);
         }
         try(FileOutputStream stream = new FileOutputStream(file)){
             this.exportDER(stream);
         }catch(IOException ex){
-            throw new TinyCaException("error creating file stream: "+file.getAbsolutePath(),
+            throw new CertEasyException("error creating file stream: "+file.getAbsolutePath(),
                     ex);
         }
         return true;
@@ -143,26 +126,25 @@ public class Certificate {
         try {
             stream.write(derBytes);
         } catch (IOException ex) {
-            throw new TinyCaException("error writing encoded certificate to stream", ex);
+            throw new CertEasyException("error writing encoded certificate to stream", ex);
         }
     }
 
-    public LocalDate getExpiryDate() {
-        return expiryDate;
+    public Set<KeyUsage> getKeyUsages() {
+        return keyUsages;
     }
 
-    public boolean hasExpired(){
-        return LocalDate.now().isAfter(
-                expiryDate);
+    public Optional<ExtendedKeyUsages> getExtendedKeyUsages() {
+        return Optional.ofNullable(extendedKeyUsages);
     }
 
     private void makeSummary(){
-        this.summary = new CertificateSummary(this.subject.getCommonName(), serial,type,
-                hasExpired() ? CertificateStatus.Expired : CertificateStatus.Active);
+        this.summary = new CertificateSummary(this.distinguishedName.getCommonName(), serial,
+                validityPeriod);
     }
 
-    public Optional<ExtendedKeyUsageDefinition> getExtendedKeyUsage(){
-        return Optional.ofNullable(extendedKeyUsageDefinition);
+    public Optional<ExtendedKeyUsages> getExtendedKeyUsage(){
+        return Optional.ofNullable(extendedKeyUsages);
     }
 
     public CertificateSummary getSummary(){
