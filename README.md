@@ -14,10 +14,10 @@ But How can we expect engineers to use TLS in production if they never used it i
 
 ## Features
 
-* RESTFul API
-* Web GUI
-* Predefined types of certificates, encapsulating X509 complexity
-* Exporting certificates in PEM Format
+* REST API
+* User friendly Web GUI
+* Predefined types/templates of certificates
+* Exporting certificates and keys in PEM Format
 
 ## Limitations
 
@@ -37,12 +37,12 @@ The cereasy project is a monorepo, with multiple sub-projects hosted under the s
 
 | Path               | Description        | Technologies |
 | :---               | :---               | :---         |
-| ./.github | Contains Github configuration files | Yaml  |
-| ./certeasy-core | Defines the core concepts related to certificates issuance | Java  |
-| ./certeasy-bouncycastle | Implements a certificate generator using bouncycastle library | Java |
-| ./certeasy-backend-app | Implements all the functionality and exposes a Restful API | Java/Quarkus |
-| ./certeasy-frontend-app | Implements the certeasy web GUI | ReactJS |
-| ./site | The Website of the project | ReactJS |
+| `./.github` | Contains Github configuration files | Yaml  |
+| `./certeasy-core` | Defines the core concepts related to certificates issuance | Java  |
+| `./certeasy-bouncycastle` | Implements a certificate generator using bouncycastle library | Java |
+| `./certeasy-backend-app` | Implements all the functionality and exposes a Restful API | Java/Quarkus |
+| `./certeasy-frontend-app` | Implements the certeasy web GUI | ReactJS |
+| `./site` | The Website of the project | ReactJS |
 
 
 ## Help wanted
