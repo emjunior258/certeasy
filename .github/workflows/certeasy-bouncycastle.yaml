@@ -15,7 +15,8 @@ on:
     paths-ignore:
       - 'certeasy-core/**'
       - 'certeasy-backend-app/**'
-      - '.github/**'
+      - '.github/certeasy-backend-app.yaml'
+      - '.github/certeasy-core.yaml'
       - '**.md'
       - '.gitignore'
       - 'LICENSE'
@@ -24,7 +25,8 @@ on:
     paths-ignore:
       - 'certeasy-core/**'
       - 'certeasy-backend-app/**'
-      - '.github/**'
+      - '.github/certeasy-backend-app.yaml'
+      - '.github/certeasy-core.yaml'
       - '**.md'
       - '.gitignore'
       - 'LICENSE'

@@ -19,7 +19,8 @@ on:
     paths-ignore:
       - 'certeasy-core/**'
       - 'certeasy-bouncycastle/**'
-      - '.github/**'
+      - '.github/certeasy-bouncycastle.yaml'
+      - '.github/certeasy-core.yaml'
       - '**.md'
       - '.gitignore'
       - 'LICENSE'
@@ -28,7 +29,8 @@ on:
     paths-ignore:
       - 'certeasy-core/**'
       - 'certeasy-bouncycastle/**'
-      - '.github/**'
+      - '.github/certeasy-bouncycastle.yaml'
+      - '.github/certeasy-core.yaml'
       - '**.md'
       - '.gitignore'
       - 'LICENSE'
