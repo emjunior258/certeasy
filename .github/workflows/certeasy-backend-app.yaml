@@ -16,14 +16,14 @@ on:
       - completed
 
   push:
-    paths:
-      - 'certeasy-backend-app/**'
-      - '.github/workflows/certeasy-backend-app.yaml'
+    paths-ignore:
+      - 'certeasy-core/**'
+      - 'certeasy-bouncycastle/**'
 
   pull_request:
-    paths:
-      - 'certeasy-backend-app/**'
-      - '.github/workflows/certeasy-backend-app.yaml'
+    paths-ignore:
+      - 'certeasy-core/**'
+      - 'certeasy-bouncycastle/**'
 
 jobs:
   build-and-deploy:
