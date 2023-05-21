@@ -11,7 +11,7 @@ env:
 on:
 
   workflow_run:
-    workflows: [ "certeasy-core" ]
+    workflows: [ "certeasy-core", "certeasy-bouncycastle" ]
     types:
       - completed
 

@@ -7,10 +7,10 @@ defaults:
 on:
 
   workflow_run:
-    workflows: [ "certeasy-core", "certeasy-bouncycastle" ]
+    workflows: [ "certeasy-core" ]
     types:
       - completed
-  
+
   push:
     paths:
       - 'certeasy-bouncycastle/**'
