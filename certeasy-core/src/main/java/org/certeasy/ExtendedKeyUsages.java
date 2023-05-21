@@ -2,18 +2,18 @@ package org.certeasy;
 
 import java.util.Set;
 
-public record ExtendedKeyUsages(Set<ExtendedKeyUsage> extendedKeyUsages, ExtendedKeyUsageEffect effect) {
+public record ExtendedKeyUsages(Set<ExtendedKeyUsage> usages, ExtendedKeyUsageEffect effect) {
 
     public ExtendedKeyUsages(Set<ExtendedKeyUsage> extendedKeyUsages){
         this(extendedKeyUsages, ExtendedKeyUsageEffect.Enforce);
     }
 
-    public ExtendedKeyUsages(Set<ExtendedKeyUsage> extendedKeyUsages, ExtendedKeyUsageEffect effect){
-        if(extendedKeyUsages==null || extendedKeyUsages.isEmpty())
-            throw new IllegalArgumentException("extendedKeyUsages MUST not be null nor empty");
+    public ExtendedKeyUsages(Set<ExtendedKeyUsage> usages, ExtendedKeyUsageEffect effect){
+        if(usages ==null || usages.isEmpty())
+            throw new IllegalArgumentException("usages MUST not be null nor empty");
         if(effect==null)
             throw new IllegalArgumentException("effect MUST not be null");
-        this.extendedKeyUsages = extendedKeyUsages;
+        this.usages = usages;
         this.effect = effect;
     }
 }

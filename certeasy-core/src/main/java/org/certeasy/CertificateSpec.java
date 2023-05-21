@@ -9,6 +9,8 @@ import java.util.Set;
  */
 public class CertificateSpec {
 
+    private BasicConstraints basicConstraints;
+
     private CertificateSubject subject;
 
     private DateRange validityPeriod;
@@ -17,11 +19,9 @@ public class CertificateSpec {
 
     private Set<KeyUsage> keyUsages;
 
-    private boolean certificateAuthority = false;
-
     private ExtendedKeyUsages extendedKeyUsages;
 
-    public CertificateSpec(CertificateSubject subject, KeyStrength keyStrength, DateRange validityPeriod, boolean certificateAuthority, Set<KeyUsage> keyUsages, ExtendedKeyUsages extendedKeyUsages){
+    public CertificateSpec(CertificateSubject subject, KeyStrength keyStrength, DateRange validityPeriod, BasicConstraints basicConstraints, Set<KeyUsage> keyUsages, ExtendedKeyUsages extendedKeyUsages){
         if(subject==null)
             throw new IllegalArgumentException("subject MUST not be null");
         if(keyStrength==null)
@@ -30,12 +30,14 @@ public class CertificateSpec {
             throw new IllegalArgumentException("validity MUST not be null");
         if(keyUsages==null || keyUsages.isEmpty())
             throw new IllegalArgumentException("key usages SET must NOT be null nor empty");
+        if(basicConstraints==null)
+            throw new IllegalArgumentException("basicConstraints MUST not be null");
         this.subject = subject;
         this.keyStrength = keyStrength;
         this.validityPeriod = validityPeriod;
         this.keyUsages = keyUsages;
         this.extendedKeyUsages = extendedKeyUsages;
-        this.certificateAuthority = certificateAuthority;
+        this.basicConstraints = basicConstraints;
     }
 
     public CertificateSubject getSubject() {
@@ -54,8 +56,8 @@ public class CertificateSpec {
         return keyStrength;
     }
 
-    public boolean isCertificateAuthority() {
-        return certificateAuthority;
+    public BasicConstraints getBasicConstraints() {
+        return basicConstraints;
     }
 
     public Optional<ExtendedKeyUsages> getExtendedKeyUsages() {

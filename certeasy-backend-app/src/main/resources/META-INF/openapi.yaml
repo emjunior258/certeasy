@@ -1,21 +1,226 @@
 openapi: "3.0.0"
 info:
   version: 1.0.0
-  title: Certeasy-API
-  description: API to Configure the Certeasy Certificate Authority and issue certificates
+  title: Certificate-API
+  description: |
+    API to issue certificates.
+    
+    ## Key Concepts
+    
+    ### Issuer
+    Represents a certificate authority. You need an Issuer in order to issue Certificates. You can have as many issuers as you need. There are two types of issuers: 
+     - Root-CA
+     - Sub-CA
+    
+    #### Root-CA
+    A Root CA is one that signed it's own certificate.
+    
+    #### Sub-CA
+    A Sub-CA is a certificate authority that had its certificate signed by another CA.
+    
+    ### Certificate
+    Represents An X509 V3 Certificate.
+
   license:
     name: Apache License 2.0
 servers:
-  - url: http://localhost:8086/api/
+  - url: http://localhost:8080/api/
 paths:
 
-  /dn-attributes:
+  /issuers:
+    get:
+      summary: List Issuers
+      operationId: getIssuersList
+      description: Get List of Issuers available
+      tags:
+        - Issuers
+      responses:
+        200:
+          description: CA Certificate Info retrieve successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/IssuerInfo"
+                minItems: 0
+        500:
+          $ref: "#/components/responses/ServerError"
+
+  /issuers/{id}:
+    post:
+      summary: Create Issuer
+      operationId: createIssuer
+      description: Create a new Certificates Issuer. May use an existing CA-Certificate or create a new one.
+      tags:
+        - Issuers
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier of the issuer in the system
+          schema:
+            pattern: ^[a-z]+(-[a-z]+)*$
+      requestBody:
+        description: Issuer creation body
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewIssuerBody"
+      responses:
+        204:
+          description: Issuer created successfully
+        422:
+          $ref: '#/components/responses/IssuerConstraintViolation'
+        409:
+          $ref: '#/components/responses/IssuerIDTaken'
+        500:
+          $ref: "#/components/responses/ServerError"
+
+  /issuers/{id}/certificates/tls-server:
+    post:
+      summary: Issue TLS-Server certificate
+      operationId: issueTlsServerCert
+      description: |
+        Issues a new Certificate to identify a TLS-Server. An RSA Key-pair will be generated and used for the Certificate. 
+        The issued certificate will contain the following extensions:
+        
+        *Subject Alternative Name (Non Critical)*:
+         * The domain names provided
+        
+        *Key Usage (Critical)*:
+         * Digital Signature
+         * Key Encipherment
+        
+        *Extended Key Usage (Critical)*:
+         * TLS Web Server Authentication (OID 1.3.6.1.5.5.7.3.1)
+
+      tags:
+        - Certificates
+      requestBody:
+        description: The Certificate details
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TLSServerCertificateRequest"
+
+      responses:
+        200:
+          $ref: '#/components/responses/SuccessfullyIssuedCert'
+        400:
+          $ref: '#/components/responses/ConstraintViolation'
+        500:
+          $ref: "#/components/responses/ServerError"
+
+
+
+  /issuers/{id}/certificates/personal:
+    post:
+      summary: Issue Personal Certificate
+      operationId: issuePersonalCert
+      description: |
+        Issues a new Certificate to identify a person. An RSA Key-pair will be generated and used for the Certificate.
+        The issued certificate will contain the following extensions:
+
+          *Key Usage (Critical)*:
+          * Digital Signature
+          * Non Repudation
+        
+         *Extended Key Usage (Critical)*:
+          * TLS Web Client Authentication (OID 1.3.6.1.5.5.7.3.2)
+          * Code Signing (OID 1.3.6.1.5.5.7.3.3)
+          * Email Protection (OID 1.3.6.1.5.5.7.3.4)
+      tags:
+        - Certificates
+      requestBody:
+        description: The Certificate details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PersonalCertificateRequest'
+
+      responses:
+        200:
+          $ref: '#/components/responses/SuccessfullyIssuedCert'
+        400:
+          $ref: '#/components/responses/ConstraintViolation'
+        500:
+          $ref: "#/components/responses/ServerError"
+
+
+  /issuers/{id}/certificates/employee:
+    post:
+      summary: Issue Employee Certificate
+      operationId: issueEmployeeCert
+      description: |
+        Issues a new Certificate to identify an Employee of an organization. An RSA Key-pair will be generated and used for the Certificate.
+        The issued certificate will contain the following extensions:
+
+          *Key Usage (Critical)*:
+          * Digital Signature
+          * Non Repudiation
+        
+         *Extended Key Usage (Critical)*:
+          * TLS Web Client Authentication (OID 1.3.6.1.5.5.7.3.2)
+          * Code Signing (OID 1.3.6.1.5.5.7.3.3)
+          * Email Protection (OID 1.3.6.1.5.5.7.3.4)
+
+      tags:
+        - Certificates
+      requestBody:
+        description: The Certificate details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeCertificateRequest'
+
+      responses:
+        200:
+          $ref: '#/components/responses/SuccessfullyIssuedCert'
+        400:
+          $ref: '#/components/responses/ConstraintViolation'
+        500:
+          $ref: "#/components/responses/ServerError"
+
+
+  /issuers/{id}/certificates/sub-ca:
+    post:
+      summary: Issue Sub Certificate-Authority Certificate
+      operationId: issueSubCACert
+      description: |
+        Issues a Sub Certificate-Authority Certificate. An RSA Key-pair will be generated and used for the Certificate.
+        The issued certificate will contain the following extensions:
+
+          *Basic Constraint (Critical)*
+
+          *Key Usage (Critical)*:
+          * Certificate Sign
+          * Sign CRL
+
+      tags:
+        - Certificates
+      requestBody:
+        description: The Certificate details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubCACertificateRequest'
+
+      responses:
+        200:
+          $ref: '#/components/responses/SuccessfullyIssuedCert'
+        400:
+          $ref: '#/components/responses/ConstraintViolation'
+        500:
+          $ref: "#/components/responses/ServerError"
+
+
+  /issuers/{id}/certificates/custom/attributes:
     get:
       summary: List Distinguished Name attributes
       operationId: listAttributes
       description: Get List of attributes that may be used on the Certificate Subject Distinguished name. The attributes returned by this operation are expected to be used only when isuing custom certificates.
       tags:
-        - Attributes
+        - Certificates
       responses:
         '200':
           description: An array of attributes
@@ -60,235 +265,7 @@ paths:
         500:
           $ref: "#/components/responses/ServerError"
 
-
-  /authority/certificate/files:
-    get:
-      summary: Get CA Certificate files
-      operationId: downloadCaCertificateFiles
-      description: Download CA Certificate files (Cert file, Private-Key). A compressed ZIP archive will be returned.
-      tags:
-        - Certificate Authority
-      responses:
-        200:
-          description: Operation performed successfully.
-          content:
-            application/zip:
-              schema:
-                type: string
-                format: binary
-        404:
-          $ref:  "#/components/responses/CaCertificateNotFound"
-        500:
-          $ref: "#/components/responses/ServerError"
-
-
-
-  /authority/certificate:
-    get:
-      summary: Get CA Certificate Info
-      operationId: getCaCertificateInfo
-      description: Get CA Certificate Information
-      tags:
-        - Certificate Authority
-      responses:
-        200:
-          description: CA Certificate Info retrieve successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CaCertificate"
-        404:
-          $ref:  "#/components/responses/CaCertificateNotFound"
-        500:
-          $ref: "#/components/responses/ServerError"
-    put:
-      summary: Set existing CA Certificate
-      operationId: setCaCertificate
-      description: Use an existing CA Certificate
-      tags:
-        - Certificate Authority
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                cert_file:
-                  type: string
-                  format: binary
-                  description: The file containing the CA certificate PEM encoded
-                key_file:
-                  type: string
-                  format: binary
-                  description: The file containing the CA private key PEM encoded
-              required:
-                - cert_file
-                - key_file
-      responses:
-        201:
-          description: Ca Certificate set successfully
-        500:
-          $ref: "#/components/responses/ServerError"
-
-    post:
-      summary: Create Certificate Authority
-      operationId: createCaCertificate
-      description: Create a new CA Certificate. An RSA Key-pair will be generated and used for the Certificate.
-      tags:
-        - Certificate Authority
-      requestBody:
-        description: The Certificate Authority configurations
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/CaCertificate"
-
-      responses:
-        201:
-          description: CA Certificate created successfully
-        500:
-          $ref: "#/components/responses/ServerError"
-
-
-  /certificates/tls-server:
-    post:
-      summary: Issue TLS-Server certificate
-      operationId: issueTlsServerCert
-      description: |
-        Issues a new Certificate to identify a TLS-Server. An RSA Key-pair will be generated and used for the Certificate. 
-        The issued certificate will contain the following extensions:
-        
-        *Subject Alternative Name (Non Critical)*:
-         * The domain names provided
-        
-        *Key Usage (Critical)*:
-         * Digital Signature
-         * Key Encipherment
-        
-        *Extended Key Usage (Critical)*:
-         * TLS Web Server Authentication (OID 1.3.6.1.5.5.7.3.1)
-
-      tags:
-        - Certificates
-      requestBody:
-        description: The Certificate details
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/TLSServerCertificateRequest"
-
-      responses:
-        200:
-          $ref: '#/components/responses/SuccessfullyIssuedCert'
-        400:
-          $ref: '#/components/responses/ConstraintViolation'
-        500:
-          $ref: "#/components/responses/ServerError"
-
-
-
-  /certificates/personal:
-    post:
-      summary: Issue Personal Certificate
-      operationId: issuePersonalCert
-      description: |
-        Issues a new Certificate to identify a person. An RSA Key-pair will be generated and used for the Certificate.
-        The issued certificate will contain the following extensions:
-
-          *Key Usage (Critical)*:
-          * Digital Signature
-          * Non Repudation
-        
-         *Extended Key Usage (Critical)*:
-          * TLS Web Client Authentication (OID 1.3.6.1.5.5.7.3.2)
-          * Code Signing (OID 1.3.6.1.5.5.7.3.3)
-          * Email Protection (OID 1.3.6.1.5.5.7.3.4)
-      tags:
-        - Certificates
-      requestBody:
-        description: The Certificate details
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PersonalCertificateRequest'
-
-      responses:
-        200:
-          $ref: '#/components/responses/SuccessfullyIssuedCert'
-        400:
-          $ref: '#/components/responses/ConstraintViolation'
-        500:
-          $ref: "#/components/responses/ServerError"
-
-
-  /certificates/employee:
-    post:
-      summary: Issue Employee Certificate
-      operationId: issueEmployeeCert
-      description: |
-        Issues a new Certificate to identify an Employee of an organization. An RSA Key-pair will be generated and used for the Certificate.
-        The issued certificate will contain the following extensions:
-
-          *Key Usage (Critical)*:
-          * Digital Signature
-          * Non Repudation
-        
-         *Extended Key Usage (Critical)*:
-          * TLS Web Client Authentication (OID 1.3.6.1.5.5.7.3.2)
-          * Code Signing (OID 1.3.6.1.5.5.7.3.3)
-          * Email Protection (OID 1.3.6.1.5.5.7.3.4)
-
-      tags:
-        - Certificates
-      requestBody:
-        description: The Certificate details
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/EmployeeCertificateRequest'
-
-      responses:
-        200:
-          $ref: '#/components/responses/SuccessfullyIssuedCert'
-        400:
-          $ref: '#/components/responses/ConstraintViolation'
-        500:
-          $ref: "#/components/responses/ServerError"
-
-
-  /certificates/sub-ca:
-    post:
-      summary: Issue Sub Certificate-Authority Certificate
-      operationId: issueSubCACert
-      description: |
-        Issues a Sub Certificate-Authority Certificate. An RSA Key-pair will be generated and used for the Certificate.
-        The issued certificate will contain the following extensions:
-
-          *Basic Constraint (Critical)*
-
-          *Key Usage (Critical)*:
-          * Certificate Sign
-          * Sign CRL
-
-      tags:
-        - Certificates
-      requestBody:
-        description: The Certificate details
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SubCACertificateRequest'
-
-      responses:
-        200:
-          $ref: '#/components/responses/SuccessfullyIssuedCert'
-        400:
-          $ref: '#/components/responses/ConstraintViolation'
-        500:
-          $ref: "#/components/responses/ServerError"
-
-
-  /certificates/custom:
+  /issuers/{id}/certificates/custom:
     post:
       summary: Issue Customized Certificate
       operationId: issueCustomCert
@@ -311,11 +288,11 @@ paths:
           $ref: "#/components/responses/ServerError"
 
 
-  /certificates:
+  /issuers/{id}/certificates:
     get:
       summary: List issued certificates
-      operationId: listIssedCerts
-      description: List all the certificates issued by this server
+      operationId: listIssuedCerts
+      description: List all the certificates issued by the selected issuer. Will include the certificate of the issuer.
       tags:
         - Certificates
       responses:
@@ -330,8 +307,7 @@ paths:
         500:
           $ref: "#/components/responses/ServerError"
 
-
-  /certificates/{serial}:
+  /issuers/{id}/certificates/{serial}:
     get:
       summary: Get Certificate Information
       operationId: GetCertInfo
@@ -356,7 +332,7 @@ paths:
           $ref: '#/components/responses/CertificateNotFound'
         500:
           $ref: "#/components/responses/ServerError"
-  /certificates/{serial}/files:
+  /issuers/{id}/certificates/{serial}/files:
     get:
       summary: Get Certificate files
       operationId: downloadCertificateFiles
@@ -459,7 +435,7 @@ components:
         - from
         - until
 
-    GeographicLocation:
+    Address:
       type: object
       description: Represents a Geographic location
       properties:
@@ -498,14 +474,28 @@ components:
           type: string
           description: The serial number of the issued Certificate
           example: d9028c1c-6778-403a-b888-c72d7de5aeb3
-        issue_date:
-          format: date
-          description: When was the certficiate issued
-          example: "2023-12-31"
+        ca:
+          type: boolean
+          description: Whether it is a certificate authority or not
       required:
         - name
         - serial
-        - issue_date
+        - ca
+
+    BasicConstraints:
+      type: object
+      description: The Basic constraints extension
+      properties:
+        ca:
+          type: boolean
+          description: Whether the certificate is a certificate authority
+        path_length:
+          type: integer
+          description: The maximum depth of CAs that may exist below this CA. This limit is enforced when issuing a sub-ca certificate.
+          default: 0
+          minimum: 0
+      required:
+        - ca
 
     IssuedCertInfo:
       allOf:
@@ -514,12 +504,6 @@ components:
           readOnly: true
           description: Information of an issued certificate
           properties:
-            key_algorithm:
-              type: string
-              description: The Algorithm for which the Certificate Key-Pair was generated
-              enum:
-                - RSA
-                - DSA
             key_size:
               type: integer
               description: The size of the Certificate Private Key in bytes
@@ -528,34 +512,111 @@ components:
               type: string
               description: The subject X.500 Distinguished name
               example: CN=John Smith, OU=Test, O=IBM, C=GB
+            issuer:
+              type: string
+              description: The subject X.500 Name of the Issuer
+              example: CN=Ipsum, OU=Test, O=IBM, C=GB
+            basic_constraints:
+              $ref: '#/components/schemas/BasicConstraints'
             subject_alt_names:
               type: array
               items:
                 $ref: '#/components/schemas/SubjectAlternativeName'
-            key_usage:
+            key_usages:
               type: array
               items:
                 $ref: '#/components/schemas/KeyUsage'
-            extended_key_usage:
-              type: array
-              items:
-                $ref: '#/components/schemas/ExtendedKeyUsage'
+            extended_key_usages:
+              type: object
+              properties:
+                usages:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ExtendedKeyUsage'
+                effect:
+                  type: string
+                  enum:
+                    - Info
+                    - Enforce
+              required:
+                - effect
+                - usages
             validity:
               $ref: '#/components/schemas/CertValidity'
 
       required:
         - name
-        - key_algorithm
         - key_size
         - distinguished_name
+        - issuer
+        - basic_constraints
         - key_usage
         - validity
-        - issue_date
 
-
-
-    CaCertificate:
+    IssuerInfo:
       type: object
+      properties:
+        id:
+          type: string
+          description: The unique identifier of the issuer
+          example: myca
+        serial:
+          type: string
+          description: The unique serial number of the certificate
+          example: 12345678910
+        type:
+          type: string
+          description: The type of issuer
+          enum:
+            - ROOT
+            - SUB_CA
+        dn:
+          type: string
+          description: The Distinguished name of the issuer certificate
+          example: cn=John Doe, ou=People, dc=sun.com
+        path_length:
+          type: integer
+          description: The maximum depth of CAs that may exist below this CA. This limit is enforced when issuing a sub-ca certificate.
+          default: 0
+          minimum: 0
+      required:
+        - id
+        - serial
+        - type
+        - dn
+        - path_length
+
+    IssuerCertPem:
+      type: object
+      description: Existing issuer PEM Encoded information.
+      properties:
+        cert_file:
+          type: string
+          description: The PEM encoded CA certificate
+        key_file:
+          type: string
+          description: The PEM encoded private key
+      required:
+        - cert_file
+        - key_file
+
+    IssuerCertRef:
+      type: object
+      description: References a Sub-CA certificate issued by an existing issuer.
+      properties:
+        issuer:
+          type: string
+          description: The name of the issuer of the Sub-CA certificate to be used
+        serial:
+          type: string
+          description: The serial of the Sub-CA certificate to be used
+      required:
+        - issuer
+        - serial
+
+    IssuerCertSpec:
+      type: object
+      description: Specification of a certificate to be created. When specified, an RSA Key-pair will be generated and used for the Certificate.
       properties:
         name:
           type: string
@@ -565,15 +626,62 @@ components:
           type: string
           description: The strength of the key pair to be generated.
           enum:
-            - Low
-            - Medium
-            - High
-            - Very-High
+            - LOW
+            - MEDIUM
+            - HIGH
+            - VERY_HIGH
+        path_length:
+          type: integer
+          description: |
+            The maximum depth of CAs that may exist below this CA. 
+            The **-1** value means NO limit while the **0** value means NO Sub-CA allowed. 
+            This limit is enforced when issuing a sub-ca certificate.
+          minimum: -1
         validity:
           $ref: "#/components/schemas/CertValidity"
-        location:
-          $ref: "#/components/schemas/GeographicLocation"
+        address:
+          $ref: "#/components/schemas/Address"
+      required:
+        - name
+        - key_strength
+        - path_length
+        - address
+        - validity
 
+    NewIssuerBody:
+      description: Request body regarding new issuer to be created
+      oneOf:
+        - $ref: "#/components/schemas/IssuerCertPemBody"
+        - $ref: "#/components/schemas/IssuerCertSpecBody"
+        - $ref: "#/components/schemas/IssuerCertRefBody"
+
+
+    IssuerCertPemBody:
+      type: object
+      description: Request body to create new issuer using existing certificate
+      properties:
+        pem:
+          $ref: "#/components/schemas/IssuerCertPem"
+      required:
+        - pem
+
+    IssuerCertSpecBody:
+      type: object
+      description: Request body to create new issuer certificate from a specification
+      properties:
+        spec:
+          $ref: "#/components/schemas/IssuerCertSpec"
+      required:
+        - spec
+
+    IssuerCertRefBody:
+      type: object
+      description: Request body to create new issuer from a Sub-CA certificate issued by an existing issuer.
+      properties:
+        ref:
+          $ref: "#/components/schemas/IssuerCertRef"
+      required:
+        - ref
 
     BaseCertificateRequest:
       type: object
@@ -590,13 +698,13 @@ components:
             - Very-High
 
 
-    BaseCertificateRequestWithLocation:
+    BaseCertificateRequestWithAddress:
       allOf:
         - $ref: '#/components/schemas/BaseCertificateRequest'
         - type: object
           properties:
-            location:
-              $ref: '#/components/schemas/GeographicLocation'
+            address:
+              $ref: '#/components/schemas/Address'
 
 
 
@@ -657,7 +765,7 @@ components:
 
     PersonalCertificateRequest:
       allOf:
-        - $ref: "#/components/schemas/BaseCertificateRequestWithLocation"
+        - $ref: "#/components/schemas/BaseCertificateRequestWithAddress"
         - type: object
           description: A Request to generate a certificate to identify an individual
           properties:
@@ -723,8 +831,8 @@ components:
               type: string
               description: The name of the Sub Certificate Authority
               example: my-subca
-        - $ref: "#/components/schemas/BaseCertificateRequestWithLocation"
-          required:
+        - $ref: "#/components/schemas/BaseCertificateRequestWithAddress"
+        - required:
             - validity
             - key_strength
             - location
@@ -732,7 +840,7 @@ components:
 
     TLSServerCertificateRequest:
       allOf:
-        - $ref: "#/components/schemas/BaseCertificateRequestWithLocation"
+        - $ref: "#/components/schemas/BaseCertificateRequestWithAddress"
         - type: object
           description: A Request to generate a Certificate to identify a TLS Server
           properties:
@@ -807,6 +915,45 @@ components:
 
   responses:
 
+    IssuerConstraintViolation:
+      description: Constraint violation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          examples:
+            cert-file-not-ca:
+              value:
+                type: /problems/constraint-violation
+                title: Constraint Violation
+                detail: The request contains one or more constraint violations
+                status: 422
+                violations:
+                  - field: body.pem.cert_file
+                    type: state
+                    sub_type: not_ca
+                    message: cert_file does not have a CA basic constraints
+            invalid-key-file-format:
+              value:
+                type: /problems/constraint-violation
+                title: Constraint Violation
+                detail: The request contains one or more constraint violations
+                status: 422
+                violations:
+                  - field: body.pem.key_file
+                    type: format
+                    message: key_file is not valid PEM encoded private key
+            invalid-cert-file-format:
+              value:
+                type: /problems/constraint-violation
+                title: Constraint Violation
+                detail: The request contains one or more constraint violations
+                status: 422
+                violations:
+                  - field: body.pem.cert_file
+                    type: format
+                    message: cert_file is not valid PEM encoded certificate
+
     SuccessfullyIssuedCert:
       description: Certificate issued successfully
       content:
@@ -827,7 +974,6 @@ components:
             status: 500
             detail: An internal server error occurred
 
-
     ConstraintViolation:
       description: Constraint violation
       content:
@@ -837,13 +983,29 @@ components:
           example:
             type: /problems/constraint-violation
             title: Constraint Violation
+            detail: The request contains one or more constraint violations
             status: 422
             violations:
-              - field: location.country
+              - field: body.location.country
                 message: may not be empty
-              - field: groups
-                message: must not contain multiple different delivery addresses
-
+                type: required
+              - field: body.groups
+                message: must not contain more than 4 addresses
+                type: length
+              - field: path.name
+                message: Name must not have numeric characters
+                type: format
+    IssuerIDTaken:
+      description: Issuer ID taken
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          example:
+            type: /problems/issuer/id-taken
+            title: Issuer ID Taken
+            detail: There is already an issuer with the provided ID
+            status: 409
     BadRequest:
       description: Bad Request
       content:

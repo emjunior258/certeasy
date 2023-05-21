@@ -1,6 +1,5 @@
 package org.certeasy;
 
-import java.security.PrivateKey;
 import java.util.Set;
 
 /**
@@ -11,5 +10,4 @@ public interface PEMCoder {
     String encodePrivateKey(Certificate certificate) throws PEMCoderException;
     String encodeCert(Certificate certificate) throws PEMCoderException;
     String encodeChain(Set<Certificate> certificateSet) throws PEMCoderException;
-
 }

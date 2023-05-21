@@ -5,9 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.security.PrivateKey;
-import java.util.Collections;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Represents an X509 V3 Certificate along with the respective private-key.
@@ -25,28 +23,42 @@ public class Certificate {
 
     private ExtendedKeyUsages extendedKeyUsages;
 
+    private BasicConstraints basicConstraints;
+
+    private Set<SubjectAlternativeName> subjectAltNames = new HashSet<>();
+
     private CertificateSummary summary;
 
-    public Certificate(String serial, DistinguishedName distinguishedName, DateRange validityPeriod, KeyStrength keyStrength, PrivateKey privateKey, byte[] derBytes,  Set<KeyUsage> keyUsages, ExtendedKeyUsages extendedKeyUsages){
+    private DistinguishedName issuerName;
+
+    public Certificate(String serial, DistinguishedName distinguishedName, DateRange validityPeriod, KeyStrength keyStrength, BasicConstraints basicConstraints, PrivateKey privateKey, byte[] derBytes, Set<SubjectAlternativeName> subjectAltNames, Set<KeyUsage> keyUsages, DistinguishedName issuerDistinguishedName, ExtendedKeyUsages extendedKeyUsages){
         if(serial==null || serial.isEmpty())
             throw new IllegalArgumentException("serial MUST not be null nor empty");
         if(distinguishedName==null)
             throw new IllegalArgumentException("distinguishedName MUST not be null nor empty");
         if(validityPeriod==null)
-            throw new IllegalArgumentException("ExtendedKeyUsages extendedKeyUsages, validityPeriod MUST not be null");
+            throw new IllegalArgumentException("ExtendedKeyUsages usages, validityPeriod MUST not be null");
         if(keyStrength==null)
             throw new IllegalArgumentException("key strength MUST not be null");
+        if(basicConstraints ==null)
+            throw new IllegalArgumentException("basicConstraint MUST not be null");
         if(privateKey==null)
             throw new IllegalArgumentException("privateKey MUST not be null");
         if(keyUsages==null)
             throw new IllegalArgumentException("keyUsages MUST not be null");
         if(derBytes==null || derBytes.length==0)
             throw new IllegalArgumentException("derBytes array MUST not be null nor empty");
+        if(issuerDistinguishedName==null)
+            throw new IllegalArgumentException("issuerDistinguishedName MUST not be null");
         this.serial = serial;
         this.distinguishedName = distinguishedName;
+        this.issuerName = issuerDistinguishedName;
         this.validityPeriod = validityPeriod;
         this.keyStrength = keyStrength;
         this.keyUsages = Collections.unmodifiableSet(keyUsages);
+        this.basicConstraints = basicConstraints;
+        if(subjectAltNames != null)
+            this.subjectAltNames = subjectAltNames;
         if(extendedKeyUsages!=null)
             this.extendedKeyUsages = extendedKeyUsages;
         this.privateKey = privateKey;
@@ -54,8 +66,7 @@ public class Certificate {
         this.makeSummary();
     }
 
-
-    public Certificate(CertificateSpec spec, String serial, PrivateKey privateKey, byte[] derBytes){
+    public Certificate(CertificateSpec spec, String serial, PrivateKey privateKey, byte[] derBytes, DistinguishedName issuerDistinguishedName){
         if(spec==null)
             throw new IllegalArgumentException("spec MUST not be null nor empty");
         if(serial==null || serial.isEmpty())
@@ -64,10 +75,14 @@ public class Certificate {
             throw new IllegalArgumentException("key pair MUST not be null nor empty");
         if(derBytes==null)
             throw new IllegalArgumentException("derBytes array MUST not be null");
+        if(issuerDistinguishedName==null)
+            throw new IllegalArgumentException("issuerDistinguishedName MUST not be null");
         this.distinguishedName = spec.getSubject().getDistinguishedName();
+        this.issuerName = issuerDistinguishedName;
         this.validityPeriod = spec.getValidityPeriod();
         this.keyStrength = spec.getKeyStrength();
         this.keyUsages = spec.getKeyUsages();
+        this.basicConstraints = spec.getBasicConstraints();
         if(spec.getExtendedKeyUsages().isPresent())
             this.extendedKeyUsages = spec.getExtendedKeyUsages().get();
         this.serial = serial;
@@ -75,7 +90,6 @@ public class Certificate {
         this.derBytes = derBytes;
         this.makeSummary();
     }
-
 
     public String getSerial() {
         return serial;
@@ -138,17 +152,29 @@ public class Certificate {
         return Optional.ofNullable(extendedKeyUsages);
     }
 
+    public Set<SubjectAlternativeName> getSubjectAltNames() {
+        return Collections.unmodifiableSet(subjectAltNames);
+    }
+
     private void makeSummary(){
         this.summary = new CertificateSummary(this.distinguishedName.getCommonName(), serial,
                 validityPeriod);
     }
 
-    public Optional<ExtendedKeyUsages> getExtendedKeyUsage(){
-        return Optional.ofNullable(extendedKeyUsages);
-    }
-
     public CertificateSummary getSummary(){
         return this.summary;
+    }
+
+    public BasicConstraints getBasicConstraints() {
+        return basicConstraints;
+    }
+
+    public DistinguishedName getIssuerName() {
+        return this.issuerName;
+    }
+
+    public boolean isSelfSignedCA(){
+        return this.issuerName.equals(distinguishedName) && this.basicConstraints.ca();
     }
 
 }

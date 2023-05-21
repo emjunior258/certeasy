@@ -12,6 +12,7 @@ import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.certeasy.*;
+import org.certeasy.BasicConstraints;
 import org.certeasy.KeyUsage;
 import org.certeasy.certspec.*;
 import org.certeasy.Certificate;
@@ -73,9 +74,13 @@ public class BouncyCastleCertGenerator implements CertificateGenerator {
 
         JcaX509v3CertificateBuilder builder = new JcaX509v3CertificateBuilder(issuerName, serialNumber, validityStartDate, validityEndDate,
                 subjectName, keyPair.getPublic());
+
+        BasicConstraints basicConstraints = spec.getBasicConstraints();
+
         try {
-            if (spec.isCertificateAuthority())
-                builder.addExtension(Extension.basicConstraints, true, new BasicConstraints(true));
+            if (basicConstraints.ca())
+                builder.addExtension(Extension.basicConstraints, true, new org.bouncycastle.asn1.x509.BasicConstraints(basicConstraints.pathLength()));
+            else builder.addExtension(Extension.basicConstraints, true, new org.bouncycastle.asn1.x509.BasicConstraints(false));
             if(spec.getSubject().hasAlternativeNames())
                 builder.addExtension(Extension.subjectAlternativeName, false, toGeneralNames(spec.getSubject().getAlternativeNames()));
             builder.addExtension(Extension.keyUsage, true, makeKeyUsage(spec));
@@ -85,8 +90,11 @@ public class BouncyCastleCertGenerator implements CertificateGenerator {
                 builder.addExtension(Extension.extendedKeyUsage, critical,  makeExtendedKeyUsage(spec));
             }
             X509CertificateHolder holder = builder.build(contentSigner);
+            DistinguishedName issuerDN = DistinguishedName.builder()
+                    .parse(issuerName.toString())
+                    .build();
             return new Certificate(spec, String.valueOf(holder.getSerialNumber()), keyPair.getPrivate(),
-                    holder.getEncoded());
+                    holder.getEncoded(), issuerDN);
         }catch (CertIOException ex){
             throw new CertificateGeneratorException("error adding extensions to certificate", ex);
         }catch (IOException ex){
@@ -134,8 +142,8 @@ public class BouncyCastleCertGenerator implements CertificateGenerator {
 
     private ExtendedKeyUsage makeExtendedKeyUsage(CertificateSpec spec){
         Set<KeyPurposeId> keyPurposeIdSet = new HashSet<>();
-        ExtendedKeyUsages extendedKeyUsageDefinition = spec.getExtendedKeyUsages().get();
-        for(org.certeasy.ExtendedKeyUsage item: extendedKeyUsageDefinition.extendedKeyUsages()){
+        ExtendedKeyUsages extendedKeyUsages = spec.getExtendedKeyUsages().get();
+        for(org.certeasy.ExtendedKeyUsage item: extendedKeyUsages.usages()){
             keyPurposeIdSet.add(toKeyPurpose(item));
         }
         KeyPurposeId[] keyPurposeIdsArray = new KeyPurposeId[keyPurposeIdSet.size()];

@@ -5,20 +5,23 @@ package org.certeasy;
  * @param type the predefined type of attribute
  * @param value the value of the attribute
  */
-public record RelativeDistinguishedName(SubjectAttributeType type, String value) {
+public record RelativeDistinguishedName(SubjectAttributeType type, String value) implements Comparable<RelativeDistinguishedName> {
 
-    public RelativeDistinguishedName(SubjectAttributeType type, String value){
+    public RelativeDistinguishedName{
         if(type==null)
             throw new IllegalArgumentException("type must not be null");
         if(value==null || value.isEmpty())
             throw new IllegalArgumentException("value must NOT be null nor empty");
-        this.type = type;
-        this.value = value;
     }
 
     @Override
     public String toString() {
-        return type + "=" + value;
+        return type.getMnemonic() + "=" + value;
     }
 
+    @Override
+    public int compareTo(RelativeDistinguishedName o) {
+        return Integer.compare(type.getPriority(),
+                o.type.getPriority());
+    }
 }

@@ -5,13 +5,13 @@ package org.certeasy;
  */
 public enum KeyStrength {
 
-    LOW_STRENGTH(512),
+    LOW(512),
 
-    MEDIUM_STRENGTH(1024),
+    MEDIUM(1024),
 
-    HIGH_STRENGTH(2048),
+    HIGH(2048),
 
-    VERY_HIGH_STRENGTH(4096);
+    VERY_HIGH(4096);
 
     private final int size;
 

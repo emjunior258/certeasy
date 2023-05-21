@@ -9,14 +9,17 @@ import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.asn1.x500.RDN;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.certeasy.*;
+import org.certeasy.BasicConstraints;
 
 import java.io.IOException;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class CertificateDecoder {
 
@@ -41,15 +44,61 @@ public class CertificateDecoder {
                 if (option.getSize() == keySize)
                     return option;
             }
-
             throw new BouncyCastleCoderException(String.format("unsupported certificate key size : %d bits",
                     keySize));
-
         }catch (IOException ex){
             throw new BouncyCastleCoderException("error parsing Public Key from certificate",
                     ex);
         }
     }
+
+    BasicConstraints extractBasicConstraints() {
+        Extension basicConstraintsExtension = holder.getExtension(Extension.basicConstraints);
+        if(basicConstraintsExtension==null)
+            return new BasicConstraints(false);
+        org.bouncycastle.asn1.x509.BasicConstraints basicConstraints = org.bouncycastle.asn1.x509.BasicConstraints.getInstance(basicConstraintsExtension.getParsedValue());
+        BigInteger pathLength = basicConstraints.getPathLenConstraint();
+        return new BasicConstraints(basicConstraints.isCA(), pathLength!=null ? pathLength.intValue() : -1 );
+    }
+
+    DistinguishedName extractIssuer(){
+        X500Name issuer = holder.getIssuer();
+        return DistinguishedName.builder().parse(issuer.toString())
+                .build();
+    }
+
+    Set<SubjectAlternativeName> extractSubjectAltNames()  {
+        Extension extension = holder.getExtension(Extension.subjectAlternativeName);
+        if(extension==null)
+            return Collections.emptySet();
+        GeneralNames sanNames = GeneralNames.getInstance(extension.getParsedValue());
+        return Arrays.stream(sanNames.getNames()).map(this::toSubjectAltName)
+                .collect(Collectors.toSet());
+    }
+
+    private SubjectAlternativeName toSubjectAltName(GeneralName sanName) {
+        switch (sanName.getTagNo()) {
+            case GeneralName.dNSName:
+                return new SubjectAlternativeName(SubjectAlternativeNameType.DNS,
+                        sanName.getName().toString());
+            case GeneralName.iPAddress:
+                return new SubjectAlternativeName(SubjectAlternativeNameType.IP_ADDRESS,
+                        sanName.getName().toString());
+            case GeneralName.directoryName:
+                return new SubjectAlternativeName(SubjectAlternativeNameType.DIRECTORY_NAME,
+                        sanName.getName().toString());
+            case GeneralName.uniformResourceIdentifier:
+                return new SubjectAlternativeName(SubjectAlternativeNameType.URI,
+                        sanName.getName().toString());
+            case GeneralName.rfc822Name:
+                return new SubjectAlternativeName(SubjectAlternativeNameType.EMAIL,
+                        sanName.getName().toString());
+            default:
+                return new SubjectAlternativeName(SubjectAlternativeNameType.OTHER_NAME,
+                        sanName.getName().toString());
+        }
+    }
+
 
     DistinguishedName extractDistinguishedName() {
         X500Name x500Name = holder.getSubject();
@@ -94,6 +143,8 @@ public class CertificateDecoder {
     ExtendedKeyUsages extractExtendedKeyUsage(){
         Set<org.certeasy.ExtendedKeyUsage> extendedKeyUsageSet = new HashSet<>();
         Extension extendedKeyUsageExtension = holder.getExtension(Extension.extendedKeyUsage);
+        if(extendedKeyUsageExtension==null)
+            return null;
         ExtendedKeyUsage extendedKeyUsage = ExtendedKeyUsage.getInstance(extendedKeyUsageExtension.getParsedValue());
         for(KeyPurposeId keyPurposeId: extendedKeyUsage.getUsages()){
             String id = keyPurposeId.getId();

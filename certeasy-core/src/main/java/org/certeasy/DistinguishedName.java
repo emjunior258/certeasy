@@ -8,9 +8,9 @@ import java.util.stream.Collectors;
  * Represents a distinguished commonName for an X.509 certificate.
  *
  * Consists of a sequence of {@link RelativeDistinguishedName}s (RDNs) where each RDN is expressed as an attribute type/value pair.
- * A distinguished name is specified as a string consisting of a sequence of attribute type/value pairs separated by a semicolon (';' U+003B). The general format is
+ * A distinguished name is specified as a string consisting of a sequence of attribute type/value pairs separated by a comma (','). The general format is
  *
- * <type>=<value>(;<type>=<value>)*[;]
+ * <type>=<value>(,<type>=<value>)*[,]
  *
  * @param relativeDistinguishedNames
  */
@@ -54,20 +54,17 @@ public record DistinguishedName(Set<RelativeDistinguishedName> relativeDistingui
 
     public String toString(){
         StringBuilder builder = new StringBuilder();
-        this.relativeDistinguishedNames.forEach(rdn -> {
+        this.relativeDistinguishedNames.stream().sorted(Comparator.reverseOrder()).forEach(rdn -> {
             if(!builder.isEmpty()){
-                builder.append(',');
+                builder.append(", ");
             }
             builder.append(rdn.toString());
         });
         return builder.toString();
     }
 
-
     public static Builder builder(){
-
         return new Builder();
-
     }
 
     public static final class Builder {
@@ -76,6 +73,26 @@ public record DistinguishedName(Set<RelativeDistinguishedName> relativeDistingui
 
         private Builder(){
 
+        }
+
+
+        public Builder parse(String distinguishedName){
+            if(distinguishedName==null || distinguishedName.isEmpty())
+                throw new IllegalArgumentException("distinguishedName MUST not be null");
+            String[] rdnArray = distinguishedName.split("(?<!\\\\),+");
+            for(String rdn: rdnArray){
+                String[] attributeArray = rdn.split("(?<!\\\\)=+");
+                if(attributeArray.length!=2)
+                    throw new IllegalArgumentException("Invalid RDN format: "+rdn);
+                try {
+                    SubjectAttributeType attributeType = SubjectAttributeType.ofKey(attributeArray[0]);
+                    String attributeValue = attributeArray[1];
+                    this.distinguishedNameSet.add(new RelativeDistinguishedName(attributeType, attributeValue));
+                }catch (IllegalArgumentException ex){
+                    throw new IllegalSubjectAttributeTypeException(attributeArray[0]);
+                }
+            }
+            return this;
         }
 
         public Builder append(RelativeDistinguishedName rdn){
