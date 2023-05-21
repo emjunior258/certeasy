@@ -19,11 +19,19 @@ on:
     paths-ignore:
       - 'certeasy-core/**'
       - 'certeasy-bouncycastle/**'
+      - '.github/**'
+      - '**.md'
+      - '.gitignore'
+      - 'LICENSE'
 
   pull_request:
     paths-ignore:
       - 'certeasy-core/**'
       - 'certeasy-bouncycastle/**'
+      - '.github/**'
+      - '**.md'
+      - '.gitignore'
+      - 'LICENSE'
 
 jobs:
   build-and-deploy:

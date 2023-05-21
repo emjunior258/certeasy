@@ -15,11 +15,19 @@ on:
     paths-ignore:
       - 'certeasy-core/**'
       - 'certeasy-backend-app/**'
+      - '.github/**'
+      - '**.md'
+      - '.gitignore'
+      - 'LICENSE'
 
   pull_request:
     paths-ignore:
       - 'certeasy-core/**'
       - 'certeasy-backend-app/**'
+      - '.github/**'
+      - '**.md'
+      - '.gitignore'
+      - 'LICENSE'
 
 jobs:
   build-and-deploy:
