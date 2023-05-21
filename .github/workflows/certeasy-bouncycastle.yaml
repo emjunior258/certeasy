@@ -9,7 +9,7 @@ on:
   workflow_run:
     workflows: [ "certeasy-core" ]
     types:
-      - completed
+      - requested
 
   push:
     paths-ignore:
