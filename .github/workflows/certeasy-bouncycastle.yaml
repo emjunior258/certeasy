@@ -4,7 +4,13 @@ defaults:
  run:
   working-directory: ./certeasy-bouncycastle
 
-on: 
+on:
+
+  workflow_run:
+    workflows: [ "certeasy-core", "certeasy-bouncycastle" ]
+    types:
+      - completed
+  
   push:
     paths:
       - 'certeasy-bouncycastle/**'

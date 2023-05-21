@@ -8,7 +8,13 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
-on: 
+on:
+
+  workflow_run:
+    workflows: [ "certeasy-core" ]
+    types:
+      - completed
+
   push:
     paths:
       - 'certeasy-backend-app/**'
