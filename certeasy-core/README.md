@@ -1,6 +1,5 @@
 # certeasy-core
-The core of the certeasy server.
-
+The core certeasy-engine.
 
 ## Core model
 * You may generate certificates of the following types:
