@@ -35,6 +35,14 @@ public class IssuerResource {
 
     private static final Logger LOGGER = Logger.getLogger(IssuerResource.class);
 
+
+    @DELETE
+    public Response deleteIssuer(@PathParam("id") String id){
+
+        throw new UnsupportedOperationException();
+
+    }
+
     @POST
     public Response createIssuer(@PathParam("id") String id, NewIssuerCert cert){
         Set<Violation> violationSet = new HashSet<>();
@@ -77,7 +85,7 @@ public class IssuerResource {
         return Response.noContent().build();
     }
 
-    private Response createFromPem(String name, IssuerCertPEM pem){
+    private Response createFromPem(String id, IssuerCertPEM pem){
         try {
             Certificate certificate = context.pemCoder().decodeCertificate(pem.certFile(),
                     pem.keyFile());
@@ -87,7 +95,7 @@ public class IssuerResource {
                         new Violation("body.pem.cert_file", ViolationType.STATE,
                                 "not_ca", "cert_file is does not have CA basic constraint"
                         ))).build();
-            registry.add(name, certificate);
+            registry.add(id, certificate);
             return Response.noContent().build();
         }catch (IllegalCertPemException ex) {
             return Response.status(422).entity(new ConstraintViolationProblem(
@@ -105,6 +113,13 @@ public class IssuerResource {
             return Response.status(500).entity(new ServerErrorProblem(message))
                     .build();
         }
+    }
+
+
+    public Response createFromRef(String id, IssuerCertRef ref){
+
+        throw new UnsupportedOperationException();
+
     }
 
 }

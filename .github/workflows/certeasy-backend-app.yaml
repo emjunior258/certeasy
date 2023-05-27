@@ -50,13 +50,26 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: maven
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
       - name: Maven build
         run: mvn --batch-mode package
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       - name: Build binary
         run: |
-          ./mvnw package -Pnative -Dquarkus.native.container-build=true
+          ./mvnw package -Pnative -Dquarkus.native.container-build=true B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=emjunior258_certeasy
           ls -la ./target
       - name: Registry login
         uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
