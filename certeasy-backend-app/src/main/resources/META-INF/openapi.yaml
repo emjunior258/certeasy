@@ -217,7 +217,7 @@ paths:
   /issuers/{id}/certificates/custom/attributes:
     get:
       summary: List Distinguished Name attributes
-      operationId: listAttributes
+      operationId: listCertAttributes
       description: Get List of attributes that may be used on the Certificate Subject Distinguished name. The attributes returned by this operation are expected to be used only when isuing custom certificates.
       tags:
         - Certificates
@@ -310,7 +310,7 @@ paths:
   /issuers/{id}/certificates/{serial}:
     get:
       summary: Get Certificate Information
-      operationId: GetCertInfo
+      operationId: getCertInfo
       description: Get information of a certificate issued by the CA
       tags:
         - Certificates

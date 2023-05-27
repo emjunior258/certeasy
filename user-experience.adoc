@@ -1,0 +1,103 @@
+
+= User experience
+
+== Concepts
+
+Issuer:: An entity responsible for issuing certificate. An issuer is a Certificate Authority.
+
+Certificate:: An X509 V3 certificate along with its respective private key.
+
+In order to issue a _Certificate_, an _Issuer_ must be created first. There can be as many issuers are needed.
+
+All certificate related operations happen in the context of an Issuer.
+
+== User Journeys
+
+.Journeys List
+[cols="1,3,6,6,4a"]
+|===
+|# | Name | Summary | Navigation | API Operations
+
+|1
+|List issuers
+|List all existing issuers
+|Home > Issuers
+|* getIssuersList
+
+
+|2
+|Create issuer
+|Create a new issuer
+|Home > Issuers > New
+|* createIssuer
+
+|3
+|Delete issuer
+|Delete an existing issuer
+|Home > Issuers > Select > Delete
+|* deleteIssuer
+
+|4
+|Export issuer
+|Export certificate and private key file in PEM format
+|Home > Issuers > Select > Export
+|* exportIssuer
+
+|5
+|List certificates
+|List certificates issued by a selected issuer
+|Home > Certificates
+|* listIssuedCerts
+
+|6
+|View certificate
+|Display the details of a certificate
+|Home > Certificates > Select > View
+|* GetCertInfo
+
+|7
+|Export certificate
+|Exports both the certificate and private key
+|Home > Certificates > Select > Export
+|* downloadCertificateFiles
+
+|8
+|Delete certificate
+|Deletes a certificate
+|Home > Certificates > Select > Delete
+|* deleteCertificate
+
+|9
+|New personal certificate
+|Issue a certificate to identify an individual
+|Home > Certificates > New > Personal
+|* issuePersonalCert
+
+|10
+|New personal certificate
+|Issue a certificate to identify an employee
+|Home > Certificates > New > Employee
+|* issueEmployeeCert
+
+|11
+|New TLS server certificate
+|Issue a certificate to identify a TLS server
+|Home > Certificates > New > TLS server
+|* issueTlsServerCert
+
+|12
+|New Sub-Ca certificate
+|Issue a certificate for sub-authority
+|Home > Certificates > New > Sub-CA
+|* issueSubCACert
+
+|13
+|New custom certificate
+|Issue a certificate with fine-grained attributes
+|Home > Issuer > Certificates > New > Custom
+|
+
+* listCertAttributes
+* issueCustomCert
+
+|===
