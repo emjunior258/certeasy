@@ -11,14 +11,14 @@ on:
       - 'certeasy-core/**'
       - 'certeasy-bouncycastle/**'
       - 'certeasy-backend-app/**'
-      - '.github/certeasy.yaml'
+      - '.github/workflows/certeasy.yaml'
 
   pull_request:
     paths:
       - 'certeasy-core/**'
       - 'certeasy-bouncycastle/**'
       - 'certeasy-backend-app/**'
-      - '.github/certeasy.yaml'
+      - '.github/workflows/certeasy.yaml'
 
 jobs:
 
