@@ -108,14 +108,13 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Maven build
-        run: mvn --batch-mode package
+        run: mvn --batch-mode package -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=emjunior258_certeasy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       - name: Build binary
         run: |
-          ./mvnw package -Pnative -Dquarkus.native.container-build=true -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=emjunior258_certeasy
-          ls -la ./target
+          ./mvnw package -Pnative -Dquarkus.native.container-build=true
       - name: Registry login
         uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
         with:
