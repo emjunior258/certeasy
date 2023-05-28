@@ -111,7 +111,7 @@ jobs:
         run: mvn --batch-mode package -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=emjunior258_certeasy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_BACKEND_TOKEN }}
       - name: Build binary
         run: |
           ./mvnw package -Pnative -Dquarkus.native.container-build=true
