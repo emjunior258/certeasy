@@ -47,4 +47,4 @@ We need help with the following work:
 * Frontend app
 
 ## How to join team
-Collaborators joining invite only for now.
+Collaborators joining by invite only for now.
