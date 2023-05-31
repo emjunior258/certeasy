@@ -43,5 +43,5 @@ The cereasy project is a monorepo, with multiple sub-projects hosted under the s
 ## Help wanted
 Checkout the [Issues page](https://github.com/emjunior258/certeasy/issues) for a detailed list.
 
-## How to collaborate
-Please check out the [collaborators guide](COLLABORATORS.md).
+## How to contribute
+Please check out the [Contributor guide](CONTRIBUTING.md).
