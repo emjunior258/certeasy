@@ -7,8 +7,6 @@ Here is everything you need to know about the Certeasy Community.
 Anyone can submit a Merge-Request anytime, there is no formality for that.
 
 ### Permanent contributor
-If you want to be a permanent contributor of the project you should submit a request [here](https://forms.gle/6eAgcEe4LgMzQ8Zn7).
-
 Permanent contributors are part of the Certeasy Committee, which makes all the decisions about the project. Permanent members are leaders of the project and have the following responsibilities:
 
 * Contribute actively to the next milestone
@@ -22,6 +20,7 @@ Permanent contributors are part of the Certeasy Committee, which makes all the d
 
 Permanent Contributors are part of a Microsoft teams community named _Certeasy-Committee_.
 
+If you want to be a permanent contributor of the project you should submit a request [here](https://forms.gle/6eAgcEe4LgMzQ8Zn7).
 
 ## Discussions
 Any topic that needs to be discussed with the community MUST be posted into the [discussions section](https://github.com/emjunior258/certeasy/discussions). This includes:
