@@ -47,34 +47,87 @@ paths:
         500:
           $ref: "#/components/responses/ServerError"
 
-  /issuers/{id}:
+  /issuers/{id}/cert-spec:
     post:
-      summary: Create Issuer
-      operationId: createIssuer
-      description: Create a new Certificates Issuer. May use an existing CA-Certificate or create a new one.
+      summary: Create Issuer from spec
+      operationId: createIssuerFromSpec
+      description: Create a new Certificates Issuer from a specification.
       tags:
         - Issuers
       parameters:
-        - name: id
-          in: path
-          description: The unique identifier of the issuer in the system
-          schema:
-            pattern: ^[a-z]+(-[a-z]+)*$
+        - $ref: "#/components/parameters/IssuerId"
       requestBody:
         description: Issuer creation body
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/NewIssuerBody"
+              $ref: "#/components/schemas/IssuerCertSpec"
       responses:
         204:
           description: Issuer created successfully
+        400:
+          $ref: '#/components/responses/IssuerNotFound'
         422:
-          $ref: '#/components/responses/IssuerConstraintViolation'
+          $ref: '#/components/responses/IssuerSpecConstraintViolation'
         409:
           $ref: '#/components/responses/IssuerIDTaken'
         500:
           $ref: "#/components/responses/ServerError"
+
+  /issuers/{id}/cert-pem:
+    post:
+      summary: Create Issuer from PEM
+      operationId: createIssuerFromPem
+      description: Create a new Certificates Issuer from PEM.
+      tags:
+        - Issuers
+      parameters:
+        - $ref: "#/components/parameters/IssuerId"
+      requestBody:
+        description: Issuer creation body
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IssuerCertPem"
+      responses:
+        204:
+          description: Issuer created successfully
+        400:
+          $ref: '#/components/responses/IssuerNotFound'
+        422:
+          $ref: '#/components/responses/IssuerPemConstraintViolation'
+        409:
+          $ref: '#/components/responses/IssuerIDTaken'
+        500:
+          $ref: "#/components/responses/ServerError"
+
+  /issuers/{id}/cert-ref:
+    post:
+      summary: Create Issuer from issued certificate
+      operationId: createIssuerFromRef
+      description: Create a new Issuer from a Sub-CA certificate issued by an existing issuer.
+      tags:
+        - Issuers
+      parameters:
+        - $ref: "#/components/parameters/IssuerId"
+      requestBody:
+        description: Issuer creation body
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IssuerCertRef"
+      responses:
+        204:
+          description: Issuer created successfully
+        400:
+          $ref: '#/components/responses/IssuerNotFound'
+        422:
+          $ref: '#/components/responses/IssuerCertRefConstraintViolation'
+        409:
+          $ref: '#/components/responses/IssuerIDTaken'
+        500:
+          $ref: "#/components/responses/ServerError"
+
 
   /issuers/{id}/certificates/tls-server:
     post:
@@ -604,9 +657,9 @@ components:
       type: object
       description: References a Sub-CA certificate issued by an existing issuer.
       properties:
-        issuer:
+        issuer_id:
           type: string
-          description: The name of the issuer of the Sub-CA certificate to be used
+          description: The ID of the issuer of the Sub-CA certificate to be used
         serial:
           type: string
           description: The serial of the Sub-CA certificate to be used
@@ -913,9 +966,116 @@ components:
             An absolute URI that identifies the specific occurrence of the problem.
             It may or may not yield further information if dereferenced.
 
+  parameters:
+    IssuerId:
+      name: id
+      in: path
+      required: true
+      description: The unique identifier of the issuer in the system
+      schema:
+        pattern: ^[a-z]+(-[a-z]+)*$
+
   responses:
 
+    IssuerSpecConstraintViolation:
+      description: Constraint violation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          examples:
+            invalid-body:
+              value:
+                type: /problems/constraint-violation
+                title: Constraint Violation
+                detail: The request contains one or more constraint violations
+                status: 422
+                violations:
+                  - field: body.name
+                    type: required
+                    message: name must not be null nor empty
+                  - field: body.address
+                    type: required
+                    message: address must not be null nor empty
+  
     IssuerConstraintViolation:
+      description: Constraint violation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          examples:
+            cert-file-not-ca:
+              value:
+                type: /problems/constraint-violation
+                title: Constraint Violation
+                detail: The request contains one or more constraint violations
+                status: 422
+                violations:
+                  - field: body.name
+                    type: required
+                    message: name must not be null nor empty
+    
+    IssuerCertRefConstraintViolation:
+      description: Constraint violation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          examples:
+          
+            invalid-body:
+              value:
+                type: /problems/constraint-violation
+                title: Constraint Violation
+                detail: The request contains one or more constraint violations
+                status: 422
+                violations:
+                  - field: body.issuer_id
+                    type: required
+                    message: issuer_id must not be null nor empty
+                  - field: body.serial
+                    type: required
+                    message: serial must not be null nor empty
+
+            cert-not-found:
+              value:
+                type: /problems/constraint-violation
+                title: Constraint Violation
+                detail: The request contains one or more constraint violations
+                status: 422
+                violations:
+                  - field: body.serial
+                    type: state
+                    sub_type: not-found
+                    message: There is no certificate with a matching serial
+
+            issuer-not-found:
+              value:
+                type: /problems/constraint-violation
+                title: Constraint Violation
+                detail: The request contains one or more constraint violations
+                status: 422
+                violations:
+                  - field: body.issuer_id
+                    type: state
+                    sub_type: not-found
+                    message: There is no issuer with a matching serial
+
+            cert-not-ca:
+              value:
+                type: /problems/constraint-violation
+                title: Constraint Violation
+                detail: The request contains one or more constraint violations
+                status: 422
+                violations:
+                  - field: body.issuer_id
+                    type: state
+                    sub_type: not-ca
+                    message: The referenced certificate is not a CA
+            
+
+    IssuerPemConstraintViolation:
       description: Constraint violation
       content:
         application/json:
@@ -953,7 +1113,7 @@ components:
                   - field: body.pem.cert_file
                     type: format
                     message: cert_file is not valid PEM encoded certificate
-
+    
     SuccessfullyIssuedCert:
       description: Certificate issued successfully
       content:
@@ -1032,13 +1192,25 @@ components:
 
 
     CertificateNotFound:
-      description: Not Found
+      description: Certificate not found
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Problem'
           example:
-            type: /problems/not-found
+            type: /problems/certificate/not-found
             title: Not found
             status: 404
-            detail: Certificate not found
+            detail: There is no certificate with a matching serial
+    
+    IssuerNotFound:
+      description: Issuer NOT found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          example:
+            type: /problems/issuer/not-found
+            title: Not found
+            status: 404
+            detail: There is no issuer with a matching ID
