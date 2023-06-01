@@ -36,7 +36,7 @@ paths:
         - Issuers
       responses:
         200:
-          description: CA Certificate Info retrieve successfully
+          description: Issuers List retrieved successfully
           content:
             application/json:
               schema:
@@ -51,7 +51,7 @@ paths:
     post:
       summary: Create Issuer from spec
       operationId: createIssuerFromSpec
-      description: Create a new Certificates Issuer from a specification.
+      description: Create a new Issuer from a specification.
       tags:
         - Issuers
       parameters:
@@ -78,7 +78,7 @@ paths:
     post:
       summary: Create Issuer from PEM
       operationId: createIssuerFromPem
-      description: Create a new Certificates Issuer from PEM.
+      description: Create a new Issuer from a PEM bundle.
       tags:
         - Issuers
       parameters:
@@ -149,6 +149,8 @@ paths:
 
       tags:
         - Certificates
+      parameters:
+        - $ref: "#/components/parameters/IssuerId"
       requestBody:
         description: The Certificate details
         content:
@@ -184,6 +186,8 @@ paths:
           * Email Protection (OID 1.3.6.1.5.5.7.3.4)
       tags:
         - Certificates
+      parameters:
+        - $ref: "#/components/parameters/IssuerId"
       requestBody:
         description: The Certificate details
         content:
@@ -219,6 +223,8 @@ paths:
 
       tags:
         - Certificates
+      parameters:
+        - $ref: "#/components/parameters/IssuerId"
       requestBody:
         description: The Certificate details
         content:
@@ -251,6 +257,8 @@ paths:
 
       tags:
         - Certificates
+      parameters:
+        - $ref: "#/components/parameters/IssuerId"
       requestBody:
         description: The Certificate details
         content:
@@ -274,6 +282,8 @@ paths:
       description: Get List of attributes that may be used on the Certificate Subject Distinguished name. The attributes returned by this operation are expected to be used only when isuing custom certificates.
       tags:
         - Certificates
+      parameters:
+        - $ref: "#/components/parameters/IssuerId"
       responses:
         '200':
           description: An array of attributes
@@ -325,6 +335,8 @@ paths:
       description: Issues a new Customized Certificate. An RSA Key-pair will be generated and used for the Certificate.
       tags:
         - Certificates
+      parameters:
+        - $ref: "#/components/parameters/IssuerId"
       requestBody:
         description: The Certificate details
         content:
@@ -348,6 +360,8 @@ paths:
       description: List all the certificates issued by the selected issuer. Will include the certificate of the issuer.
       tags:
         - Certificates
+      parameters:
+        - $ref: "#/components/parameters/IssuerId"
       responses:
         200:
           description: Certificates List Retrieved Successfully
@@ -374,6 +388,8 @@ paths:
           required: true
           schema:
             type: string
+        - $ref: "#/components/parameters/IssuerId"
+        
       responses:
         200:
           description: Certificate Information Retrieved successfully
@@ -392,6 +408,9 @@ paths:
       description: Download Certificate files. A compressed ZIP archive will be returned.
       tags:
         - Certificates
+      parameters:
+        - $ref: "#/components/parameters/IssuerId"
+        - $ref: "#/components/parameters/SerialNumber"
       responses:
         200:
           description: Files retrieve successfully.
@@ -454,7 +473,6 @@ components:
         - CertificateSign
         - SignCRL
         - NonRepudiation
-
 
     ExtendedKeyUsage:
       type: string
@@ -967,11 +985,20 @@ components:
             It may or may not yield further information if dereferenced.
 
   parameters:
+
+    SerialNumber:
+      name: serial
+      in: path
+      description: The serial number of the certificate
+      required: true
+      schema:
+        type: string    
+
     IssuerId:
       name: id
       in: path
       required: true
-      description: The unique identifier of the issuer in the system
+      description: The unique identifier of the issuer
       schema:
         pattern: ^[a-z]+(-[a-z]+)*$
 
@@ -1023,7 +1050,7 @@ components:
           schema:
             $ref: '#/components/schemas/Problem'
           examples:
-          
+
             invalid-body:
               value:
                 type: /problems/constraint-violation
