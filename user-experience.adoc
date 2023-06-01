@@ -70,9 +70,9 @@ All certificate related operations happen in the context of an Issuer.
 
 |9
 |Delete certificate
-|Deletes a certificate
+|Deletes an existing certificate
 |Home > Certificates > Select > Delete
-|* deleteCertificate
+|* deleteCert
 
 |10
 |New personal certificate
@@ -107,12 +107,5 @@ All certificate related operations happen in the context of an Issuer.
 * listCertAttributes
 * issueCustomCert
 
-|15
-|Delete certificate
-|Delete an existing certificate
-|Home > Issuer > Certificates > Select > Delete
-|
-
-* deleteCert
 
 |===
