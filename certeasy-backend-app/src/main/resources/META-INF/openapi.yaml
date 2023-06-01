@@ -429,7 +429,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/IssuedCertInfo'
         404:
-          $ref: '#/components/responses/CertificateNotFound'
+          $ref: '#/components/responses/CertOrIssuerNotFound'
         500:
           $ref: "#/components/responses/ServerError"
     delete:
@@ -453,7 +453,7 @@ paths:
         400:
           $ref: '#/components/responses/BadRequest'
         404:
-          $ref: '#/components/responses/CertificateNotFound'
+          $ref: '#/components/responses/CertOrIssuerNotFound'
         500:
           $ref: "#/components/responses/ServerError"
       
@@ -476,7 +476,7 @@ paths:
                 type: string
                 format: binary
         404:
-          $ref:  "#/components/responses/CertificateNotFound"
+          $ref:  "#/components/responses/CertOrIssuerNotFound"
         500:
           $ref: "#/components/responses/ServerError"
 
@@ -1338,3 +1338,25 @@ components:
             title: Not found
             status: 404
             detail: There is no issuer with a matching ID
+
+    CertOrIssuerNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          examples:
+            issuer-not-found:
+              value:
+                type: /problems/issuer/not-found
+                title: Not found
+                status: 404
+                detail: There is no issuer with a matching ID
+            certificate-not-found:
+              value:
+                type: /problems/certificate/not-found
+                title: Not found
+                status: 404
+                detail: There is no certificate with a matching serial
+
+        
