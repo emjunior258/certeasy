@@ -66,7 +66,7 @@ paths:
         204:
           description: Issuer created successfully
         400:
-          $ref: '#/components/responses/IssuerNotFound'
+          $ref: '#/components/responses/BadRequest'
         422:
           $ref: '#/components/responses/IssuerSpecConstraintViolation'
         409:
@@ -93,7 +93,7 @@ paths:
         204:
           description: Issuer created successfully
         400:
-          $ref: '#/components/responses/IssuerNotFound'
+          $ref: '#/components/responses/BadRequest'
         422:
           $ref: '#/components/responses/IssuerPemConstraintViolation'
         409:
@@ -120,7 +120,7 @@ paths:
         204:
           description: Issuer created successfully
         400:
-          $ref: '#/components/responses/IssuerNotFound'
+          $ref: '#/components/responses/BadRequest'
         422:
           $ref: '#/components/responses/IssuerCertRefConstraintViolation'
         409:
@@ -162,6 +162,8 @@ paths:
         200:
           $ref: '#/components/responses/SuccessfullyIssuedCert'
         400:
+          $ref: '#/components/responses/BadRequest'
+        422:
           $ref: '#/components/responses/ConstraintViolation'
         500:
           $ref: "#/components/responses/ServerError"
@@ -199,6 +201,8 @@ paths:
         200:
           $ref: '#/components/responses/SuccessfullyIssuedCert'
         400:
+          $ref: '#/components/responses/BadRequest'
+        422:
           $ref: '#/components/responses/ConstraintViolation'
         500:
           $ref: "#/components/responses/ServerError"
@@ -236,6 +240,8 @@ paths:
         200:
           $ref: '#/components/responses/SuccessfullyIssuedCert'
         400:
+          $ref: '#/components/responses/BadRequest'
+        422:
           $ref: '#/components/responses/ConstraintViolation'
         500:
           $ref: "#/components/responses/ServerError"
@@ -270,6 +276,8 @@ paths:
         200:
           $ref: '#/components/responses/SuccessfullyIssuedCert'
         400:
+          $ref: '#/components/responses/BadRequest'
+        422:
           $ref: '#/components/responses/ConstraintViolation'
         500:
           $ref: "#/components/responses/ServerError"
@@ -348,6 +356,8 @@ paths:
         200:
           $ref: '#/components/responses/SuccessfullyIssuedCert'
         400:
+          $ref: '#/components/responses/BadRequest'
+        422:
           $ref: '#/components/responses/ConstraintViolation'
         500:
           $ref: "#/components/responses/ServerError"
@@ -423,15 +433,6 @@ paths:
           $ref:  "#/components/responses/CertificateNotFound"
         500:
           $ref: "#/components/responses/ServerError"
-
-
-
-
-# /certificates/{serial}
-# GET (JSON)
-
-# /certificates/{serial}/files/compressed
-# GET (Zip file)
 
 
 components:
@@ -983,6 +984,55 @@ components:
           description: |
             An absolute URI that identifies the specific occurrence of the problem.
             It may or may not yield further information if dereferenced.
+            
+            
+    ConstraintViolation:
+      description: Represents a violation of a constraint
+      properties:
+        field:
+          type: string
+          description: The input that violated the constraint
+          example: body.name
+        type:
+          type: string
+          description: The type of constraint violation
+          enum:
+            - required
+            - presence
+            - length
+            - pattern
+            - range
+            - precedence
+            - enum
+            - format
+            - state
+        sub_type:
+          type: string
+          description: The sub type of constraint violation. This is only applicable to `state` violation
+        message:
+          type: string
+          description: A message describing the constraint violation
+          example: body.name MUST not be null be nor empty
+      required:
+        - field
+        - type
+        - message
+    
+    ConstraintViolationProblem:
+      allOf:
+        - $ref: "#/components/schemas/Problem"
+        - type: object
+          properties:
+            violations:
+              type: array
+              items: 
+                $ref: "#/components/schemas/ConstraintViolation"
+        - required:
+            - type
+            - title
+            - detail
+            - violations
+                  
 
   parameters:
 
@@ -1166,7 +1216,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Problem'
+            $ref: '#/components/schemas/ConstraintViolationProblem'
           example:
             type: /problems/constraint-violation
             title: Constraint Violation
