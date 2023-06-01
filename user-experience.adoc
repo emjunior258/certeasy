@@ -51,60 +51,54 @@ All certificate related operations happen in the context of an Issuer.
 |* deleteIssuer
 
 |6
-|Export issuer
-|Export certificate and private key file in PEM format
-|Home > Issuers > Select > Export
-|* exportIssuer
-
-|7
 |List certificates
 |List certificates issued by a selected issuer
 |Home > Certificates
 |* listIssuedCerts
 
-|8
+|7
 |View certificate
 |Display the details of a certificate
 |Home > Certificates > Select > View
 |* GetCertInfo
 
-|9
+|8
 |Export certificate
 |Exports both the certificate and private key
 |Home > Certificates > Select > Export
 |* downloadCertificateFiles
 
-|10
+|9
 |Delete certificate
 |Deletes a certificate
 |Home > Certificates > Select > Delete
 |* deleteCertificate
 
-|11
+|10
 |New personal certificate
 |Issue a certificate to identify an individual
 |Home > Certificates > New > Personal
 |* issuePersonalCert
 
-|12
+|11
 |New personal certificate
 |Issue a certificate to identify an employee
 |Home > Certificates > New > Employee
 |* issueEmployeeCert
 
-|13
+|12
 |New TLS server certificate
 |Issue a certificate to identify a TLS server
 |Home > Certificates > New > TLS server
 |* issueTlsServerCert
 
-|14
+|13
 |New Sub-Ca certificate
 |Issue a certificate for sub-authority
 |Home > Certificates > New > Sub-CA
 |* issueSubCACert
 
-|15
+|14
 |New custom certificate
 |Issue a certificate with fine-grained attributes
 |Home > Issuer > Certificates > New > Custom
