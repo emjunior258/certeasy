@@ -26,72 +26,85 @@ All certificate related operations happen in the context of an Issuer.
 
 
 |2
-|Create issuer
+|Create issuer from spec
 |Create a new issuer
-|Home > Issuers > New
-|* createIssuer
+|Home > Issuers > New > From Specification
+|* createIssuerFromSpec
+
 
 |3
+|Create issuer from pem
+|Create issuer from pre-existing PEM files
+|Home > Issuers > New > From PEM
+|* createIssuerFromPem
+
+|4
+|Create issuer from ref
+|Create issue from an issued CA cert
+|Home > Issuers > New > From Issued Cert
+|* createIssuerFromRef
+
+|5
 |Delete issuer
 |Delete an existing issuer
 |Home > Issuers > Select > Delete
 |* deleteIssuer
 
-|4
+|6
 |Export issuer
 |Export certificate and private key file in PEM format
 |Home > Issuers > Select > Export
 |* exportIssuer
 
-|5
+|7
 |List certificates
 |List certificates issued by a selected issuer
 |Home > Certificates
 |* listIssuedCerts
 
-|6
+|8
 |View certificate
 |Display the details of a certificate
 |Home > Certificates > Select > View
 |* GetCertInfo
 
-|7
+|9
 |Export certificate
 |Exports both the certificate and private key
 |Home > Certificates > Select > Export
 |* downloadCertificateFiles
 
-|8
+|10
 |Delete certificate
 |Deletes a certificate
 |Home > Certificates > Select > Delete
 |* deleteCertificate
 
-|9
+|11
 |New personal certificate
 |Issue a certificate to identify an individual
 |Home > Certificates > New > Personal
 |* issuePersonalCert
 
-|10
+|12
 |New personal certificate
 |Issue a certificate to identify an employee
 |Home > Certificates > New > Employee
 |* issueEmployeeCert
 
-|11
+|13
 |New TLS server certificate
 |Issue a certificate to identify a TLS server
 |Home > Certificates > New > TLS server
 |* issueTlsServerCert
 
-|12
+|14
 |New Sub-Ca certificate
 |Issue a certificate for sub-authority
 |Home > Certificates > New > Sub-CA
 |* issueSubCACert
 
-|13
+|15
 |New custom certificate
 |Issue a certificate with fine-grained attributes
 |Home > Issuer > Certificates > New > Custom
