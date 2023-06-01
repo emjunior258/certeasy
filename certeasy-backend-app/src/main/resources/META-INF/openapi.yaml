@@ -47,7 +47,28 @@ paths:
         500:
           $ref: "#/components/responses/ServerError"
 
-  /issuers/{id}/cert-spec:
+  /issuers/{issuerId}:
+    delete:
+      summary: Delete Issuer
+      operationId: deleteIssuer
+      description: Delete an existing issuer. All stored certificates issued by the referenced issuer will be deleted.
+      tags:
+        - Issuers
+      parameters:
+        - $ref: "#/components/parameters/IssuerId"
+      responses:
+        204:
+          description: Issuer deleted successfully
+        400:
+          $ref: '#/components/responses/BadRequest'
+        404:
+          $ref: '#/components/responses/IssuerNotFound'
+        422:
+          $ref: '#/components/responses/IssuerSpecConstraintViolation'
+        500:
+          $ref: "#/components/responses/ServerError"
+
+  /issuers/{issuerId}/cert-spec:
     post:
       summary: Create Issuer from spec
       operationId: createIssuerFromSpec
@@ -74,7 +95,7 @@ paths:
         500:
           $ref: "#/components/responses/ServerError"
 
-  /issuers/{id}/cert-pem:
+  /issuers/{issuerId}/cert-pem:
     post:
       summary: Create Issuer from PEM
       operationId: createIssuerFromPem
@@ -101,7 +122,7 @@ paths:
         500:
           $ref: "#/components/responses/ServerError"
 
-  /issuers/{id}/cert-ref:
+  /issuers/{issuerId}/cert-ref:
     post:
       summary: Create Issuer from issued certificate
       operationId: createIssuerFromRef
@@ -129,7 +150,7 @@ paths:
           $ref: "#/components/responses/ServerError"
 
 
-  /issuers/{id}/certificates/tls-server:
+  /issuers/{issuerId}/certificates/tls-server:
     post:
       summary: Issue TLS-Server certificate
       operationId: issueTlsServerCert
@@ -170,7 +191,7 @@ paths:
 
 
 
-  /issuers/{id}/certificates/personal:
+  /issuers/{issuerId}/certificates/personal:
     post:
       summary: Issue Personal Certificate
       operationId: issuePersonalCert
@@ -208,7 +229,7 @@ paths:
           $ref: "#/components/responses/ServerError"
 
 
-  /issuers/{id}/certificates/employee:
+  /issuers/{issuerId}/certificates/employee:
     post:
       summary: Issue Employee Certificate
       operationId: issueEmployeeCert
@@ -247,7 +268,7 @@ paths:
           $ref: "#/components/responses/ServerError"
 
 
-  /issuers/{id}/certificates/sub-ca:
+  /issuers/{issuerId}/certificates/sub-ca:
     post:
       summary: Issue Sub Certificate-Authority Certificate
       operationId: issueSubCACert
@@ -283,7 +304,7 @@ paths:
           $ref: "#/components/responses/ServerError"
 
 
-  /issuers/{id}/certificates/custom/attributes:
+  /issuers/{issuerId}/certificates/custom/attributes:
     get:
       summary: List Distinguished Name attributes
       operationId: listCertAttributes
@@ -336,7 +357,7 @@ paths:
         500:
           $ref: "#/components/responses/ServerError"
 
-  /issuers/{id}/certificates/custom:
+  /issuers/{issuerId}/certificates/custom:
     post:
       summary: Issue Customized Certificate
       operationId: issueCustomCert
@@ -363,7 +384,7 @@ paths:
           $ref: "#/components/responses/ServerError"
 
 
-  /issuers/{id}/certificates:
+  /issuers/{issuerId}/certificates:
     get:
       summary: List issued certificates
       operationId: listIssuedCerts
@@ -384,7 +405,7 @@ paths:
         500:
           $ref: "#/components/responses/ServerError"
 
-  /issuers/{id}/certificates/{serial}:
+  /issuers/{issuerId}/certificates/{serial}:
     get:
       summary: Get Certificate Information
       operationId: getCertInfo
@@ -411,7 +432,32 @@ paths:
           $ref: '#/components/responses/CertificateNotFound'
         500:
           $ref: "#/components/responses/ServerError"
-  /issuers/{id}/certificates/{serial}/files:
+    delete:
+      summary: Delete certificate
+      operationId: deleteCert
+      description: Delete an existing certiticate
+      tags:
+        - Certificates
+      parameters:
+        - name: serial
+          in: path
+          description: The serial number of the certificate
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/IssuerId"
+        
+      responses:
+        204:
+          description: Certificate deleted successfully
+        400:
+          $ref: '#/components/responses/BadRequest'
+        404:
+          $ref: '#/components/responses/CertificateNotFound'
+        500:
+          $ref: "#/components/responses/ServerError"
+      
+  /issuers/{issuerId}/certificates/{serial}/files:
     get:
       summary: Get Certificate files
       operationId: downloadCertificateFiles
@@ -1045,12 +1091,13 @@ components:
         type: string    
 
     IssuerId:
-      name: id
+      name: issuerId
       in: path
       required: true
-      description: The unique identifier of the issuer
+      description: The unique identifier of the certificate issuer
       schema:
         pattern: ^[a-z]+(-[a-z]+)*$
+        example: lorem-ipsum
 
   responses:
 

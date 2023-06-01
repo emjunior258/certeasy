@@ -107,4 +107,12 @@ All certificate related operations happen in the context of an Issuer.
 * listCertAttributes
 * issueCustomCert
 
+|15
+|Delete certificate
+|Delete an existing certificate
+|Home > Issuer > Certificates > Select > Delete
+|
+
+* deleteCert
+
 |===
