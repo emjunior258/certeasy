@@ -102,7 +102,7 @@ public class DirectoryIssuerDatastore implements IssuerDatastore {
                 return Optional.of(FileUtils.readFileToString(serialFile,
                         StandardCharsets.UTF_8));
             } catch (IOException ex) {
-                throw new CertEasyException("failed to read issuer certificate serial file",
+                throw new CertEasyException("failed to read issuerId certificate serial file",
                         ex);
             }
         }else LOGGER.warn("Serial file not found. Nothing to Read");
@@ -117,7 +117,7 @@ public class DirectoryIssuerDatastore implements IssuerDatastore {
             try {
                 FileUtils.writeStringToFile(serialFile, serial, StandardCharsets.UTF_8);
             } catch (IOException ex) {
-                throw new CertEasyException("failed to write issuer certificate serial to file",
+                throw new CertEasyException("failed to write issuerId certificate serial to file",
                         ex);
             }
         }
@@ -128,7 +128,7 @@ public class DirectoryIssuerDatastore implements IssuerDatastore {
         try {
             if(!directory.exists())
                 return;
-            LOGGER.info("Deleting issuer data directory: {}",directory.getAbsolutePath());
+            LOGGER.info("Deleting issuerId data directory: {}",directory.getAbsolutePath());
             FileUtils.deleteDirectory(directory);
         } catch (IOException ex) {
             throw new IssuerDatastoreException("error deleting data directory: "+directory.getAbsolutePath(),

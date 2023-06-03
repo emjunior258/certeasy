@@ -11,7 +11,7 @@ import java.util.Optional;
 
 
 /**
- * Represents a certificate issuer: issues certificates and keeps record of them.
+ * Represents a certificate issuerId: issues certificates and keeps record of them.
  */
 public class CertIssuer {
 
@@ -104,11 +104,11 @@ public class CertIssuer {
         if(spec==null)
             throw new IllegalArgumentException("spec MUST not be null");
         if(disabled)
-            throw new IllegalStateException("issuer has been permanently disabled");
+            throw new IllegalStateException("issuerId has been permanently disabled");
         if(!hasCertificate())
-            throw new IllegalStateException("issuer doesn't have a certificate to sign with");
+            throw new IllegalStateException("issuerId doesn't have a certificate to sign with");
         if(certificate.getBasicConstraints().ca())
-            throw new IllegalStateException("issuer certificate is not CA");
+            throw new IllegalStateException("issuerId certificate is not CA");
         Certificate issuedCert = context.generator().generate(spec, certificate);
         LOGGER.info("Issued certificate with serial: {}", issuedCert.getSerial());
         this.store.put(issuedCert);

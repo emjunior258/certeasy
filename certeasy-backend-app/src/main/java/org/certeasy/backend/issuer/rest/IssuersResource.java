@@ -44,7 +44,7 @@ public class IssuersResource {
         Optional<Certificate> optionalCertificate = certManager.getCertificate();
         if(optionalCertificate.isEmpty()){
             return Response.status(404)
-                    .entity(new CertificateNotFound("There is no issuer certificate set"))
+                    .entity(new CertificateNotFound("There is no issuerId certificate set"))
                     .build();
         }
         Certificate certificate = optionalCertificate.get();

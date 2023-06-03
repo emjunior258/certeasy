@@ -51,7 +51,7 @@ paths:
     delete:
       summary: Delete Issuer
       operationId: deleteIssuer
-      description: Delete an existing issuer. All stored certificates issued by the referenced issuer will be deleted.
+      description: Delete an existing issuerId. All stored certificates issued by the referenced issuerId will be deleted.
       tags:
         - Issuers
       parameters:
@@ -126,7 +126,7 @@ paths:
     post:
       summary: Create Issuer from issued certificate
       operationId: createIssuerFromRef
-      description: Create a new Issuer from a Sub-CA certificate issued by an existing issuer.
+      description: Create a new Issuer from a Sub-CA certificate issued by an existing issuerId.
       tags:
         - Issuers
       parameters:
@@ -388,7 +388,7 @@ paths:
     get:
       summary: List issued certificates
       operationId: listIssuedCerts
-      description: List all the certificates issued by the selected issuer. Will include the certificate of the issuer.
+      description: List all the certificates issued by the selected issuerId. Will include the certificate of the issuerId.
       tags:
         - Certificates
       parameters:
@@ -666,7 +666,7 @@ components:
         - name
         - key_size
         - distinguished_name
-        - issuer
+        - issuerId
         - basic_constraints
         - key_usage
         - validity
@@ -676,7 +676,7 @@ components:
       properties:
         id:
           type: string
-          description: The unique identifier of the issuer
+          description: The unique identifier of the issuerId
           example: myca
         serial:
           type: string
@@ -684,13 +684,13 @@ components:
           example: 12345678910
         type:
           type: string
-          description: The type of issuer
+          description: The type of issuerId
           enum:
             - ROOT
             - SUB_CA
         dn:
           type: string
-          description: The Distinguished name of the issuer certificate
+          description: The Distinguished name of the issuerId certificate
           example: cn=John Doe, ou=People, dc=sun.com
         path_length:
           type: integer
@@ -706,7 +706,7 @@ components:
 
     IssuerCertPem:
       type: object
-      description: Existing issuer PEM Encoded information.
+      description: Existing issuerId PEM Encoded information.
       properties:
         cert_file:
           type: string
@@ -720,16 +720,16 @@ components:
 
     IssuerCertRef:
       type: object
-      description: References a Sub-CA certificate issued by an existing issuer.
+      description: References a Sub-CA certificate issued by an existing issuerId.
       properties:
         issuer_id:
           type: string
-          description: The ID of the issuer of the Sub-CA certificate to be used
+          description: The ID of the issuerId of the Sub-CA certificate to be used
         serial:
           type: string
           description: The serial of the Sub-CA certificate to be used
       required:
-        - issuer
+        - issuer_id
         - serial
 
     IssuerCertSpec:
@@ -767,7 +767,7 @@ components:
         - validity
 
     NewIssuerBody:
-      description: Request body regarding new issuer to be created
+      description: Request body regarding new issuerId to be created
       oneOf:
         - $ref: "#/components/schemas/IssuerCertPemBody"
         - $ref: "#/components/schemas/IssuerCertSpecBody"
@@ -776,7 +776,7 @@ components:
 
     IssuerCertPemBody:
       type: object
-      description: Request body to create new issuer using existing certificate
+      description: Request body to create new issuerId using existing certificate
       properties:
         pem:
           $ref: "#/components/schemas/IssuerCertPem"
@@ -785,7 +785,7 @@ components:
 
     IssuerCertSpecBody:
       type: object
-      description: Request body to create new issuer certificate from a specification
+      description: Request body to create new issuerId certificate from a specification
       properties:
         spec:
           $ref: "#/components/schemas/IssuerCertSpec"
@@ -794,7 +794,7 @@ components:
 
     IssuerCertRefBody:
       type: object
-      description: Request body to create new issuer from a Sub-CA certificate issued by an existing issuer.
+      description: Request body to create new issuerId from a Sub-CA certificate issued by an existing issuerId.
       properties:
         ref:
           $ref: "#/components/schemas/IssuerCertRef"
@@ -1094,7 +1094,7 @@ components:
       name: issuerId
       in: path
       required: true
-      description: The unique identifier of the certificate issuer
+      description: The unique identifier of the certificate issuerId
       schema:
         pattern: ^[a-z]+(-[a-z]+)*$
         example: lorem-ipsum
@@ -1155,9 +1155,9 @@ components:
                 detail: The request contains one or more constraint violations
                 status: 422
                 violations:
-                  - field: body.issuer_id
+                  - field: body.issuerId
                     type: required
-                    message: issuer_id must not be null nor empty
+                    message: issuerId must not be null nor empty
                   - field: body.serial
                     type: required
                     message: serial must not be null nor empty
@@ -1181,10 +1181,10 @@ components:
                 detail: The request contains one or more constraint violations
                 status: 422
                 violations:
-                  - field: body.issuer_id
+                  - field: body.issuerId
                     type: state
                     sub_type: not-found
-                    message: There is no issuer with a matching serial
+                    message: There is no issuerId with a matching serial
 
             cert-not-ca:
               value:
@@ -1193,7 +1193,7 @@ components:
                 detail: The request contains one or more constraint violations
                 status: 422
                 violations:
-                  - field: body.issuer_id
+                  - field: body.issuerId
                     type: state
                     sub_type: not-ca
                     message: The referenced certificate is not a CA
@@ -1286,9 +1286,9 @@ components:
           schema:
             $ref: '#/components/schemas/Problem'
           example:
-            type: /problems/issuer/id-taken
+            type: /problems/issuerId/id-taken
             title: Issuer ID Taken
-            detail: There is already an issuer with the provided ID
+            detail: There is already an issuerId with the provided ID
             status: 409
     BadRequest:
       description: Bad Request
@@ -1334,10 +1334,10 @@ components:
           schema:
             $ref: '#/components/schemas/Problem'
           example:
-            type: /problems/issuer/not-found
+            type: /problems/issuerId/not-found
             title: Not found
             status: 404
-            detail: There is no issuer with a matching ID
+            detail: There is no issuerId with a matching ID
 
     CertOrIssuerNotFound:
       description: Not found
@@ -1348,10 +1348,10 @@ components:
           examples:
             issuer-not-found:
               value:
-                type: /problems/issuer/not-found
+                type: /problems/issuerId/not-found
                 title: Not found
                 status: 404
-                detail: There is no issuer with a matching ID
+                detail: There is no issuerId with a matching ID
             certificate-not-found:
               value:
                 type: /problems/certificate/not-found

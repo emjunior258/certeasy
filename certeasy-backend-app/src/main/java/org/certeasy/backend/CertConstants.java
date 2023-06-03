@@ -9,7 +9,7 @@ public class CertConstants {
 
 
     /**
-     * The name of the file containing the serial number of the issuer certificate
+     * The name of the file containing the serial number of the issuerId certificate
      */
     public static final String ISSUER_CERT_SERIAL_FILENAME = "iss_cert_serial";
 

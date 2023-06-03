@@ -59,31 +59,31 @@ public class DirectoryIssuerRegistry implements IssuerRegistry {
                 LOGGER.warn(String.format("Skipping directory: %s", issuerDirectory.getAbsolutePath()));
                 continue;
             }
-            LOGGER.info("Found issuer: " + issuerDirectory.getName());
+            LOGGER.info("Found issuerId: " + issuerDirectory.getName());
             cache.put(issuerDirectory.getName(), issuer);
         }
         this.scanned = true;
     }
 
     @Override
-    public CertIssuer add(String name, Certificate certificate) throws IssuerRegistryException {
-        if(name==null || name.isEmpty())
+    public CertIssuer add(String issuerId, Certificate certificate) throws IssuerRegistryException {
+        if(issuerId ==null || issuerId.isEmpty())
             throw new IllegalArgumentException("name MUST not be null nor empty");
         if(certificate==null)
             throw new IllegalArgumentException("certificate MUST not be null");
-        LOGGER.info("Adding issuer: " + name);
-        File issuerDirectory = new File(dataDirectory, name);
-        LOGGER.info("Creating issuer data directory: " + issuerDirectory.getAbsolutePath());
+        LOGGER.info("Adding issuerId: " + issuerId);
+        File issuerDirectory = new File(dataDirectory, issuerId);
+        LOGGER.info("Creating issuerId data directory: " + issuerDirectory.getAbsolutePath());
         try {
             Files.createDirectories(issuerDirectory.toPath());
         } catch (IOException ex) {
-            throw new IssuerRegistryException("error creating issuer data directory: "+issuerDirectory.getAbsolutePath(),
+            throw new IssuerRegistryException("error creating issuerId data directory: "+issuerDirectory.getAbsolutePath(),
                     ex);
         }
         IssuerDatastore datastore = new DirectoryIssuerDatastore(issuerDirectory, context);
-        CertIssuer issuer = new CertIssuer(name, datastore, context, certificate);
-        cache.put(name, issuer);
-        LOGGER.info("Issuer added successfully: " + name);
+        CertIssuer issuer = new CertIssuer(issuerId, datastore, context, certificate);
+        cache.put(issuerId, issuer);
+        LOGGER.info("Issuer added successfully: " + issuerId);
         return issuer;
     }
 
@@ -96,17 +96,17 @@ public class DirectoryIssuerRegistry implements IssuerRegistry {
     }
 
     @Override
-    public Optional<CertIssuer> getByName(String name) throws IssuerRegistryException {
-        if(name==null || name.isEmpty())
+    public Optional<CertIssuer> getById(String issuerId) throws IssuerRegistryException {
+        if(issuerId ==null || issuerId.isEmpty())
             throw new IllegalArgumentException("name MUST not be null");
         this.scanIfNotYet();
-        return Optional.ofNullable(cache.get(name));
+        return Optional.ofNullable(cache.get(issuerId));
     }
 
     @Override
     public void delete(CertIssuer issuer) throws IssuerRegistryException {
         if(issuer==null)
-            throw new IllegalArgumentException("issuer MUST not be null");
+            throw new IllegalArgumentException("issuerId MUST not be null");
         if(!issuer.isDisabled())
             issuer.disable();
         this.cache.remove(issuer.getId());
