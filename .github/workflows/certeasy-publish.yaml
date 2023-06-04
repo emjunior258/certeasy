@@ -1,4 +1,4 @@
-name: certeasy-image
+name: certeasy-publish
 
 env:
   REGISTRY: ghcr.io
@@ -11,18 +11,14 @@ on:
       - 'certeasy-core/**'
       - 'certeasy-bouncycastle/**'
       - 'certeasy-backend-app/**'
-      - '.github/workflows/certeasy.yaml'
-
-  pull_request:
-    paths:
-      - 'certeasy-core/**'
-      - 'certeasy-bouncycastle/**'
-      - 'certeasy-backend-app/**'
-      - '.github/workflows/certeasy.yaml'
+      - '.github/workflows/certeasy-publish.yaml'
+    branches:
+      - main
+      - develop
 
 jobs:
 
-  certeasy-core:
+  build-core:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -50,7 +46,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  certeasy-bouncycastle:
+  build-bouncycastle:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -79,7 +75,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  certeasy-backend:
+  build-image:
     runs-on: ubuntu-latest
     permissions:
       contents: read
