@@ -733,7 +733,7 @@ components:
       properties:
         cert_file:
           type: string
-          description: The PEM encoded CA certificate
+          description: The PEM encoded certificate
         key_file:
           type: string
           description: The PEM encoded private key
