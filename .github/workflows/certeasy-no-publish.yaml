@@ -87,7 +87,7 @@ jobs:
           name: certeasy-bouncycastle
           path: ~/.m2/repository/org/certeasy/certeasy-bouncycastle
 
-  build-image:
+  build-binary:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -135,3 +135,39 @@ jobs:
       - name: Build binary
         run: |
           ./mvnw package -Pnative -Dquarkus.native.container-build=true
+      - name: Upload certeasy-binary
+        uses: actions/upload-artifact@v2
+        with:
+          name: certeasy-binary
+          path: target/*-runner
+
+  build-docker-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    defaults:
+      run:
+        working-directory: ./certeasy-backend-app
+    needs: ["build-core", "build-bouncycastle"]
+    steps:
+      - uses: actions/checkout@v3
+        name: Git checkout
+      - name: Download certeasy-binary
+        uses: actions/download-artifact@v2
+        with:
+          name: certeasy-binary
+          path: binary/
+      - name: Registry login
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Image build and push
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          context: ./
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:test
