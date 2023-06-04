@@ -48,7 +48,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_CORE_TOKEN }}
       - name: Upload certeasy-core
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: certeasy-core
           path: ~/.m2/repository/org/certeasy/certeasy-core
@@ -72,7 +72,7 @@ jobs:
           distribution: 'temurin'
           cache: maven
       - name: Download certeasy-core
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: certeasy-core
           path: ~/.m2/repository/org/certeasy/certeasy-core
@@ -82,7 +82,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_BOUNCYCASTLE_TOKEN }}
       - name: Upload certeasy-bouncycastle
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: certeasy-bouncycastle
           path: ~/.m2/repository/org/certeasy/certeasy-bouncycastle
@@ -123,7 +123,7 @@ jobs:
           name: certeasy-core
           path: ~/.m2/repository/org/certeasy/certeasy-core
       - name: Download bouncycastle
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: certeasy-bouncycastle
           path: ~/.m2/repository/org/certeasy/certeasy-bouncycastle
@@ -136,7 +136,7 @@ jobs:
         run: |
           ./mvnw package -Pnative -Dquarkus.native.container-build=true
       - name: Upload certeasy-binary
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: certeasy-binary
           path: ./target/certeasy-bke
@@ -151,7 +151,7 @@ jobs:
       - uses: actions/checkout@v3
         name: Git checkout
       - name: Download certeasy-binary
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: certeasy-binary
           path: ./
@@ -170,6 +170,24 @@ jobs:
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
         with:
           context: .
-          push: true
+          push: false
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:test
           labels: ${{ steps.meta.outputs.labels }}
+
+  api-tests:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    needs: [ "build-binary" ]
+    steps:
+      - uses: actions/checkout@v3
+        name: Git checkout
+      - name: Download certeasy-binary
+        uses: actions/download-artifact@v3
+        with:
+          name: certeasy-binary
+          path: ./
+      - name: Run API tests
+        run: echo "Hello world"
+
