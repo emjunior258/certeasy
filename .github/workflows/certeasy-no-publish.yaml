@@ -139,7 +139,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: certeasy-binary
-          path: ./target/certeasy-bke
+          path: ./target/**-runner
 
   build-image:
     runs-on: ubuntu-latest
@@ -179,7 +179,7 @@ jobs:
     permissions:
       contents: read
       packages: write
-    needs: [ "build-binary" ]
+    needs: [ "build-binary", "build-image"]
     steps:
       - uses: actions/checkout@v3
         name: Git checkout
