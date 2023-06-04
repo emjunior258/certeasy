@@ -3,6 +3,7 @@ package org.certeasy.backend.issuer.rest;
 import org.certeasy.*;
 import org.certeasy.backend.common.problem.ConstraintViolationProblem;
 import org.certeasy.backend.common.problem.Problem;
+import org.certeasy.backend.common.problem.ProblemResponse;
 import org.certeasy.backend.common.problem.ServerErrorProblem;
 import org.certeasy.backend.common.validation.ValidationPath;
 import org.certeasy.backend.common.validation.Violation;
@@ -51,10 +52,9 @@ public class IssuerResource {
         Optional<Response> optionalIdResponse = this.checkIssuerId(id, false);
         if(optionalIdResponse.isPresent())
             return optionalIdResponse.get();
-        Set<Violation> violationSet = new HashSet<>(spec.validate(ValidationPath.of("body")));
+        Set<Violation> violationSet = spec.validate(ValidationPath.of("body"));
         if(!violationSet.isEmpty())
-            return Response.status(422).entity(new ConstraintViolationProblem(violationSet))
-                    .build();
+            return ProblemResponse.constraintViolations(violationSet);
         CertificateAuthoritySubject subject = new CertificateAuthoritySubject(
                 spec.name(),
                 spec.geographicAddressInfo().
@@ -73,10 +73,9 @@ public class IssuerResource {
         Optional<Response> optionalIdResponse = this.checkIssuerId(id, false);
         if(optionalIdResponse.isPresent())
             return optionalIdResponse.get();
-        Set<Violation> violationSet = new HashSet<>(pem.validate(ValidationPath.of("body")));
+        Set<Violation> violationSet = pem.validate(ValidationPath.of("body"));
         if(!violationSet.isEmpty())
-            return Response.status(422).entity(new ConstraintViolationProblem(violationSet))
-                    .build();
+            return ProblemResponse.constraintViolations(violationSet);
         try{
             Certificate certificate = context.pemCoder().decodeCertificate(pem.certFile(),
                     pem.keyFile());
@@ -112,34 +111,49 @@ public class IssuerResource {
         Optional<Response> optionalIdResponse = this.checkIssuerId(issuerId, false);
         if(optionalIdResponse.isPresent())
             return optionalIdResponse.get();
-        Set<Violation> violationSet = new HashSet<>();
-        violationSet.addAll(ref.validate(ValidationPath.of("body")));
+        Set<Violation> violationSet = ref.validate(ValidationPath.of("body"));
         if(!violationSet.isEmpty())
-            return Response.status(422).entity(new ConstraintViolationProblem(violationSet))
-                    .build();
-
+            return ProblemResponse.constraintViolations(violationSet);
         Optional<CertIssuer> optionalCertIssuer = registry.getById(ref.issuerId());
+        //Issuer not found
         if(optionalCertIssuer.isEmpty()){
-            //TODO: Issuer not resolved
+            return ProblemResponse.constraintViolation(
+                    new Violation("body.issuer_id", ViolationType.STATE,
+                            "not-found",
+                            "No issuer found with a matching Id: "+ref.issuerId()
+                    ));
         }
         CertIssuer certIssuer = optionalCertIssuer.get();
         Optional<StoredCert> optionalStoredCert = certIssuer.listCerts().stream()
                 .filter(cert -> cert.getCertificate().getSerial()
                 .equals(issuerId))
                 .findAny();
+        //Certificate not found
         if(optionalStoredCert.isEmpty()){
-            //TODO: Certificate not found
+            return ProblemResponse.constraintViolation(
+                    new Violation("body.serial", ViolationType.STATE,
+                            "not-found",
+                            "No certificate found with a matching serial: "+ref.serial()
+                    ));
         }
-
-        //TODO: Implement
-        throw new UnsupportedOperationException();
+        Certificate certificate = optionalStoredCert.get().getCertificate();
+        //Certificate not a CA
+        if(!certificate.getBasicConstraints().ca()){
+            return ProblemResponse.constraintViolation(
+                    new Violation("body.serial", ViolationType.STATE,
+                            "not-ca",
+                            "The referenced certificate is not a CA: "+ref.serial()
+                    ));
+        }
+        registry.add(issuerId, certificate);
+        return Response.noContent().build();
 
     }
 
     private Optional<Response> checkIssuerId(String issuerId, boolean mustExist){
         Set<Violation> violationSet = new HashSet<>();
         if(!ID_PATTERN.matcher(issuerId).matches())
-            violationSet.add(new Violation("path.issuerId", ViolationType.FORMAT,
+            violationSet.add(new Violation("path.issuerId", ViolationType.PATTERN,
                     "issuerId does not match regular expression: "+ ID_REGEX));
         if(mustExist && !registry.exists(issuerId)){
             LOGGER.warn("Issuer not found: " +  issuerId);

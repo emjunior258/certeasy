@@ -420,7 +420,7 @@ paths:
           schema:
             type: string
         - $ref: "#/components/parameters/IssuerId"
-        
+
       responses:
         200:
           description: Certificate Information Retrieved successfully
@@ -446,7 +446,7 @@ paths:
           schema:
             type: string
         - $ref: "#/components/parameters/IssuerId"
-        
+
       responses:
         204:
           description: Certificate deleted successfully
@@ -456,7 +456,7 @@ paths:
           $ref: '#/components/responses/CertOrIssuerNotFound'
         500:
           $ref: "#/components/responses/ServerError"
-      
+
   /issuers/{issuerId}/certificates/{serial}/files:
     get:
       summary: Get Certificate files
@@ -1030,8 +1030,8 @@ components:
           description: |
             An absolute URI that identifies the specific occurrence of the problem.
             It may or may not yield further information if dereferenced.
-            
-            
+    
+
     ConstraintViolation:
       description: Represents a violation of a constraint
       properties:
@@ -1071,14 +1071,14 @@ components:
           properties:
             violations:
               type: array
-              items: 
+              items:
                 $ref: "#/components/schemas/ConstraintViolation"
         - required:
             - type
             - title
             - detail
             - violations
-                  
+
 
   parameters:
 
@@ -1088,7 +1088,7 @@ components:
       description: The serial number of the certificate
       required: true
       schema:
-        type: string    
+        type: string
 
     IssuerId:
       name: issuerId
@@ -1121,7 +1121,7 @@ components:
                   - field: body.address
                     type: required
                     message: address must not be null nor empty
-  
+
     IssuerConstraintViolation:
       description: Constraint violation
       content:
@@ -1155,7 +1155,7 @@ components:
                 detail: The request contains one or more constraint violations
                 status: 422
                 violations:
-                  - field: body.issuerId
+                  - field: body.issuer_id
                     type: required
                     message: issuerId must not be null nor empty
                   - field: body.serial
@@ -1181,10 +1181,10 @@ components:
                 detail: The request contains one or more constraint violations
                 status: 422
                 violations:
-                  - field: body.issuerId
+                  - field: body.issuer_id
                     type: state
                     sub_type: not-found
-                    message: There is no issuerId with a matching serial
+                    message: There is no issuer with a matching serial
 
             cert-not-ca:
               value:
@@ -1193,11 +1193,11 @@ components:
                 detail: The request contains one or more constraint violations
                 status: 422
                 violations:
-                  - field: body.issuerId
+                  - field: body.issuer_id
                     type: state
                     sub_type: not-ca
                     message: The referenced certificate is not a CA
-            
+
 
     IssuerPemConstraintViolation:
       description: Constraint violation
@@ -1358,5 +1358,3 @@ components:
                 title: Not found
                 status: 404
                 detail: There is no certificate with a matching serial
-
-        
