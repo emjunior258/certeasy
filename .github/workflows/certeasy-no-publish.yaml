@@ -141,7 +141,7 @@ jobs:
           name: certeasy-binary
           path: target/*-runner
 
-  build-docker-image:
+  build-image:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -149,7 +149,7 @@ jobs:
     defaults:
       run:
         working-directory: ./certeasy-backend-app
-    needs: ["build-core", "build-bouncycastle"]
+    needs: ["build-binary"]
     steps:
       - uses: actions/checkout@v3
         name: Git checkout
