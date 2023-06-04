@@ -1,4 +1,4 @@
-package org.certeasy.backend.issuer.rest;
+package org.certeasy.backend.issuer;
 
 public enum IssuerType {
     ROOT, SUB_CA

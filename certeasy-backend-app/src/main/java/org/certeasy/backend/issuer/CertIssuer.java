@@ -79,13 +79,16 @@ public class CertIssuer {
     }
 
     public Optional<Certificate> getCertificate() {
-        if(!hasCertificate())
-            return Optional.empty();
-        if(certificate!=null)
-            return Optional.of(certificate);
+        this.loadCertIfNotYet();
+        return Optional.ofNullable(certificate);
+    }
+
+
+    private void loadCertIfNotYet() {
+        if(certificate!=null || !hasCertificate())
+            return;
         Optional<StoredCert> storedCert = store.getCert(serial);
         storedCert.ifPresent(cert -> this.certificate = cert.getCertificate());
-        return Optional.ofNullable(certificate);
     }
 
     private void writeSerial(){
@@ -104,15 +107,16 @@ public class CertIssuer {
         if(spec==null)
             throw new IllegalArgumentException("spec MUST not be null");
         if(disabled)
-            throw new IllegalStateException("issuerId has been permanently disabled");
+            throw new IllegalStateException("issuer has been permanently disabled");
         if(!hasCertificate())
-            throw new IllegalStateException("issuerId doesn't have a certificate to sign with");
-        if(certificate.getBasicConstraints().ca())
-            throw new IllegalStateException("issuerId certificate is not CA");
+            throw new IllegalStateException("issuer doesn't have a certificate to sign with");
+        this.loadCertIfNotYet();
+        if(!certificate.getBasicConstraints().ca())
+            throw new IllegalStateException("issuer certificate is not CA");
         Certificate issuedCert = context.generator().generate(spec, certificate);
         LOGGER.info("Issued certificate with serial: {}", issuedCert.getSerial());
         this.store.put(issuedCert);
-        return certificate;
+        return issuedCert;
     }
 
     public void disable(){

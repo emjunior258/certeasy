@@ -810,10 +810,10 @@ components:
           type: string
           description: The cryptography strength of the key-pair to be generated
           enum:
-            - Low
-            - Medium
-            - High
-            - Very-High
+            - LOW
+            - MEDIUM
+            - HIGH
+            - VERY_HIGH
 
 
     BaseCertificateRequestWithAddress:
