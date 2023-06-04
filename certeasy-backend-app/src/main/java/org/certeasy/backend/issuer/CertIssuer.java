@@ -103,6 +103,10 @@ public class CertIssuer {
         return store.listStored();
     }
 
+    public Optional<StoredCert> getIssuedCert(String serial){
+        return this.store.getCert(serial);
+    }
+
     public Certificate issueCert(CertificateSpec spec) {
         if(spec==null)
             throw new IllegalArgumentException("spec MUST not be null");

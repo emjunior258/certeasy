@@ -11,6 +11,8 @@ import org.certeasy.certspec.CertificateAuthoritySubject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Path("/api/issuers/{issuerId}/certificates")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -20,8 +22,14 @@ public class CertificatesResource extends BaseResource {
     @GET
     public Response list(@PathParam("issuerId") String issuerId){
         return this.checkIssuerExistsThen(issuerId, (issuer) -> {
-            //TODO: Implement: Return List of CertSummaryInfo
-            throw new UnsupportedOperationException();
+            Set<IssuedCertInfo> issuedCertInfoSet =  issuer.listCerts().stream().map(storedCert -> {
+                Certificate cert = storedCert.getCertificate();
+                return new IssuedCertInfo(cert.getDistinguishedName().getCommonName(),
+                        cert.getSerial(),
+                        cert.getBasicConstraints().ca());
+            }).collect(Collectors.toSet());
+            return Response.ok(issuedCertInfoSet)
+                    .build();
         });
     }
 
