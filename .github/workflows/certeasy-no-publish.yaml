@@ -139,16 +139,13 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: certeasy-binary
-          path: target/*-runner
+          path: ./target/certeasy-bke
 
   build-image:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
-    defaults:
-      run:
-        working-directory: ./certeasy-backend-app
     needs: ["build-binary"]
     steps:
       - uses: actions/checkout@v3
@@ -157,7 +154,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: certeasy-binary
-          path: binary/
+          path: ./
       - name: Registry login
         uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
         with:
