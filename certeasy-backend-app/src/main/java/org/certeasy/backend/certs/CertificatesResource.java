@@ -51,6 +51,16 @@ public class CertificatesResource extends BaseResource {
         });
     }
 
+
+    @GET
+    @Path("/certificates/{serial}")
+    public Response getCertInfo(@PathParam("issuerId") String issuerId, @PathParam("serial") String serial){
+
+        //TODO: Implement
+        throw new UnsupportedOperationException();
+
+    }
+
     @GET
     @Path("/certificates/{serial}/files")
     public Response downloadCertFiles(@PathParam("issuerId") String issuerId, @PathParam("serial") String serial){
