@@ -134,13 +134,15 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_BACKEND_TOKEN }}
       - name: Build binary
         run: |
-          ls -la target
           ./mvnw package -Pnative -Dquarkus.native.container-build=true
+          ls -la target
       - name: Upload certeasy-binary
         uses: actions/upload-artifact@v3
         with:
           name: certeasy-binary
-          path: target/**-runner
+          path: | 
+            target/**-runner
+            target/certeasy-backend-**-runner
 
   build-image:
     runs-on: ubuntu-latest
