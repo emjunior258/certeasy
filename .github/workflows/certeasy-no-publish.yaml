@@ -61,7 +61,7 @@ jobs:
     permissions:
       contents: read
       packages: write
-    needs: ["certeasy-core"]
+    needs: ["build-core"]
     steps:
       - uses: actions/checkout@v3
         name: Git checkout
@@ -95,7 +95,7 @@ jobs:
     defaults:
       run:
         working-directory: ./certeasy-backend-app
-    needs: ["certeasy-core", "certeasy-bouncycastle"]
+    needs: ["build-core", "build-bouncycastle"]
     steps:
       - uses: actions/checkout@v3
         name: Git checkout
