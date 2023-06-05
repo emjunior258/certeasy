@@ -143,6 +143,7 @@ jobs:
           path: | 
             target/**-runner
             target/certeasy-backend-**-runner
+            target/certeasy-backend-app-1.0.0-SNAPSHOT-runner
 
   build-image:
     runs-on: ubuntu-latest
