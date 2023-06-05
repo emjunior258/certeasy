@@ -11,6 +11,7 @@ import org.certeasy.backend.persistence.IssuerRegistry;
 import org.jboss.logging.Logger;
 
 import javax.inject.Inject;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.HashSet;
 import java.util.Optional;
@@ -46,10 +47,10 @@ public abstract class BaseResource {
             return optionalResponse.get();
         if(registry.exists(issuerId)){
             LOGGER.warn("Issuer id taken: " +  issuerId);
-            return Response.status(409).entity(
-                            new Problem("/problems/issuerId/id-taken",
+            return Response.status(409).entity(new Problem("/problems/issuerId/id-taken",
                                     "Issuer ID Taken", 409,
                                     "There is already an issuerId with the provided ID: " + issuerId))
+                    .type(MediaType.APPLICATION_JSON_TYPE)
                     .build();
         }
         return operation.get();
@@ -62,10 +63,11 @@ public abstract class BaseResource {
         Optional<CertIssuer> issuer = registry.getById(issuerId);
         if(issuer.isEmpty()){
             LOGGER.warn("Issuer not found: " +  issuerId);
-            return Response.status(409).entity(
-                            new Problem("/problems/issuer/not-found",
+            return Response.status(404).entity(
+                    new Problem("/problems/issuer/not-found",
                                     "Issuer not found", 404,
                                     "There no issuer with a matching ID: " + issuerId))
+                    .type(MediaType.APPLICATION_JSON_TYPE)
                     .build();
         }
         return operation.getResponse(issuer.get());
@@ -85,37 +87,5 @@ public abstract class BaseResource {
         return Optional.of(ProblemResponse.constraintViolations(
                 violationSet));
     }
-
-
-    /*
-    public Response checkIssuerThen(String issuerId, boolean mustExist, IssuerOperation operation){
-        Set<Violation> violationSet = new HashSet<>();
-        if(!ID_PATTERN.matcher(issuerId).matches())
-            violationSet.add(new Violation("path.issuerId", ViolationType.PATTERN,
-                    "issuerId does not match regular expression: "+ ID_REGEX));
-        if(mustExist && !registry.exists(issuerId)){
-            LOGGER.warn("Issuer not found: " +  issuerId);
-            return Response.status(409).entity(
-                            new Problem("/problems/issuer/not-found",
-                                    "Issuer not found", 404,
-                                    "There no issuer with a matching ID: " + issuerId))
-                    .build();
-        }
-        if(!mustExist && registry.exists(issuerId)){
-            LOGGER.warn("Issuer id taken: " +  issuerId);
-            return Response.status(409).entity(
-                            new Problem("/problems/issuerId/id-taken",
-                                    "Issuer ID Taken", 409,
-                                    "There is already an issuerId with the provided ID: " + issuerId))
-                    .build();
-        }
-        if(!violationSet.isEmpty()) {
-            return Response.status(422).entity(
-                            new ConstraintViolationProblem(violationSet))
-                    .build();
-        }
-        return operation.getResponse(registry.getById(issuerId)
-                .orElse(null));
-    }*/
 
 }

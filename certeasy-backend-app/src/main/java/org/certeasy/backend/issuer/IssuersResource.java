@@ -2,6 +2,7 @@ package org.certeasy.backend.issuer;
 
 import org.certeasy.*;
 import org.certeasy.backend.common.BaseResource;
+import org.certeasy.backend.common.CertPEM;
 import org.certeasy.backend.common.SubCaSpec;
 import org.certeasy.backend.common.problem.ConstraintViolationProblem;
 import org.certeasy.backend.common.problem.ProblemResponse;
@@ -9,8 +10,6 @@ import org.certeasy.backend.common.problem.ServerErrorProblem;
 import org.certeasy.backend.common.validation.ValidationPath;
 import org.certeasy.backend.common.validation.Violation;
 import org.certeasy.backend.common.validation.ViolationType;
-import org.certeasy.backend.issuer.CertIssuer;
-import org.certeasy.backend.persistence.IssuerRegistry;
 import org.certeasy.backend.persistence.StoredCert;
 import org.certeasy.certspec.CertificateAuthoritySpec;
 import org.certeasy.certspec.CertificateAuthoritySubject;
@@ -79,7 +78,7 @@ public class IssuersResource extends BaseResource {
 
     @POST
     @Path("/{issuerId}/cert-pem")
-    public Response createFromPem(@PathParam("issuerId") String issuerId, IssuerCertPEM pem){
+    public Response createFromPem(@PathParam("issuerId") String issuerId, CertPEM pem){
         return this.checkIssuerNotExistsThen(issuerId,  ()->{
             Set<Violation> violationSet = pem.validate(ValidationPath.of("body"));
             if(!violationSet.isEmpty())
