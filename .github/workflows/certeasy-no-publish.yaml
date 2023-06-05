@@ -135,7 +135,8 @@ jobs:
       - name: Build binary
         run: |
           ./mvnw package -Pnative -Dquarkus.native.container-build=true
-          ls -la target
+      - name: list files
+        run: ls -la target
       - name: Upload certeasy-binary
         uses: actions/upload-artifact@v3
         with:
