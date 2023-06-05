@@ -136,15 +136,16 @@ jobs:
         run: |
           ./mvnw package -Pnative -Dquarkus.native.container-build=true
       - name: list files
-        run: ls -la target
+        run: |
+          ls -la target
+          echo "targetDirectory=$(pwd)" >> $GITHUB_ENV
       - name: Upload certeasy-binary
         uses: actions/upload-artifact@v3
         with:
           name: certeasy-binary
-          path: | 
-            target/**-runner
-            target/certeasy-backend-**-runner
+          path: |
             target/certeasy-backend-app-1.0.0-SNAPSHOT-runner
+            ${{ env.artifactPath }}/certeasy-backend-app-1.0.0-SNAPSHOT-runner
 
   build-image:
     runs-on: ubuntu-latest
