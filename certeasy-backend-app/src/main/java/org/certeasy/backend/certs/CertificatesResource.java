@@ -4,15 +4,23 @@ package org.certeasy.backend.certs;
 import org.certeasy.Certificate;
 import org.certeasy.KeyStrength;
 import org.certeasy.backend.common.BaseResource;
+import org.certeasy.backend.common.CertPEM;
 import org.certeasy.backend.common.SubCaSpec;
+import org.certeasy.backend.common.cert.NotFoundProblem;
+import org.certeasy.backend.common.problem.ProblemResponse;
+import org.certeasy.backend.issuer.CertIssuer;
+import org.certeasy.backend.persistence.StoredCert;
 import org.certeasy.certspec.CertificateAuthoritySpec;
 import org.certeasy.certspec.CertificateAuthoritySubject;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Path("/api/issuers/{issuerId}/certificates")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -61,7 +69,7 @@ public class CertificatesResource extends BaseResource {
 
 
     @GET
-    @Path("/certificates/{serial}")
+    @Path("/{serial}")
     public Response getCertInfo(@PathParam("issuerId") String issuerId, @PathParam("serial") String serial){
 
         //TODO: Implement
@@ -70,12 +78,33 @@ public class CertificatesResource extends BaseResource {
     }
 
     @GET
-    @Path("/certificates/{serial}/files")
-    public Response downloadCertFiles(@PathParam("issuerId") String issuerId, @PathParam("serial") String serial){
+    @Path("/{serial}/pem")
+    public Response getCertPem(@PathParam("issuerId") String issuerId, @PathParam("serial") String serial){
+        return this.checkIssuerExistsThen(issuerId, issuer -> checkCertExistsThen(issuer, serial, cert -> Response.ok(
+                new CertPEM(cert.getCertPem(), cert.getKeyPem()))
+                .build()));
+    }
 
-        //TODO: Implement
-        throw new UnsupportedOperationException();
+    @GET
+    @Path("/{serial}/der")
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response getCertDER(@PathParam("issuerId") String issuerId, @PathParam("serial") String serial){
+        return this.checkIssuerExistsThen(issuerId, issuer -> checkCertExistsThen(issuer, serial, cert -> {
+            byte[] encodedBytes = Base64.getEncoder().encode(cert.getCertificate().getDERBytes());
+            String encodedContent = new String(encodedBytes, StandardCharsets.UTF_8);
+            return Response.ok(encodedContent).build();
+        }));
+    }
 
+    private Response checkCertExistsThen(CertIssuer issuer, String serial, StoredCertOperation operation) {
+        Optional<StoredCert> issuedCertOptional = issuer.getIssuedCert(serial);
+        if(issuedCertOptional.isEmpty()){
+            return ProblemResponse.fromProblem(new NotFoundProblem(
+                    "/problems/certificate/not-found",
+                    "Certificate not found",
+                    "There is no certificate with matching serial: "+serial));
+        }
+        return operation.getResponse(issuedCertOptional.get());
     }
 
 }
