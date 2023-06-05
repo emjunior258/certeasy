@@ -114,14 +114,18 @@ jobs:
         run: mvn clean test --batch-mode -Dmaven.repo.local=.m2/repository
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Archive code coverage results
-        uses: actions/upload-artifact@v3
-        with:
-          name: code-coverage-report
-          path: target/jacoco-report/jacoco.xml
+#       - name: Archive code coverage results
+#         uses: actions/upload-artifact@v3
+#         with:
+#           name: code-coverage-report
+#           path: target/jacoco-report/jacoco.xml
 
       - name: view directory
-        run: pwd && ls -la
+        run: |
+            pwd && ls -la
+            ls target
+            ls target/jacoco-report
+            ls target/surefire-reports
 
       - name: Test Reporter
         uses: dorny/test-reporter@v1.6.0
