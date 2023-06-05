@@ -112,6 +112,8 @@ jobs:
 
       - name: Maven Test
         run: mvn clean test --batch-mode -Dmaven.repo.local=.m2/repository
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Test Reporter
         uses: dorny/test-reporter@v1.6.0
         if: success() || failure()
