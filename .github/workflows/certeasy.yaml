@@ -138,4 +138,15 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          
+      - name: Install dependencies and run integration tests
+        run: |
+          docker run -it --rm \
+            -v "$(pwd)/certeasy-api-tests:/application/certeasy-api-tests" \
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }} \
+            pip install -r /application/certeasy-api-tests/requirements.txt && \
+            pytest /application/certeasy-api-tests/tests
+      
+      
+      
 
