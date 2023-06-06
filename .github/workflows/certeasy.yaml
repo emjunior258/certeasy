@@ -111,14 +111,17 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
 
       - name: Maven Test
-        run: mvn clean test --batch-mode -Dmaven.repo.local=.m2/repository
+        run: mvn clean test --batch-mode
+#         -Dmaven.repo.local=~/.m2/
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Archive code coverage results
+      - name: Archive Test Reports
         uses: actions/upload-artifact@v3
         with:
-          name: code-coverage-report
-          path: target/jacoco-report/jacoco.xml
+          name: target
+          path: |
+            ${{ github.workspace }}/target/jacoco-report
+            ${{ github.workspace }}/target/surefire-reports
 
       - name: view directory
         run: |
@@ -127,15 +130,15 @@ jobs:
             ls target/jacoco-report
             ls target/surefire-reports
 
-      - name: Test Reporter
-        uses: dorny/test-reporter@v1.6.0
-        if: success() || failure()
-        with:
-            artifact: code-coverage-report
-            name: Jacoco or Surefire Tests
-            path: '*.xml'
-#             path: target/surefire-reports/TEST-*.xml
-            reporter: java-junit
+#       - name: Test Reporter
+#         uses: dorny/test-reporter@v1.6.0
+#         if: success() || failure()
+#         with:
+#             artifact: code-coverage-report
+#             name: Jacoco or Surefire Tests
+#             path: '*.xml'
+# #             path: target/surefire-reports/TEST-*.xml
+#             reporter: java-junit
 
       - name: Maven build
         run: mvn --batch-mode package -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=certeasy-backend
