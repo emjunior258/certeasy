@@ -51,13 +51,13 @@ jobs:
             path: certeasy-core/target/surefire-reports
             retention-days: 1
 
-    - name: Test Reporter
-      uses: dorny/test-reporter@v1.6.0
-      if: success() || failure()
-      with:
-          name: Core Test Results
-          path: certeasy-core/target/surefire-reports/TEST-*.xml
-          reporter: java-junit
+      - name: Test Reporter
+        uses: dorny/test-reporter@v1.6.0
+        if: success() || failure()
+        with:
+            name: Core Test Results
+            path: certeasy-core/target/surefire-reports/TEST-*.xml
+            reporter: java-junit
       - name: Maven build
         run: mvn --batch-mode package -DskipTests -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=certeasy-core
         env:
