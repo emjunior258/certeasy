@@ -176,7 +176,7 @@ jobs:
           name: image-tar
           path: /tmp/${{ env.IMAGE_NAME }}.tar
 
-  c:
+  run-api-tests:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -184,7 +184,7 @@ jobs:
     needs: [ "build-binary", "build-image"]
     steps:
       - uses: actions/checkout@v3
-        name: Git checkousst
+        name: Git checkout
       - name: Download certeasy-binary
         uses: actions/download-artifact@v3
         with:
