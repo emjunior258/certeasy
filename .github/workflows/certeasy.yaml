@@ -84,6 +84,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+      checks: write
     defaults:
       run:
         working-directory: ./certeasy-backend-app
