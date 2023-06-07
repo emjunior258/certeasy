@@ -143,8 +143,7 @@ jobs:
         with:
           name: certeasy-binary
           path: |
-            certeasy-backend-app/target/certeasy-backend-app-1.0.0-SNAPSHOT-runner
-            certeasy-backend-app/target/certeasy-backend-app-1.0.0-SNAPSHOT.jar
+            certeasy-backend-app/target/certeasy-backend-app-**-runner
 
   build-image:
     runs-on: ubuntu-latest
@@ -159,7 +158,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: certeasy-binary
-          path: ./
+          path: certeasy-backend-app/target/
       - name: Generate Image metadata
         id: meta
         uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
