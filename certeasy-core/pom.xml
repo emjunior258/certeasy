@@ -14,7 +14,16 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <sonar.organization>talk-code-github</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <surefire-plugin.version>3.0.0-M7</surefire-plugin.version>
     </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.9.2</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
     <distributionManagement>
         <repository>
@@ -23,5 +32,18 @@
            <url>https://maven.pkg.github.com/emjunior258/certeasy</url>
         </repository>
   </distributionManagement>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${surefire-plugin.version}</version>
+        <configuration>
+          <systemPropertyVariables>
+            <maven.home>${maven.home}</maven.home>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>
