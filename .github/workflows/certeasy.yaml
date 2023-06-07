@@ -120,8 +120,8 @@ jobs:
         with:
           name: target
           path: |
-            ${{ jobs.certeasy-backend.steps.working-directory }}/target/jacoco-report
-            ${{ jobs.certeasy-backend.steps.working-directory }}/target/surefire-reports
+            ${{ github.workspace }}/certeasy-backend-app/target/jacoco-report
+            ${{ github.workspace }}/certeasy-backend-app/target/surefire-reports
 
       - name: view directory
         run: |
@@ -136,7 +136,7 @@ jobs:
         with:
             name: Test Results
 #             artifact: target
-            path: ${{ jobs.certeasy-backend.steps.working-directory }}/target/surefire-reports/TEST-*.xml
+            path: ${{ github.workspace }}/certeasy-backend-app/target/surefire-reports/TEST-*.xml
             reporter: java-junit
 #             java-version: 17
 
