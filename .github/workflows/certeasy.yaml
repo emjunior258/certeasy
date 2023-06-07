@@ -130,15 +130,15 @@ jobs:
             ls target/jacoco-report
             ls target/surefire-reports
 
-#       - name: Test Reporter
-#         uses: dorny/test-reporter@v1.6.0
-#         if: success() || failure()
-#         with:
-#             artifact: code-coverage-report
-#             name: Jacoco or Surefire Tests
-#             path: '*.xml'
-# #             path: target/surefire-reports/TEST-*.xml
-#             reporter: java-junit
+      - name: Test Reporter
+        uses: dorny/test-reporter@v1.6.0
+        if: success() || failure()
+        with:
+            name: Test Results
+#             artifact: target
+            path: ${{ github.workspace }}/target/surefire-reports/TEST-*.xml
+            reporter: java-junit
+#             java-version: 17
 
       - name: Maven build
         run: mvn --batch-mode package -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=certeasy-backend
