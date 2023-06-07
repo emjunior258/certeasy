@@ -143,8 +143,8 @@ jobs:
         with:
           name: certeasy-binary
           path: |
-            target/certeasy-backend-app-1.0.0-SNAPSHOT-runner
-            target/certeasy-backend-app-1.0.0-SNAPSHOT.jar
+            certeasy-backend-app/target/certeasy-backend-app-1.0.0-SNAPSHOT-runner
+            certeasy-backend-app/target/certeasy-backend-app-1.0.0-SNAPSHOT.jar
 
   build-image:
     runs-on: ubuntu-latest
