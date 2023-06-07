@@ -138,14 +138,13 @@ jobs:
       - name: list files
         run: |
           ls -la target
-          echo "targetDirectory=$(pwd)" >> $GITHUB_ENV
       - name: Upload certeasy-binary
         uses: actions/upload-artifact@v3
         with:
           name: certeasy-binary
           path: |
             target/certeasy-backend-app-1.0.0-SNAPSHOT-runner
-            ${{ env.artifactPath }}/certeasy-backend-app-1.0.0-SNAPSHOT-runner
+            target/certeasy-backend-app-1.0.0-SNAPSHOT.jar
 
   build-image:
     runs-on: ubuntu-latest
