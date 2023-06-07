@@ -124,13 +124,6 @@ jobs:
             certeasy-backend-app/target/jacoco-report
             certeasy-backend-app/target/surefire-reports
 
-      - name: view directory
-        run: |
-            pwd && ls -la
-            ls target
-            ls target/jacoco-report
-            ls target/surefire-reports
-
       - name: Test Reporter
         uses: dorny/test-reporter@v1.6.0
         if: success() || failure()
@@ -143,7 +136,7 @@ jobs:
         if: success() || failure()
         with:
             name: Test Results
-            path: certeasy-backend-app/target/jacoco-reports/jacoco.xml
+            path: certeasy-backend-app/target/jacoco-report/jacoco.xml
             reporter: java-junit
 
       - name: Maven build
