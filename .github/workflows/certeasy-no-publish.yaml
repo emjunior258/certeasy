@@ -135,9 +135,6 @@ jobs:
       - name: Build binary
         run: |
           ./mvnw package -Pnative -Dquarkus.native.container-build=true
-      - name: list files
-        run: |
-          ls -la target
       - name: Upload certeasy-binary
         uses: actions/upload-artifact@v3
         with:
@@ -179,7 +176,7 @@ jobs:
           name: image-tar
           path: /tmp/${{ env.IMAGE_NAME }}.tar
 
-  run-api-tests:
+  c:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -187,7 +184,7 @@ jobs:
     needs: [ "build-binary", "build-image"]
     steps:
       - uses: actions/checkout@v3
-        name: Git checkout
+        name: Git checkousst
       - name: Download certeasy-binary
         uses: actions/download-artifact@v3
         with:
@@ -202,6 +199,12 @@ jobs:
         run: |
             docker load --input /tmp/${{ env.IMAGE_NAME }}.tar
             docker image ls -a
-      - name: Run API tests
-        run: echo "Hello world"
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Install dependencies
+        run: pip install -r certeasy-api-tests/requirements.txt
+      - name: Run tests
+        run: pytest certeasy-api-tests/src/tests
 
