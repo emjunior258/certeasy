@@ -158,7 +158,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: certeasy-binary
-          path: certeasy-backend-app/target/
+          path: /
       - name: Generate Image metadata
         id: meta
         uses: docker/metadata-action@v4
