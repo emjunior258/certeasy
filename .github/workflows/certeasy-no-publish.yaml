@@ -2,7 +2,7 @@ name: certeasy-no-publish
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: certeasy
 
 on:
 
@@ -172,11 +172,11 @@ jobs:
           outputs: type=docker,dest=/tmp/${{ env.IMAGE_NAME }}.tar
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:test
           labels: ${{ steps.meta.outputs.labels }}
-      - name: Upload artifact
+      - name: Upload image tar file
         uses: actions/upload-artifact@v3
         with:
-          name: test-image
-          path: ${{ env.IMAGE_NAME }}.tar
+          name: image-tar
+          path: /tmp/${{ env.IMAGE_NAME }}.tar
 
   api-tests:
     runs-on: ubuntu-latest
@@ -192,12 +192,12 @@ jobs:
         with:
           name: certeasy-binary
           path: ./
-      - name: Download docker image
+      - name: Download image tar file
         uses: actions/download-artifact@v3
         with:
-          name: test-image
+          name: image-tar
           path: /tmp
-      - name: Load docker image
+      - name: Load docker image tar
         run: |
             docker load --input /tmp/${{ env.IMAGE_NAME }}.tar
             docker image ls -a
