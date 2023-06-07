@@ -109,7 +109,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/IssuerCertPem"
+              $ref: "#/components/schemas/CertPem"
       responses:
         204:
           description: Issuer created successfully
@@ -457,11 +457,11 @@ paths:
         500:
           $ref: "#/components/responses/ServerError"
 
-  /issuers/{issuerId}/certificates/{serial}/files:
+  /issuers/{issuerId}/certificates/{serial}/pem:
     get:
-      summary: Get Certificate files
-      operationId: downloadCertificateFiles
-      description: Download Certificate files. A compressed ZIP archive will be returned.
+      summary: Get Certificate pem
+      operationId: getCertificatePem
+      description: Get the certificate files in PEM format.
       tags:
         - Certificates
       parameters:
@@ -469,14 +469,37 @@ paths:
         - $ref: "#/components/parameters/SerialNumber"
       responses:
         200:
-          description: Files retrieve successfully.
+          description: Pem retrieve successfully.
           content:
-            application/zip:
+            application/json:
               schema:
-                type: string
-                format: binary
+                $ref: "#/components/schemas/CertPem"
         404:
           $ref:  "#/components/responses/CertOrIssuerNotFound"
+        500:
+          $ref: "#/components/responses/ServerError"
+
+  /issuers/{issuerId}/certificates/{serial}/der:
+    get:
+      summary: Get Certificate DER content
+      operationId: getCertificateDer
+      description: Get the certificate DER content Base64 encoded.
+      tags:
+        - Certificates
+      parameters:
+        - $ref: "#/components/parameters/IssuerId"
+        - $ref: "#/components/parameters/SerialNumber"
+      responses:
+        200:
+          description: DER retrieved successfully.
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: Base64 encoded DER content
+
+        404:
+          $ref: "#/components/responses/CertOrIssuerNotFound"
         500:
           $ref: "#/components/responses/ServerError"
 
@@ -704,13 +727,13 @@ components:
         - dn
         - path_length
 
-    IssuerCertPem:
+    CertPem:
       type: object
-      description: Existing issuerId PEM Encoded information.
+      description: PEM Encoded Certificate information.
       properties:
         cert_file:
           type: string
-          description: The PEM encoded CA certificate
+          description: The PEM encoded certificate
         key_file:
           type: string
           description: The PEM encoded private key
