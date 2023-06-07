@@ -161,11 +161,13 @@ jobs:
           path: certeasy-backend-app/target/
       - name: Generate Image metadata
         id: meta
-        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        uses: docker/metadata-action@v4
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
       - name: Build docker image
-        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        uses: docker/build-push-action@v4
         with:
           context: .
           push: false
@@ -178,7 +180,7 @@ jobs:
           name: image-tar
           path: /tmp/${{ env.IMAGE_NAME }}.tar
 
-  api-tests:
+  run-api-tests:
     runs-on: ubuntu-latest
     permissions:
       contents: read
