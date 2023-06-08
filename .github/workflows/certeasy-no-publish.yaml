@@ -150,6 +150,7 @@ jobs:
       - name: Sonar Report
         run: |
             mvn sonar:sonar \
+            -Dsonar.coverage.jacoco.xmlReportPaths=certeasy-backend-app/target/jacoco-report/jacoco.xml \
             -Dsonar.projectKey=certeasy-backend \
             -Dsonar.branch.name=${GITHUB_REF##*/}
         env:
