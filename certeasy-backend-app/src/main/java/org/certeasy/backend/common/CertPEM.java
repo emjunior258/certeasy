@@ -1,4 +1,4 @@
-package org.certeasy.backend.issuer;
+package org.certeasy.backend.common;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.certeasy.backend.common.validation.Validable;
@@ -9,7 +9,7 @@ import org.certeasy.backend.common.validation.ViolationType;
 import java.util.HashSet;
 import java.util.Set;
 
-public record IssuerCertPEM (
+public record CertPEM(
         @JsonProperty("cert_file")
         String certFile,
 

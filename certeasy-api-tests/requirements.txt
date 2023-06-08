@@ -1,0 +1,8 @@
+jsonpath
+junit-xml
+py
+pytest
+requests
+assertpy
+precisely
+PyHamcrest==1.9.0
