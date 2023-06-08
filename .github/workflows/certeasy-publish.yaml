@@ -1,4 +1,4 @@
-name: certeasy-image
+name: certeasy-publish
 
 env:
   REGISTRY: ghcr.io
@@ -11,18 +11,14 @@ on:
       - 'certeasy-core/**'
       - 'certeasy-bouncycastle/**'
       - 'certeasy-backend-app/**'
-      - '.github/workflows/certeasy.yaml'
-
-  pull_request:
-    paths:
-      - 'certeasy-core/**'
-      - 'certeasy-bouncycastle/**'
-      - 'certeasy-backend-app/**'
-      - '.github/workflows/certeasy.yaml'
+      - '.github/workflows/certeasy-publish.yaml'
+    branches:
+      - main
+      - develop
 
 jobs:
 
-  certeasy-core:
+  build-core:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -50,7 +46,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  certeasy-bouncycastle:
+  build-bouncycastle:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -58,7 +54,7 @@ jobs:
     permissions:
       contents: read
       packages: write
-    needs: ["certeasy-core"]
+    needs: ["build-core"]
     steps:
       - uses: actions/checkout@v3
         name: Git checkout
@@ -79,7 +75,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  certeasy-backend:
+  build-binary:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -87,7 +83,7 @@ jobs:
     defaults:
       run:
         working-directory: ./certeasy-backend-app
-    needs: ["certeasy-core", "certeasy-bouncycastle"]
+    needs: ["build-core", "build-bouncycastle"]
     steps:
       - uses: actions/checkout@v3
         name: Git checkout
@@ -106,7 +102,7 @@ jobs:
       - name: Cache Maven packages
         uses: actions/cache@v3
         with:
-          path: ~/.m2
+          path: ~/.m2/repository
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Maven build
@@ -117,34 +113,51 @@ jobs:
       - name: Build binary
         run: |
           ./mvnw package -Pnative -Dquarkus.native.container-build=true
+      - name: Upload certeasy-binary
+        uses: actions/upload-artifact@v3
+        with:
+          name: certeasy-binary
+          path: |
+            certeasy-backend-app/target/certeasy-backend-app-**-runner
+
+  build-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    needs: [ "build-binary" ]
+    steps:
+      - uses: actions/checkout@v3
+        name: Git checkout
+      - name: Download certeasy-binary
+        uses: actions/download-artifact@v3
+        with:
+          name: certeasy-binary
       - name: Registry login
         uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Image metadata
+      - name: Generate Image metadata
         id: meta
-        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        uses: docker/metadata-action@v4
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-
       - name: Image build and push
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
-        if: ${{ github.event_name != 'pull_request' }}
         with:
           context: ./certeasy-backend-app
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           
-  certeasy-api-tests:
+  run-api-tests:
       runs-on: ubuntu-latest
       permissions:
         contents: read
         packages: write
-      needs: ["certeasy-core", "certeasy-bouncycastle", "certeasy-backend"]
+      needs: ["build-image"]
       steps:
         - name: Checkout code
           uses: actions/checkout@v3
@@ -156,7 +169,5 @@ jobs:
           run: pip install -r certeasy-api-tests/requirements.txt
         - name: Run tests
           run: pytest certeasy-api-tests/src/tests
-        
-      
       
 
