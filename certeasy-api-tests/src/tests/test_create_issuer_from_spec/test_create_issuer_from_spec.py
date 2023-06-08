@@ -1,5 +1,32 @@
+import requests
+import pytest
+from testcontainers.core.container import DockerContainer
 
-# dummy test
-def test_dummy():
-          i = 1 + 1
-          assert i == 2
+
+@pytest.fixture(scope="module")
+def docker_container():
+    # docker image name
+    docker_image = "certeasy:test"
+
+    # create docker container
+    container = DockerContainer(docker_image)
+    container.with_exposed_ports(8080)
+
+    # start the container
+    with container as docker_container:
+        # get the container host and port
+        host = docker_container.get_container_host_ip()
+        port = docker_container.get_exposed_port(8080)
+
+        # Pass the container details to the tests
+        yield host, port
+    # the container will automatically be stopped and removed after the yield statement
+
+
+def test_should_return_status_code(docker_container):
+    host, port = docker_container
+    try:
+        response = requests.get(url=f'https://{host}:{port}/issuers')
+        assert response.status_code == 200
+    except Exception as e:
+        pytest.fail(f"An exception occurred: {str(e)}")
