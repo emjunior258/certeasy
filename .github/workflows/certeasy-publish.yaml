@@ -155,6 +155,7 @@ jobs:
           name: target
           path: |
             certeasy-backend-app/target/surefire-reports
+            certeasy-backend-app/target/jacoco-report
           retention-days: 1
 
       - name: Test Reporter
@@ -164,12 +165,18 @@ jobs:
             name: Backend App Test Results
             path: certeasy-backend-app/target/surefire-reports/TEST-*.xml
             reporter: java-junit
-
-      - name: Maven build
-        run: mvn --batch-mode package -DskipTests -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=certeasy-backend
+      - name: Sonar Report
+        run: |
+            mvn sonar:sonar
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_BACKEND_TOKEN }}
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            SONAR_TOKEN: ${{ secrets.SONAR_BACKEND_TOKEN }}
+
+#       - name: Maven build
+#         run: mvn --batch-mode package -DskipTests -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=certeasy-backend
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#           SONAR_TOKEN: ${{ secrets.SONAR_BACKEND_TOKEN }}
       - name: Build binary
         run: |
           ./mvnw package -DskipTests -Pnative -Dquarkus.native.container-build=true
