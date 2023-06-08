@@ -148,7 +148,10 @@ jobs:
             path: certeasy-backend-app/target/surefire-reports/TEST-*.xml
             reporter: java-junit
       - name: Sonar Report
-        run: mvn sonar:sonar Dsonar.projectKey=certeasy-backend
+        run: |
+            mvn sonar:sonar \
+            -Dsonar.projectKey=certeasy-backend \
+            -Dsonar.branch.name=${GITHUB_REF##*/}
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             SONAR_TOKEN: ${{ secrets.SONAR_BACKEND_TOKEN }}
