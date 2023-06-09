@@ -8,25 +8,25 @@ def docker_container():
     # Create a Docker container
     docker_image = 'ghcr.io/certeasy:test'
 
-    # create docker container
+    # Create docker container
     container = DockerContainer(docker_image)
     container.with_exposed_ports(8080)
 
-    # start the container
+    # Start the container
     with container as docker_container:
-        # get the container host and port
+        # Get the container host and port
         host = docker_container.get_container_host_ip()
         port = docker_container.get_exposed_port(8080)
 
         # Pass the container details to the tests
         yield host, port
-    # the container will automatically be stopped and removed after the yield statement
+    # The container will automatically be stopped and removed after the yield statement
 
 
 def test_should_return_status_code(docker_container):
     host, port = docker_container
     try:
-        response = requests.get(url=f'https://{host}:{port}/issuers')
+        response = requests.get(url=f'https://{host}:{port}/issuers', verify=False)
         print(response.json)
         assert response.status_code == 200
     except Exception as e:
