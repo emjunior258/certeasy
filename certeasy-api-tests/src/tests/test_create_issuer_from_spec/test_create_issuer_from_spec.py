@@ -26,7 +26,7 @@ def docker_container():
 def test_should_return_status_code(docker_container):
     host, port = docker_container
     try:
-        response = requests.get(url=f'https://{host}:{port}/issuers', verify=False)
+        response = requests.get(url=f'http://{host}:{port}/issuers', verify=False)
         print(response.json)
         assert response.status_code == 200
     except Exception as e:
