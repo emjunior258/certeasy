@@ -16,7 +16,7 @@ def docker_container():
     with container as docker_container:
         # Get the container host and port
         host = docker_container.get_container_host_ip()
-        port = docker_container.get_exposed_port(8080)
+        port = '8080'
 
         # Pass the container details to the tests
         yield host, port
@@ -26,7 +26,7 @@ def docker_container():
 def test_should_return_status_code(docker_container):
     host, port = docker_container
     try:
-        response = requests.get(url=f'http://{host}:8080/issuers', verify=False)
+        response = requests.get(url=f'http://{host}:8080/', verify=False)
         print(response.json)
         assert response.status_code == 200
     except Exception as e:
