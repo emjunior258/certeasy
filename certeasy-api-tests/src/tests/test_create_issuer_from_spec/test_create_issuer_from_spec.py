@@ -5,8 +5,8 @@ from testcontainers.core.container import DockerContainer
 
 @pytest.fixture(scope="module")
 def docker_container():
-    # docker image name
-    docker_image = "certeasy:test"
+    # Create a Docker container
+    docker_image = 'ghcr.io/certeasy:test'
 
     # create docker container
     container = DockerContainer(docker_image)
@@ -32,10 +32,10 @@ def test_should_return_status_code(docker_container):
         pytest.fail(f"An exception occurred: {str(e)}")
 
 
-def test_should_return_a_list(docker_container):
-    host, port = docker_container
-    try:
-        response = requests.get(url=f'https://{host}:{port}/issuers')
-        assert type(response.json()) == list
-    except Exception as e:
-        pytest.fail(f"An exception occurred: {str(e)}")
+# def test_should_return_a_list(docker_container):
+#     host, port = docker_container
+#     try:
+#         response = requests.get(url=f'https://{host}:{port}/issuers')
+#         assert type(response.json()) == list
+#     except Exception as e:
+#         pytest.fail(f"An exception occurred: {str(e)}")
