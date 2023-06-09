@@ -149,15 +149,17 @@ jobs:
             reporter: java-junit
       - name: Sonar Report
         run: |
-            mvn sonar:sonar \
-            -Dsonar.coverage.jacoco.xmlReportPaths=target/jacoco-report/jacoco.xml \
+            mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
             -Dsonar.projectKey=certeasy-backend \
-            -Dsonar.branch.name=${GITHUB_REF##*/}
+            -Dsonar.branch.name=${GITHUB_REF##*/} \
+            -Pcoverage
+#             -Dsonar.coverage.jacoco.xmlReportPaths=target/jacoco-report/jacoco.xml \
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             SONAR_TOKEN: ${{ secrets.SONAR_BACKEND_TOKEN }}
       - name: Maven build
-        run: mvn --batch-mode package -DskipTests -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=certeasy-backend
+        run: mvn --batch-mode package -DskipTests
+#         -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=certeasy-backend
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_BACKEND_TOKEN }}
