@@ -27,7 +27,7 @@ def app_container():
 
 def test_api_status(app_container):
     # Make a request to the API
-    url = f'http://localhost:8000/'
+    url = f'http://localhost:8080/'
     response = requests.get(url)
 
     # Assert the response status
