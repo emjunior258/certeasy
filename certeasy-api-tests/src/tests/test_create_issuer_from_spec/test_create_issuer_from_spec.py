@@ -26,17 +26,11 @@ def docker_container():
 def test_should_return_status_code(docker_container):
     host, port = docker_container
     try:
-        response = requests.get(url=f'http://{host}:{port}/issuers', verify=False)
+        response = requests.get(url=f'http://{host}:8080/issuers', verify=False)
         print(response.json)
         assert response.status_code == 200
     except Exception as e:
         pytest.fail(f"An exception occurred: {str(e)}")
 
 
-# def test_should_return_a_list(docker_container):
-#     host, port = docker_container
-#     try:
-#         response = requests.get(url=f'https://{host}:{port}/issuers')
-#         assert type(response.json()) == list
-#     except Exception as e:
-#         pytest.fail(f"An exception occurred: {str(e)}")
+
