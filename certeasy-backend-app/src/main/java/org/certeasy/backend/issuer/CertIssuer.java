@@ -83,6 +83,12 @@ public class CertIssuer {
         return Optional.ofNullable(certificate);
     }
 
+    public void deleteIssuedCert(StoredCert storedCert){
+        if(storedCert.getCertificate().getSerial().equals(serial))
+            throw new ReadOnlyCertificateException(storedCert.getCertificate().
+                    getSerial());
+        this.store.deleteCert(storedCert.getCertificate().getSerial());
+    }
 
     private void loadCertIfNotYet() {
         if(certificate!=null || !hasCertificate())
