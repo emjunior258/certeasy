@@ -11,7 +11,7 @@ def app_container():
 
     # Define the Docker image and port
     image_name = 'ghcr.io/certeasy:test'
-    container_port = 8000
+    container_port = 8080
 
     # Start the container
     container = client.containers.run(image_name, detach=True, ports={f'{container_port}/tcp': container_port})
