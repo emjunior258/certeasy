@@ -152,7 +152,6 @@ jobs:
             mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
             -Dsonar.projectKey=certeasy-backend \
             -Dsonar.branch.name=${GITHUB_REF##*/} \
-            -Pcoverage
 #             -Dsonar.coverage.jacoco.xmlReportPaths=target/jacoco-report/jacoco.xml \
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
