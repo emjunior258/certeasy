@@ -11,6 +11,7 @@ on:
       - 'certeasy-core/**'
       - 'certeasy-bouncycastle/**'
       - 'certeasy-backend-app/**'
+      - 'certeasy-api-tests/**'
       - '.github/workflows/certeasy-publish.yaml'
     branches:
       - main
