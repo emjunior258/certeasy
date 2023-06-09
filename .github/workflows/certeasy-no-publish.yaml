@@ -35,6 +35,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+      checks: write
     steps:
       - uses: actions/checkout@v3
         name: Git checkout
@@ -44,8 +45,34 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: maven
+      - name: Maven Test
+        run: mvn clean test --batch-mode
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Archive Test Reports
+        uses: actions/upload-artifact@v3
+        with:
+            name: target
+            path: |
+                certeasy-core/target/surefire-reports
+                certeasy-core/target/jacoco-report
+      - name: Test Reporter
+        uses: dorny/test-reporter@v1.6.0
+        if: success() || failure()
+        with:
+            name: Core Test Results
+            path: certeasy-core/target/surefire-reports/TEST-*.xml
+            reporter: java-junit
+      - name: Sonar Report
+        run: |
+            mvn test org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+            -Dsonar.projectKey=certeasy-core \
+            -Dsonar.branch.name=${GITHUB_REF##*/} \
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            SONAR_TOKEN: ${{ secrets.SONAR_CORE_TOKEN }}
       - name: Maven build
-        run: mvn --batch-mode package install -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=certeasy-core
+        run: mvn --batch-mode package install -DskipTests
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_CORE_TOKEN }}
@@ -63,6 +90,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+      checks: write
     needs: ["build-core"]
     steps:
       - uses: actions/checkout@v3
@@ -78,8 +106,34 @@ jobs:
         with:
           name: certeasy-core
           path: ~/.m2/repository/org/certeasy/certeasy-core
+      - name: Maven Test
+        run: mvn clean test --batch-mode
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Archive Test Reports
+        uses: actions/upload-artifact@v3
+        with:
+            name: target
+            path: |
+                certeasy-bouncycastle/target/surefire-reports
+                certeasy-bouncycastle/target/jacoco-report
+      - name: Test Reporter
+        uses: dorny/test-reporter@v1.6.0
+        if: success() || failure()
+        with:
+            name: BouncyCastle Test Results
+            path: certeasy-backend-app/target/surefire-reports/TEST-*.xml
+            reporter: java-junit
+      - name: Sonar Report
+        run: |
+            mvn test org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+            -Dsonar.projectKey=certeasy-bouncycastle \
+            -Dsonar.branch.name=${GITHUB_REF##*/} \
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            SONAR_TOKEN: ${{ secrets.SONAR_BOUNCYCASTLE_TOKEN }}
       - name: Maven build
-        run: mvn --batch-mode package install -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=certeasy-bouncycastle
+        run: mvn --batch-mode package install -DskipTests
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_BOUNCYCASTLE_TOKEN }}
@@ -151,16 +205,14 @@ jobs:
             reporter: java-junit
       - name: Sonar Report
         run: |
-            mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+            mvn test org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
             -Dsonar.projectKey=certeasy-backend \
             -Dsonar.branch.name=${GITHUB_REF##*/} \
-#             -Dsonar.coverage.jacoco.xmlReportPaths=target/jacoco-report/jacoco.xml \
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             SONAR_TOKEN: ${{ secrets.SONAR_BACKEND_TOKEN }}
       - name: Maven build
         run: mvn --batch-mode package -DskipTests
-#         -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=certeasy-backend
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_BACKEND_TOKEN }}
