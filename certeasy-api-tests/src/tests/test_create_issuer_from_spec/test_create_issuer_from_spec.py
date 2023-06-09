@@ -1,36 +1,38 @@
+import docker
 import requests
+import time
 import pytest
-from testcontainers.core.container import DockerContainer
 
 
 @pytest.fixture(scope="module")
-def docker_container():
-    # Create a Docker container
-    docker_image = 'ghcr.io/certeasy:test'
+def app_container():
+    # Create a Docker client
+    client = docker.from_env()
 
-    # Create docker container
-    container = DockerContainer(docker_image)
-    container.with_exposed_ports(8080)
+    # Define the Docker image and port
+    image_name = 'ghcr.io/certeasy:test'
+    container_port = 8000
 
     # Start the container
-    with container as docker_container:
-        # Get the container host and port
-        host = docker_container.get_container_host_ip()
-        port = '8080'
+    container = client.containers.run(image_name, detach=True, ports={f'{container_port}/tcp': container_port})
+    print(container)
+    # Wait for the container to start
+    time.sleep(2)
 
-        # Pass the container details to the tests
-        yield host, port
-    # The container will automatically be stopped and removed after the yield statement
+    yield container
 
-
-def test_should_return_status_code(docker_container):
-    host, port = docker_container
-    try:
-        response = requests.get(url=f'http://{host}:8080/', verify=False)
-        print(response.json)
-        assert response.status_code == 200
-    except Exception as e:
-        pytest.fail(f"An exception occurred: {str(e)}")
+    # Stop and remove the container
+    container.stop()
+    container.remove()
 
 
+def test_api_status(app_container):
+    # Make a request to the API
+    url = f'http://localhost:8000/'
+    response = requests.get(url)
 
+    # Assert the response status
+    expected_status = 200
+    assert response.status_code == expected_status, f'Expected status {expected_status}, but received {response.status_code}'
+
+    # Add more assertions as needed
