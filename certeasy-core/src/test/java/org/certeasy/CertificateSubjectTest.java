@@ -3,6 +3,7 @@ package org.certeasy;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.Set;
 
@@ -33,6 +34,24 @@ public class CertificateSubjectTest {
         });
     }
 
+    @Test
+    @DisplayName("constructor must succeed if distinguished name and alternatives are provided")
+    public void mustConstructCertificateSubjectSuccessfullyWithDistinguishedNameAndAlternatives(){
+        new CertificateSubject(
+                DistinguishedName.builder()
+                        .parse("CN=John Wick, C=MZ")
+                        .build(),
+                Set.of(
+                        new SubjectAlternativeName(SubjectAlternativeNameType.DNS, "test.example.com"),
+                        new SubjectAlternativeName(SubjectAlternativeNameType.DNS, "demo.example.com")
+                ));
+    }
+
+    @Test
+    @DisplayName("constructor must succeed with zero arguments")
+    public void mustConstructCertificateSubjectWithZeroArguments(){
+        new CertificateSubject();
+    }
 
     @Test
     @DisplayName("setDistinguishedName() must change distinguishedName")
@@ -98,6 +117,27 @@ public class CertificateSubjectTest {
                 new SubjectAlternativeName(SubjectAlternativeNameType.DNS, "johnwick.com")
         ));
         assertTrue(subject.hasAlternativeNames());
+    }
+
+    @Test
+    @DisplayName("getAlternativeNames() must return all alternative names set")
+    public void getAlternativeNamesMustReturnAllAlternativeNamesSet(){
+        CertificateSubject subject =  new CertificateSubject(
+                DistinguishedName.builder()
+                        .parse("CN=John Wick, C=UK")
+                        .build());
+        subject.setAlternativeNames(Set.of(
+                new SubjectAlternativeName(SubjectAlternativeNameType.OTHER_NAME, "Baga Yaga"),
+                new SubjectAlternativeName(SubjectAlternativeNameType.DNS, "johnwick.com")
+        ));
+
+        Set<SubjectAlternativeName> nameSet = subject.getAlternativeNames();
+        assertEquals(2, nameSet.size());
+        Iterator<SubjectAlternativeName> iterator = nameSet.iterator();
+        SubjectAlternativeName san = iterator.next();
+        assertEquals(SubjectAlternativeNameType.OTHER_NAME, san.type());
+        san = iterator.next();
+        assertEquals(SubjectAlternativeNameType.DNS, san.type());
     }
 
 
