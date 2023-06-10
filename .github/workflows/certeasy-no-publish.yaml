@@ -238,6 +238,8 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: certeasy-binary
+      - name: Make binary executable
+        run: find . -name "*-runner" -exec chmod +x {} \;
       - name: Generate Image metadata
         id: meta
         uses: docker/metadata-action@v4
