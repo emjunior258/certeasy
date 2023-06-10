@@ -44,7 +44,7 @@ The cereasy project is a monorepo, with multiple sub-projects hosted under the s
 ## Build & run locally
 
 ### Build Locally
-You must have `Java17 JDK` installed in order to build locally.
+You must have `Java17 JDK` and `Docker` installed in order to build locally.
 All you need to do is to execute the `./build-local.sh` script. The script will produce a docker image tagged as `certeasy:local`.
 
 ### Run locally
