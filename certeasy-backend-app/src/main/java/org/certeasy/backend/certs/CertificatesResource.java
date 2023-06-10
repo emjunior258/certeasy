@@ -7,8 +7,10 @@ import org.certeasy.backend.common.BaseResource;
 import org.certeasy.backend.common.CertPEM;
 import org.certeasy.backend.common.SubCaSpec;
 import org.certeasy.backend.common.cert.NotFoundProblem;
+import org.certeasy.backend.common.problem.Problem;
 import org.certeasy.backend.common.problem.ProblemResponse;
 import org.certeasy.backend.issuer.CertIssuer;
+import org.certeasy.backend.issuer.ReadOnlyCertificateException;
 import org.certeasy.backend.persistence.StoredCert;
 import org.certeasy.certspec.CertificateAuthoritySpec;
 import org.certeasy.certspec.CertificateAuthoritySubject;
@@ -67,7 +69,6 @@ public class CertificatesResource extends BaseResource {
         });
     }
 
-
     @GET
     @Path("/{serial}")
     public Response getCertInfo(@PathParam("issuerId") String issuerId, @PathParam("serial") String serial){
@@ -75,6 +76,23 @@ public class CertificatesResource extends BaseResource {
         //TODO: Implement
         throw new UnsupportedOperationException();
 
+    }
+
+    @DELETE
+    @Path("/{serial}")
+    public Response delete(@PathParam("issuerId") String issuerId, @PathParam("serial") String serial){
+        return this.checkIssuerExistsThen(issuerId, issuer -> checkCertExistsThen(issuer, serial, cert -> {
+            try {
+                issuer.deleteIssuedCert(cert);
+                return Response.status(Response.Status.NO_CONTENT).build();
+            }catch (ReadOnlyCertificateException ex){
+                return ProblemResponse.fromProblem(
+                        new Problem("/problems/certificate/read-only",
+                                "Certificate Read-only",
+                                Response.Status.CONFLICT.getStatusCode(),
+                        "Certificate is read-only therefore cannot be deleted"));
+            }
+        }));
     }
 
     @GET
