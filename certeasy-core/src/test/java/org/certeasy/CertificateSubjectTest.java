@@ -3,7 +3,6 @@ package org.certeasy;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.Iterator;
 import java.util.Optional;
 import java.util.Set;
 
@@ -56,19 +55,19 @@ public class CertificateSubjectTest {
     @Test
     @DisplayName("setDistinguishedName() must change distinguishedName")
     public void setDistinguishedNameMustChangeDistinguishedName(){
-       CertificateSubject subject =  new CertificateSubject(
+        CertificateSubject subject =  new CertificateSubject(
                 DistinguishedName.builder()
                         .parse("CN=John Wick, C=UK")
                         .build());
-       subject.setDistinguishedName(
-               DistinguishedName.builder()
-                       .parse("CN=John Doe, C=US")
-                       .build());
-       DistinguishedName distinguishedName = subject.getDistinguishedName();
-       assertEquals("John Doe", distinguishedName.getCommonName());
-       Optional<RelativeDistinguishedName> countryName = distinguishedName.findFirst(SubjectAttributeType.CountryName);
-       assertTrue(countryName.isPresent());
-       assertEquals("US", countryName.get().value());
+        subject.setDistinguishedName(
+                DistinguishedName.builder()
+                        .parse("CN=John Doe, C=US")
+                        .build());
+        DistinguishedName distinguishedName = subject.getDistinguishedName();
+        assertEquals("John Doe", distinguishedName.getCommonName());
+        Optional<RelativeDistinguishedName> countryName = distinguishedName.findFirst(SubjectAttributeType.CountryName);
+        assertTrue(countryName.isPresent());
+        assertEquals("US", countryName.get().value());
     }
 
 
