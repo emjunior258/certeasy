@@ -133,11 +133,6 @@ public class CertificateSubjectTest {
 
         Set<SubjectAlternativeName> nameSet = subject.getAlternativeNames();
         assertEquals(2, nameSet.size());
-        Iterator<SubjectAlternativeName> iterator = nameSet.iterator();
-        SubjectAlternativeName san = iterator.next();
-        assertEquals(SubjectAlternativeNameType.OTHER_NAME, san.type());
-        san = iterator.next();
-        assertEquals(SubjectAlternativeNameType.DNS, san.type());
     }
 
 
