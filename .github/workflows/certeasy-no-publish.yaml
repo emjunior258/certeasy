@@ -122,7 +122,7 @@ jobs:
         if: success() || failure()
         with:
             name: BouncyCastle Test Results
-            path: certeasy-backend-app/target/surefire-reports/TEST-*.xml
+            path: certeasy-bouncycastle/target/surefire-reports/TEST-*.xml
             reporter: java-junit
       - name: Sonar Report
         run: |
