@@ -56,7 +56,7 @@ public class DateRangeTest {
     }
 
     @Test
-    @DisplayName("isWithin() must return false if date is within range")
+    @DisplayName("isWithin() must return true if date is within range")
     public void isWithinMustReturnTrueIfWithinRange() {
 
         DateRange range = new DateRange(LocalDate.of(2023, Month.JANUARY, 1),
