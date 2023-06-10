@@ -11,7 +11,7 @@ def app_container():
     # Define the Docker image and port
     image_name = 'ghcr.io/certeasy:test'
     container_port = 8080
-    host_port = 8888  # Change the host port to your desired port number
+    host_port = 8080  # Change the host port to your desired port number
 
     # Start the container
     container = client.containers.run(image_name, detach=True, ports={f'{container_port}/tcp': host_port})
@@ -38,7 +38,7 @@ def app_container():
 
 def test_api_status(app_container):
     # Make a request to the API
-    url = f'http://localhost:8888/'  # Use the host port you specified above
+    url = f'http://localhost:8080/'  # Use the host port you specified above
     response = requests.get(url)
 
     # Assert the response status
