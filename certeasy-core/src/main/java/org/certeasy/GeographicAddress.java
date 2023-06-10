@@ -1,5 +1,6 @@
 package org.certeasy;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -16,12 +17,16 @@ public record GeographicAddress(String countryIsoCode,
 
     @Override
     public Set<RelativeDistinguishedName> toRdns() {
-        return Set.of(
-                new RelativeDistinguishedName(SubjectAttributeType.CountryName, countryIsoCode),
-                new RelativeDistinguishedName(SubjectAttributeType.Province, state),
-                new RelativeDistinguishedName(SubjectAttributeType.Locality, locality),
-                new RelativeDistinguishedName(SubjectAttributeType.Street, streetAddress)
-        );
+        Set<RelativeDistinguishedName> nameSet = new HashSet<>();
+        if(countryIsoCode != null)
+            nameSet.add(new RelativeDistinguishedName(SubjectAttributeType.CountryName, countryIsoCode));
+        if(state != null)
+            nameSet.add(new RelativeDistinguishedName(SubjectAttributeType.Province, state));
+        if(locality != null)
+            nameSet.add(new RelativeDistinguishedName(SubjectAttributeType.Locality, locality));
+        if(streetAddress != null)
+            nameSet.add(new RelativeDistinguishedName(SubjectAttributeType.Street, streetAddress));
+        return nameSet;
     }
 
 
