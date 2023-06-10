@@ -454,8 +454,11 @@ paths:
           $ref: '#/components/responses/BadRequest'
         404:
           $ref: '#/components/responses/CertOrIssuerNotFound'
+        409:
+          $ref: '#/components/responses/ReadyOnlyCertificate'
         500:
           $ref: "#/components/responses/ServerError"
+
 
   /issuers/{issuerId}/certificates/{serial}/pem:
     get:
@@ -1361,6 +1364,18 @@ components:
             title: Not found
             status: 404
             detail: There is no issuerId with a matching ID
+
+    ReadyOnlyCertificate:
+      description: Certificate is ready-only
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          example:
+            type: /problems/certificate/read-only
+            title: Certificate Read-only
+            status: 409
+            detail: Certificate is read-only therefore cannot be deleted
 
     CertOrIssuerNotFound:
       description: Not found
