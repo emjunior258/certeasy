@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.time.Month;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class DateRangeTest {
@@ -36,6 +37,15 @@ public class DateRangeTest {
     }
 
     @Test
+    @DisplayName("constructor must assume start date is today when not provided")
+    public void constructorMustAssumeStartDateIsTodayWhenNotProvided() {
+        LocalDate today = LocalDate.now();
+        DateRange range = new DateRange(LocalDate.of(2023, Month.SEPTEMBER, 28));
+        LocalDate start = range.start();
+        assertEquals(today, start);
+    }
+
+    @Test
     @DisplayName("isWithin() must return false if date is outside range")
     public void isWithinMustReturnFalseIfOutOfRange() {
 
@@ -53,6 +63,16 @@ public class DateRangeTest {
                 LocalDate.of(2023, Month.SEPTEMBER, 28));
         range.isWithin(LocalDate.of(2023, Month.MARCH, 10));
 
+    }
+
+    @Test
+    @DisplayName("isWithin() must fail if date is null")
+    public void isWithinMustFailIfDateIsNull() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            DateRange range = new DateRange(LocalDate.of(2023, Month.JANUARY, 1),
+                    LocalDate.of(2023, Month.SEPTEMBER, 28));
+            range.isWithin(null);
+        });
     }
 
 }
