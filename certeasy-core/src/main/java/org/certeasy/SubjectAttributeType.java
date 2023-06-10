@@ -73,7 +73,7 @@ public enum SubjectAttributeType {
                 return attributeType;
             }
         }
-        throw new IllegalArgumentException("Unknown attribute type");
+        throw new IllegalArgumentException("Unknown attribute type with OID: "+oid);
     }
 
     public static SubjectAttributeType ofKey(String key){
