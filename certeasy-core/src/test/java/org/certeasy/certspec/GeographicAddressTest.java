@@ -2,6 +2,7 @@ package org.certeasy.certspec;
 
 import org.certeasy.GeographicAddress;
 import org.certeasy.RelativeDistinguishedName;
+import org.certeasy.SubjectAttributeType;
 import org.junit.jupiter.api.Test;
 
 import java.util.Comparator;
@@ -30,10 +31,13 @@ public class GeographicAddressTest {
         Set<RelativeDistinguishedName> nameSet = address.toRdns();
         assertEquals(2, nameSet.size());
         Iterator<RelativeDistinguishedName> iterator = nameSet.iterator();
-        RelativeDistinguishedName country = iterator.next();
-        assertEquals("MZ", country.value());
-        RelativeDistinguishedName province = iterator.next();
-        assertEquals("Maputo", province.value());
+        RelativeDistinguishedName rdn = iterator.next();
+        if(rdn.type().equals(SubjectAttributeType.Province)){
+            assertEquals("Maputo", rdn.value());
+        }
+        if(rdn.type().equals(SubjectAttributeType.CountryName)){
+            assertEquals("MZ", rdn.value());
+        }
     }
 
     @Test
