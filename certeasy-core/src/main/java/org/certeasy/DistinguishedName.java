@@ -40,7 +40,8 @@ public record DistinguishedName(Set<RelativeDistinguishedName> relativeDistingui
         if(attributeType==null)
             throw new IllegalArgumentException("attributeType MUST not be null nor empty");
         return this.relativeDistinguishedNames
-                .stream().filter(it -> it.type() == attributeType)
+                .stream().sorted(Comparator.reverseOrder())
+                .filter(it -> it.type() == attributeType)
                 .findFirst();
     }
 
@@ -48,7 +49,16 @@ public record DistinguishedName(Set<RelativeDistinguishedName> relativeDistingui
         if(attributeType==null)
             throw new IllegalArgumentException("attributeType MUST not be null nor empty");
         return this.relativeDistinguishedNames
-                .stream().filter(it -> it.type() == attributeType)
+                .stream()
+                .filter(it -> it.type() == attributeType)
+                .sorted(Comparator.reverseOrder())
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    public Set<SubjectAttributeType> getAttributeTypes(){
+        return this.relativeDistinguishedNames
+                .stream()
+                .map(RelativeDistinguishedName::type)
                 .collect(Collectors.toSet());
     }
 
@@ -85,7 +95,7 @@ public record DistinguishedName(Set<RelativeDistinguishedName> relativeDistingui
                 if(attributeArray.length!=2)
                     throw new IllegalArgumentException("Invalid RDN format: "+rdn);
                 try {
-                    SubjectAttributeType attributeType = SubjectAttributeType.ofKey(attributeArray[0]);
+                    SubjectAttributeType attributeType = SubjectAttributeType.ofKey(attributeArray[0].trim());
                     String attributeValue = attributeArray[1];
                     this.distinguishedNameSet.add(new RelativeDistinguishedName(attributeType, attributeValue));
                 }catch (IllegalArgumentException ex){

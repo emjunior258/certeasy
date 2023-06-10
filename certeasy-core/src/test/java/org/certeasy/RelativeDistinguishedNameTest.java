@@ -1,5 +1,5 @@
-import org.certeasy.RelativeDistinguishedName;
-import org.certeasy.SubjectAttributeType;
+package org.certeasy;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
