@@ -50,12 +50,15 @@ public class SubjectAttributeTypeTest {
     public void ofKeyMustReturnAttributeWithMatchingDescription(){
         SubjectAttributeType commonName = SubjectAttributeType.ofKey("commonName");
         assertNotNull(commonName);
+        assertEquals("commonName", commonName.getDescription());
         assertEquals(SubjectAttributeType.CommonName, commonName);
         SubjectAttributeType countryName = SubjectAttributeType.ofKey("countryName");
         assertNotNull(countryName);
+        assertEquals("countryName", countryName.getDescription());
         assertEquals(SubjectAttributeType.CountryName, countryName);
         SubjectAttributeType state = SubjectAttributeType.ofKey("stateOrProvinceName");
         assertNotNull(state);
+        assertEquals("stateOrProvinceName", state.getDescription());
         assertEquals(SubjectAttributeType.Province, state);
     }
 
