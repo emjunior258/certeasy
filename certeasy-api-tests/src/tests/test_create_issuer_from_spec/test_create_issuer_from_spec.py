@@ -2,6 +2,7 @@ import docker
 import requests
 import time
 import pytest
+import subprocess
 
 @pytest.fixture(scope="module")
 def app_container():
@@ -20,6 +21,11 @@ def app_container():
     # Wait for the container to start
     time.sleep(2)
 
+    # Check the container's port mapping
+    port_mapping = subprocess.check_output(["docker", "port", container.id]).decode("utf-8")
+    print("Container Port Mapping:")
+    print(port_mapping)
+
     yield container
 
     # Stop and remove the container
@@ -28,7 +34,7 @@ def app_container():
 
 def test_api_status(app_container):
     # Make a request to the API
-    url = f'http://localhost:8888/'  # Use the host port you specified above
+    url = f'http://localhost:8888/' 
     response = requests.get(url)
 
     # Assert the response status
