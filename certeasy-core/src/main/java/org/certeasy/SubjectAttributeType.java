@@ -11,18 +11,18 @@ package org.certeasy;
 public enum SubjectAttributeType {
 
     CommonName("CN", "commonName", "2.5.4.3", Integer.MAX_VALUE),
-    Surname("SN", "surname", "2.5.4.4", Integer.MAX_VALUE - 4),
-    CountryName("C", "countryName", "2.5.4.6", Integer.MAX_VALUE - 9),
-    Locality("L", "localityName", "2.5.4.7", Integer.MAX_VALUE - 11),
-    Province("ST", "stateOrProvinceName", "2.5.4.8", Integer.MAX_VALUE - 10),
-    Street("STREET", "streetAddress", "2.5.4.9", Integer.MAX_VALUE - 12),
-    OrganizationName("O",  "organizationName", "2.5.4.10", Integer.MAX_VALUE - 7),
-    OrganizationUnit("OU", "organizationalUnit", "2.5.4.11", Integer.MAX_VALUE - 8, true),
     Title("T", "title", "2.5.4.12", Integer.MAX_VALUE - 1),
     Initials("initials", "initials", "2.5.4.43", Integer.MAX_VALUE - 2),
     GivenName("G", "givenName", "2.5.4.42",  Integer.MAX_VALUE - 3, true),
+    Surname("SN", "surname", "2.5.4.4", Integer.MAX_VALUE - 4),
     TelephoneNumber("telephoneNumber", "telephoneNumber","2.5.4.20", Integer.MAX_VALUE - 5),
     UserID( "UID", "userID", "0.9.2342.19200300.100.1.1", Integer.MAX_VALUE - 6, true),
+    OrganizationName("O",  "organizationName", "2.5.4.10", Integer.MAX_VALUE - 7),
+    OrganizationUnit("OU", "organizationalUnit", "2.5.4.11", Integer.MAX_VALUE - 8, true),
+    CountryName("C", "countryName", "2.5.4.6", Integer.MAX_VALUE - 9),
+    Province("ST", "stateOrProvinceName", "2.5.4.8", Integer.MAX_VALUE - 10),
+    Locality("L", "localityName", "2.5.4.7", Integer.MAX_VALUE - 11),
+    Street("STREET", "streetAddress", "2.5.4.9", Integer.MAX_VALUE - 12),
     DomainComponent("DC", "domainComponent", "0.9.2342.19200300.100.1.25",  Integer.MAX_VALUE - 13, true);
 
     private String mnemonic;
