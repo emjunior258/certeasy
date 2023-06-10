@@ -10,12 +10,16 @@ def app_container():
     client = docker.from_env()
 
     # Define the Docker image and port
-    image_name = 'ghcr.io/emjunior258/certeasy:develop'
+    image_name = 'ghcr.io/certeasy:test'
     container_port = 8080
-    host_port = 8000  # Change the host port to your desired port number
+    host_port = 8080
 
-    # Start the container
-    container = client.containers.run(image_name, detach=True, ports={f'{container_port}/tcp': host_port})
+    # Define the volume mount
+    empty_directory = '/path/to/empty_directory'
+    volume_mount = {empty_directory: {'bind': '/work/target', 'mode': 'rw'}}
+
+    # Start the container with volume mounting and port mapping
+    container = client.containers.run(image_name, detach=True, ports={f'{container_port}/tcp': host_port}, volumes=volume_mount)
     print(container)
 
     # Wait for the container to start
@@ -40,7 +44,7 @@ def app_container():
 
 def test_api_status(app_container):
     # Make a request to the API
-    url = f'http://localhost:8000/'  # Use the host port you specified above
+    url = f'http://localhost:8080/'  #
     response = requests.get(url)
 
     # Assert the response status
