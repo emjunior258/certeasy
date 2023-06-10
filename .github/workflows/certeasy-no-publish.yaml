@@ -136,7 +136,6 @@ jobs:
         run: mvn --batch-mode package install -DskipTests
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_BOUNCYCASTLE_TOKEN }}
       - name: Upload certeasy-bouncycastle
         uses: actions/upload-artifact@v3
         with:
