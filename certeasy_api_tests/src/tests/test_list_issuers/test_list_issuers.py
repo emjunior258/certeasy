@@ -3,7 +3,7 @@ import requests
 import time
 import pytest
 
-from certeasy_api_tests.src.config import BASE_URL
+from certeasy_api_tests.src.config import BASE_URL, DOCKER_IMAGE_NAME, DOCKER_IMAGE_PORT
 
 
 @pytest.fixture(scope="module")
@@ -12,9 +12,9 @@ def app_container():
     client = docker.from_env()
 
     # Define the Docker image and port
-    image_name = 'ghcr.io/certeasy:test'
-    container_port = 8080
-    host_port = 8080
+    image_name = DOCKER_IMAGE_NAME
+    container_port = DOCKER_IMAGE_PORT
+    host_port = DOCKER_IMAGE_PORT
 
     # Define the volume mount
     empty_directory = '/path/to/empty_directory'
@@ -58,3 +58,9 @@ def test_should_return_a_list(app_container):
     response = requests.get(url=f'{BASE_URL}/issuers')
     print(response.json())
     assert type(response.json()) == list, f'Expected data type "LIST, but received {type(response.json())}'
+
+
+def test_validate_content_of_body_response(app_container):
+    # Make a request to the API
+    response = requests.get(url=f'{BASE_URL}/issuers')
+    assert "dummy test" in response.json(), f'Expected data type "LIST, but received {response.json()}'
