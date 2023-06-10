@@ -3,15 +3,16 @@ import requests
 import time
 import pytest
 
+
 @pytest.fixture(scope="module")
 def app_container():
     # Create a Docker client
     client = docker.from_env()
 
     # Define the Docker image and port
-    image_name = 'ghcr.io/certeasy:test'
+    image_name = 'ghcr.io/emjunior258/certeasy:develop'
     container_port = 8080
-    host_port = 8080  # Change the host port to your desired port number
+    host_port = 8000  # Change the host port to your desired port number
 
     # Start the container
     container = client.containers.run(image_name, detach=True, ports={f'{container_port}/tcp': host_port})
@@ -36,9 +37,10 @@ def app_container():
     container.stop()
     container.remove()
 
+
 def test_api_status(app_container):
     # Make a request to the API
-    url = f'http://localhost:8080/'  # Use the host port you specified above
+    url = f'http://localhost:8000/'  # Use the host port you specified above
     response = requests.get(url)
 
     # Assert the response status
