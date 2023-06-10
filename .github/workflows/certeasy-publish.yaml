@@ -11,6 +11,7 @@ on:
       - 'certeasy-core/**'
       - 'certeasy-bouncycastle/**'
       - 'certeasy-backend-app/**'
+      - 'certeasy-api-tests/**'
       - '.github/workflows/certeasy-publish.yaml'
     branches:
       - main
@@ -26,6 +27,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+      checks: write
     steps:
       - uses: actions/checkout@v3
         name: Git checkout
@@ -35,11 +37,36 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: maven
-      - name: Maven build
-        run: mvn --batch-mode package -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=certeasy-core
+      - name: Maven Test
+        run: mvn clean test --batch-mode
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_CORE_TOKEN }}
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Archive Test Reports
+        uses: actions/upload-artifact@v3
+        with:
+            name: target
+            path: |
+                certeasy-core/target/surefire-reports
+                certeasy-core/target/jacoco-report
+      - name: Test Reporter
+        uses: dorny/test-reporter@v1.6.0
+        if: success() || failure()
+        with:
+            name: Core Test Results
+            path: certeasy-core/target/surefire-reports/TEST-*.xml
+            reporter: java-junit
+      - name: Sonar Report
+        run: |
+            mvn test org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+            -Dsonar.projectKey=certeasy-core
+#             -Dsonar.branch.name=${GITHUB_REF##*/} \
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            SONAR_TOKEN: ${{ secrets.SONAR_CORE_TOKEN }}
+      - name: Maven build
+        run: mvn --batch-mode package -DskipTests
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Maven deploy
         run: mvn --batch-mode deploy
         if: ${{ github.event_name != 'pull_request' }}
@@ -54,6 +81,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+      checks: write
     needs: ["build-core"]
     steps:
       - uses: actions/checkout@v3
@@ -64,11 +92,36 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: maven
+      - name: Maven Test
+        run: mvn clean test --batch-mode
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Archive Test Reports
+        uses: actions/upload-artifact@v3
+        with:
+            name: target
+            path: |
+                certeasy-bouncycastle/target/surefire-reports
+                certeasy-bouncycastle/target/jacoco-report
+      - name: Test Reporter
+        uses: dorny/test-reporter@v1.6.0
+        if: success() || failure()
+        with:
+            name: BouncyCastle Test Results
+            path: certeasy-bouncycastle/target/surefire-reports/TEST-*.xml
+            reporter: java-junit
+      - name: Sonar Report
+        run: |
+            mvn test org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+            -Dsonar.projectKey=certeasy-bouncycastle
+#             -Dsonar.branch.name=${GITHUB_REF##*/} \
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            SONAR_TOKEN: ${{ secrets.SONAR_BOUNCYCASTLE_TOKEN }}
       - name: Maven build
-        run: mvn --batch-mode package -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=certeasy-bouncycastle
+        run: mvn --batch-mode package -DskipTests
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_BOUNCYCASTLE_TOKEN }}
       - name: Maven deploy
         run: mvn --batch-mode deploy
         if: ${{ github.event_name != 'pull_request' }}
@@ -80,6 +133,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+      checks: write
     defaults:
       run:
         working-directory: ./certeasy-backend-app
@@ -105,14 +159,40 @@ jobs:
           path: ~/.m2/repository
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
-      - name: Maven build
-        run: mvn --batch-mode package -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=certeasy-backend
+
+      - name: Maven Test
+        run: mvn clean test --batch-mode
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_BACKEND_TOKEN }}
+      - name: Archive Test Reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: target
+          path: |
+            certeasy-backend-app/target/surefire-reports
+            certeasy-backend-app/target/jacoco-report
+      - name: Test Reporter
+        uses: dorny/test-reporter@v1.6.0
+        if: success() || failure()
+        with:
+            name: Backend App Test Results
+            path: certeasy-backend-app/target/surefire-reports/TEST-*.xml
+            reporter: java-junit
+      - name: Sonar Report
+        run: |
+            mvn test org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+            -Dsonar.projectKey=certeasy-backend
+#             -Dsonar.branch.name=${GITHUB_REF##*/} \
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            SONAR_TOKEN: ${{ secrets.SONAR_BACKEND_TOKEN }}
+      - name: Maven build
+        run: mvn --batch-mode package -DskipTests
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Build binary
         run: |
-          ./mvnw package -Pnative -Dquarkus.native.container-build=true
+          ./mvnw package -DskipTests -Pnative -Dquarkus.native.container-build=true
       - name: Upload certeasy-binary
         uses: actions/upload-artifact@v3
         with:
@@ -151,7 +231,7 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          
+
   run-api-tests:
       runs-on: ubuntu-latest
       permissions:
@@ -169,5 +249,5 @@ jobs:
           run: pip install -r certeasy-api-tests/requirements.txt
         - name: Run tests
           run: pytest certeasy-api-tests/src/tests
-      
+
 
