@@ -26,6 +26,10 @@ def app_container():
     print("Container Port Mapping:")
     print(port_mapping)
 
+    # Print container logs for debugging
+    print("Container Logs:")
+    print(container.logs().decode('utf-8'))
+
     yield container
 
     # Stop and remove the container
