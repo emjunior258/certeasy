@@ -5,11 +5,9 @@ import org.certeasy.RelativeDistinguishedName;
 import org.certeasy.SubjectAttributeType;
 import org.junit.jupiter.api.Test;
 
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -30,14 +28,14 @@ public class GeographicAddressTest {
         GeographicAddress address = new GeographicAddress("MZ", "Maputo", null, null);
         Set<RelativeDistinguishedName> nameSet = address.toRdns();
         assertEquals(2, nameSet.size());
-        Iterator<RelativeDistinguishedName> iterator = nameSet.iterator();
-        RelativeDistinguishedName rdn = iterator.next();
-        if(rdn.type().equals(SubjectAttributeType.Province)){
-            assertEquals("Maputo", rdn.value());
-        }
-        if(rdn.type().equals(SubjectAttributeType.CountryName)){
-            assertEquals("MZ", rdn.value());
-        }
+        Map<SubjectAttributeType, String> map = nameSet.stream().collect(Collectors.toMap(RelativeDistinguishedName::type,
+                RelativeDistinguishedName::value));
+        assertTrue(map.containsKey(SubjectAttributeType.Province));
+        String province = map.get(SubjectAttributeType.Province);
+        assertEquals("Maputo", province);
+        assertTrue(map.containsKey(SubjectAttributeType.CountryName));
+        String countryName = map.get(SubjectAttributeType.CountryName);
+        assertEquals("MZ", countryName);
     }
 
     @Test
