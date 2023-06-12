@@ -140,7 +140,7 @@ public class Certificate {
         try {
             stream.write(derBytes);
         } catch (IOException ex) {
-            throw new CertEasyException("error writing encoded certificate to stream", ex);
+            throw new CertEasyException("error writing DER encoded certificate to stream", ex);
         }
     }
 
@@ -175,6 +175,10 @@ public class Certificate {
 
     public boolean isSelfSignedCA(){
         return this.issuerName.equals(distinguishedName) && this.basicConstraints.ca();
+    }
+
+    public boolean isCA(){
+        return this.basicConstraints.ca();
     }
 
 }

@@ -5,6 +5,10 @@ public record BasicConstraints(boolean ca, int pathLength) {
     public BasicConstraints(boolean ca){
         this(ca, -1);
     }
+
+    public BasicConstraints(int ca){
+        this(true, -1);
+    }
     public BasicConstraints(boolean ca, int pathLength){
         this.ca = ca;
         if(pathLength<-1)
