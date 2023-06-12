@@ -23,7 +23,7 @@ public class CertificateLongConstructorTest implements CertificateBaseTest {
 
     private TestCert makeTestCert(StoredCert storedCert){
         CertAttributes attributes = storedCert.getAttributes();
-        Certificate certificate = new Certificate(attributes.serial(), attributes.subject(), attributes.validity(), attributes.keyStrength(), attributes.basicConstraints(), storedCert.getPrivateKey(), storedCert.getDerBytes(), attributes.sans(), attributes.keyUsages(), attributes.issuer(), attributes.extendedKeyUsages());
+        Certificate certificate = new Certificate(attributes.serial(), attributes.subject(), attributes.validity(), attributes.keyStrength(), attributes.basicConstraints(), storedCert.getPrivateKey(), storedCert.getDerBytes(), attributes.subjectAltNames(), attributes.keyUsages(), attributes.issuer(), attributes.extendedKeyUsages());
         return storedCert.asTestCert(certificate);
     }
 
@@ -57,7 +57,7 @@ public class CertificateLongConstructorTest implements CertificateBaseTest {
                     attrs.basicConstraints(),
                     cert.privateKey(),
                     cert.derBytes(),
-                    attrs.sans(),
+                    attrs.subjectAltNames(),
                     attrs.keyUsages(),
                     attrs.issuer(),
                     attrs.extendedKeyUsages());
@@ -78,7 +78,7 @@ public class CertificateLongConstructorTest implements CertificateBaseTest {
                     attrs.basicConstraints(),
                     cert.privateKey(),
                     cert.derBytes(),
-                    attrs.sans(),
+                    attrs.subjectAltNames(),
                     attrs.keyUsages(),
                     attrs.issuer(),
                     attrs.extendedKeyUsages());
@@ -98,7 +98,7 @@ public class CertificateLongConstructorTest implements CertificateBaseTest {
                     attrs.basicConstraints(),
                     cert.privateKey(),
                     cert.derBytes(),
-                    attrs.sans(),
+                    attrs.subjectAltNames(),
                     attrs.keyUsages(),
                     attrs.issuer(),
                     attrs.extendedKeyUsages());
@@ -119,7 +119,7 @@ public class CertificateLongConstructorTest implements CertificateBaseTest {
                     attrs.basicConstraints(),
                     cert.privateKey(),
                     cert.derBytes(),
-                    attrs.sans(),
+                    attrs.subjectAltNames(),
                     attrs.keyUsages(),
                     attrs.issuer(),
                     attrs.extendedKeyUsages());
@@ -140,7 +140,7 @@ public class CertificateLongConstructorTest implements CertificateBaseTest {
                     null,
                     cert.privateKey(),
                     cert.derBytes(),
-                    attrs.sans(),
+                    attrs.subjectAltNames(),
                     attrs.keyUsages(),
                     attrs.issuer(),
                     attrs.extendedKeyUsages());
@@ -161,7 +161,7 @@ public class CertificateLongConstructorTest implements CertificateBaseTest {
                     attrs.basicConstraints(),
                     null,
                     cert.derBytes(),
-                    attrs.sans(),
+                    attrs.subjectAltNames(),
                     attrs.keyUsages(),
                     attrs.issuer(),
                     attrs.extendedKeyUsages());
@@ -182,7 +182,7 @@ public class CertificateLongConstructorTest implements CertificateBaseTest {
                     attrs.basicConstraints(),
                     cert.privateKey(),
                     cert.derBytes(),
-                    attrs.sans(),
+                    attrs.subjectAltNames(),
                     null,
                     attrs.issuer(),
                     attrs.extendedKeyUsages());
@@ -202,7 +202,7 @@ public class CertificateLongConstructorTest implements CertificateBaseTest {
                     attrs.basicConstraints(),
                     cert.privateKey(),
                     null,
-                    attrs.sans(),
+                    attrs.subjectAltNames(),
                     attrs.keyUsages(),
                     attrs.issuer(),
                     attrs.extendedKeyUsages());
@@ -223,7 +223,7 @@ public class CertificateLongConstructorTest implements CertificateBaseTest {
                     attrs.basicConstraints(),
                     cert.privateKey(),
                     new byte[]{},
-                    attrs.sans(),
+                    attrs.subjectAltNames(),
                     attrs.keyUsages(),
                     attrs.issuer(),
                     attrs.extendedKeyUsages());
@@ -244,7 +244,7 @@ public class CertificateLongConstructorTest implements CertificateBaseTest {
                     attrs.basicConstraints(),
                     cert.privateKey(),
                     cert.derBytes(),
-                    attrs.sans(),
+                    attrs.subjectAltNames(),
                     attrs.keyUsages(),
                     null,
                     attrs.extendedKeyUsages());
@@ -263,7 +263,7 @@ public class CertificateLongConstructorTest implements CertificateBaseTest {
                 attrs.basicConstraints(),
                 cert.privateKey(),
                 cert.derBytes(),
-                attrs.sans(),
+                attrs.subjectAltNames(),
                 attrs.keyUsages(),
                 attrs.issuer(),
                 null);

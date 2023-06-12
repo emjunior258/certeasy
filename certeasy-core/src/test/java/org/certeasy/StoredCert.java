@@ -46,7 +46,7 @@ public enum StoredCert {
             new CertAttributes(
                     "09a5debe03bbe41a371a2f7aa5119c71327fd178",
                     DistinguishedName.builder().parse("CN=www.example.com, C=MZ, O=Example Inc").build(),
-                    null,
+                    Set.of(new SubjectAlternativeName(SubjectAlternativeNameType.DNS,"www.example.com"), new SubjectAlternativeName(SubjectAlternativeNameType.DNS,"smptp.example.com")),
                     DistinguishedName.builder().parse("CN=example-intermediate, C=MZ, O=Example Inc").build(),
                     KeyStrength.HIGH,new DateRange(LocalDate.of(2023, Month.JUNE, 12), LocalDate.of(2050, Month.OCTOBER, 28)),
                     new BasicConstraints(false),

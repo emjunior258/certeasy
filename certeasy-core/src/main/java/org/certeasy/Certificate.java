@@ -83,6 +83,7 @@ public class Certificate {
         this.keyStrength = spec.getKeyStrength();
         this.keyUsages = spec.getKeyUsages();
         this.basicConstraints = spec.getBasicConstraints();
+        this.subjectAltNames = spec.getSubject().getAlternativeNames();
         if(spec.getExtendedKeyUsages().isPresent())
             this.extendedKeyUsages = spec.getExtendedKeyUsages().get();
         this.serial = serial;
