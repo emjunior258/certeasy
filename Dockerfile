@@ -1,7 +1,9 @@
 FROM quay.io/quarkus/quarkus-micro-image:2.0
 WORKDIR /work/
-COPY *-runner /work/application
-RUN chmod 775 /work
-RUN mkdir -p target/certificates
+ENV CERTEASY_DATADIR=/work/data
+ENV QUARKUS_LOG_LEVEL=INFO
+COPY *-runner /work/app
+RUN mkdir -p /work/data
+RUN chmod -R 775 /work
 EXPOSE 8080
-CMD ["./application", "-Dquarkus.http.host=0.0.0.0"]
+CMD ["./app", "-Dquarkus.http.host=0.0.0.0"]
