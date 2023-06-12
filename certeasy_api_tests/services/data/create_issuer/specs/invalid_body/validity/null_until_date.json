@@ -1,0 +1,14 @@
+{
+  "name": "test",
+  "key_strength": "LOW",
+  "path_length": -1,
+  "validity": {
+    "from": "2023-01-01"
+  },
+  "address": {
+    "country": "PT",
+    "state": "Maputo",
+    "locality": "Polana",
+    "street_address": "Main Street"
+  }
+}
