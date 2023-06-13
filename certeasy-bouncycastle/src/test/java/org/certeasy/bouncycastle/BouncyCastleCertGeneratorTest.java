@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -26,13 +27,17 @@ class BouncyCastleCertGeneratorTest {
         subject = new CertificateAuthoritySubject("John Tester",
                 new GeographicAddress("MZ", "Maputo", "KaMabukwane", "Av. F"));
 
+        CertificateSubject certSubject = new CertificateSubject(subject.getDistinguishedName(),
+                Set.of(new SubjectAlternativeName(SubjectAlternativeNameType.DNS, "jtester")));
+
         DateRange dateRange = new DateRange(LocalDate.now().plusDays(2));
-        spec = new CertificateAuthoritySpec(subject,0, KeyStrength.LOW,
-                dateRange);
+        spec = new CertificateAuthoritySpec(subject,0, KeyStrength.LOW, dateRange);
 
-        certSpec = new CertificateSpec(subject, KeyStrength.LOW, dateRange,spec.getBasicConstraints(), spec.getKeyUsages(), null);
+        Set<KeyUsage> keyUsages = Set.of(KeyUsage.values());
+        ExtendedKeyUsages extendedKeyUsages = new ExtendedKeyUsages(Set.of(ExtendedKeyUsage.values()));
 
-//        authorityCert = generator.generate(spec);
+        certSpec = new CertificateSpec(certSubject, KeyStrength.LOW, dateRange,spec.getBasicConstraints(), keyUsages,
+                extendedKeyUsages);
 
     }
 
