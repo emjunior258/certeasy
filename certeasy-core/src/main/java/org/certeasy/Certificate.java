@@ -124,7 +124,8 @@ public class Certificate {
         if(file.isDirectory())
             throw new IllegalArgumentException("file MUST not be a directory: "+ file.getAbsolutePath());
         try {
-            Files.createFile(file.toPath());
+            if(!file.exists())
+                Files.createFile(file.toPath());
         } catch (IOException ex) {
             throw new CertEasyException("failed to create file: "+file.getAbsolutePath(), ex);
         }
