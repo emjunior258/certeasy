@@ -17,14 +17,14 @@ public record PersonName(String givenName, String surname) implements RDNConvert
         this.surname = surname;
     }
 
-    public String fullname(){
+    public String fullName(){
         return String.format("%s %s", givenName, surname);
     }
 
 
     public String initials(){
         StringBuilder builder = new StringBuilder();
-        String[] parts = this.fullname().toUpperCase().trim().split(" ");
+        String[] parts = this.fullName().toUpperCase().trim().split(" ");
         for(String part: parts)
             builder.append(part.charAt(0));
         return builder.toString();
@@ -34,7 +34,7 @@ public record PersonName(String givenName, String surname) implements RDNConvert
     public Set<RelativeDistinguishedName> toRdns() {
         return Set.of(
                 new RelativeDistinguishedName(SubjectAttributeType.Initials,initials()),
-                new RelativeDistinguishedName(SubjectAttributeType.CommonName, fullname()),
+                new RelativeDistinguishedName(SubjectAttributeType.CommonName, fullName()),
                 new RelativeDistinguishedName(SubjectAttributeType.GivenName, givenName),
                 new RelativeDistinguishedName(SubjectAttributeType.Surname, surname));
     }

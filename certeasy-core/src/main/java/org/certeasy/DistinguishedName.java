@@ -62,6 +62,19 @@ public record DistinguishedName(Set<RelativeDistinguishedName> relativeDistingui
                 .collect(Collectors.toSet());
     }
 
+    public boolean hasAttribute(SubjectAttributeType type){
+        return this.findFirst(type).isPresent();
+    }
+
+    public boolean hasAttribute(SubjectAttributeType type, String value){
+        if(type==null)
+            throw new IllegalArgumentException("type MUST not be null");
+        if(value==null)
+            throw new IllegalArgumentException("value MUST not be null nor empty");
+        Optional<RelativeDistinguishedName> optional = this.findFirst(type);
+        return (optional.isPresent() && optional.get().value().equals(value));
+    }
+
     public String toString(){
         StringBuilder builder = new StringBuilder();
         this.relativeDistinguishedNames.stream().sorted(Comparator.reverseOrder()).forEach(rdn -> {

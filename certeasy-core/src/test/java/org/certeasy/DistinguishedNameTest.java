@@ -143,4 +143,27 @@ public class DistinguishedNameTest {
 
     }
 
+    @Test
+    @DisplayName("hasAttribute() must return true if attribute is present")
+    public void hasAttributeMustReturnTrueIfAttributeIsPresent(){
+        DistinguishedName dn = DistinguishedName
+                .builder()
+                .append(new RelativeDistinguishedName(SubjectAttributeType.CommonName, "Example"))
+                .build();
+        assertTrue(dn.hasAttribute(SubjectAttributeType.CommonName));
+        assertTrue(dn.hasAttribute(SubjectAttributeType.CommonName, "Example"));
+    }
+
+    @Test
+    @DisplayName("hasAttribute() must return false if attribute is not present")
+    public void hasAttributeMustReturnFalseIfAttributeIsNotPresent(){
+        DistinguishedName dn = DistinguishedName
+                .builder()
+                .append(new RelativeDistinguishedName(SubjectAttributeType.CommonName, "Example"))
+                .build();
+        assertFalse(dn.hasAttribute(SubjectAttributeType.DomainComponent));
+        assertFalse(dn.hasAttribute(SubjectAttributeType.CommonName, "Example_"));
+    }
+
+
 }
