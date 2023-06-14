@@ -5,8 +5,14 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
 @JsonPropertyOrder({"id", "type", "serial", "dn", "path_length"})
-public record IssuerInfo(String id,
+public record IssuerInfo(
+                         @JsonProperty("id")
+                         String id,
+
+                         @JsonProperty("serial")
                          String serial,
+
+                         @JsonProperty("type")
                          IssuerType type,
 
                          @JsonProperty("dn")
@@ -14,5 +20,4 @@ public record IssuerInfo(String id,
 
                          @JsonProperty("path_length")
                          int pathLength) {
-
 }
