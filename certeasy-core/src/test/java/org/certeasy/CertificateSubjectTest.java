@@ -8,7 +8,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class CertificateSubjectTest {
+class CertificateSubjectTest {
 
     @Test
     @DisplayName("constructor must succeed with null alternative names")

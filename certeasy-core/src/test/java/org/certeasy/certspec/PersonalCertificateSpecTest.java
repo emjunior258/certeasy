@@ -12,7 +12,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class PersonalCertificateSpecTest {
+class PersonalCertificateSpecTest {
 
     private PersonalIdentitySubject subject;
 
@@ -35,8 +35,8 @@ public class PersonalCertificateSpecTest {
         assertFalse(spec.getBasicConstraints().ca());
         Set<KeyUsage> keyUsages = spec.getKeyUsages();
         assertFalse(keyUsages.isEmpty());
-        assertTrue(keyUsages.contains(KeyUsage.DigitalSignature));
-        assertTrue(keyUsages.contains(KeyUsage.NonRepudiation));
+        assertTrue(keyUsages.contains(KeyUsage.DIGITAL_SIGNATURE));
+        assertTrue(keyUsages.contains(KeyUsage.NON_REPUDIATION));
         Optional<ExtendedKeyUsages> optionalExtendedKeyUsages = spec.getExtendedKeyUsages();
         assertTrue(optionalExtendedKeyUsages.isPresent());
         ExtendedKeyUsages extendedKeyUsages = optionalExtendedKeyUsages.get();

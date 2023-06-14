@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-public class CertificateSpecTest {
+class CertificateSpecTest {
 
     private CertificateSubject subject;
     private DateRange validityPeriod;
@@ -32,7 +32,7 @@ public class CertificateSpecTest {
         assertThrows(IllegalArgumentException.class, () -> {
             new CertificateSpec(null, KeyStrength.LOW, validityPeriod,
                     new BasicConstraints(false),
-                    Set.of(KeyUsage.KeyAgreement), new ExtendedKeyUsages(Set.of(ExtendedKeyUsage.EMAIL_PROTECTION))
+                    Set.of(KeyUsage.KEY_AGREEMENT), new ExtendedKeyUsages(Set.of(ExtendedKeyUsage.EMAIL_PROTECTION))
             );
         });
     }
@@ -43,7 +43,7 @@ public class CertificateSpecTest {
         assertThrows(IllegalArgumentException.class, () -> {
             new CertificateSpec(subject, null, validityPeriod,
                     new BasicConstraints(false),
-                    Set.of(KeyUsage.KeyAgreement), new ExtendedKeyUsages(Set.of(ExtendedKeyUsage.EMAIL_PROTECTION))
+                    Set.of(KeyUsage.KEY_AGREEMENT), new ExtendedKeyUsages(Set.of(ExtendedKeyUsage.EMAIL_PROTECTION))
             );
         });
     }
@@ -54,7 +54,7 @@ public class CertificateSpecTest {
         assertThrows(IllegalArgumentException.class, () -> {
             new CertificateSpec(subject, KeyStrength.LOW, null,
                     new BasicConstraints(false),
-                    Set.of(KeyUsage.KeyAgreement), new ExtendedKeyUsages(Set.of(ExtendedKeyUsage.EMAIL_PROTECTION))
+                    Set.of(KeyUsage.KEY_AGREEMENT), new ExtendedKeyUsages(Set.of(ExtendedKeyUsage.EMAIL_PROTECTION))
             );
         });
     }
@@ -64,7 +64,7 @@ public class CertificateSpecTest {
     public void mustRequireNonNullBasicConstraints(){
         assertThrows(IllegalArgumentException.class, () -> {
             new CertificateSpec(subject, KeyStrength.LOW, validityPeriod,
-                    null, Set.of(KeyUsage.DecipherOnly),
+                    null, Set.of(KeyUsage.DECIPHER_ONLY),
                     new ExtendedKeyUsages(Set.of(ExtendedKeyUsage.EMAIL_PROTECTION))
             );
         });
@@ -97,7 +97,7 @@ public class CertificateSpecTest {
     @DisplayName("constructor must allow null extendedKeyUsages argument")
     public void mustAllowNullExtendedKeyUsages(){
         CertificateSpec spec = new CertificateSpec(subject, KeyStrength.LOW, validityPeriod,
-                new BasicConstraints(false), Set.of(KeyUsage.CertificateSign),
+                new BasicConstraints(false), Set.of(KeyUsage.CERTIFICATE_SIGN),
                 null);
         assertFalse(spec.getExtendedKeyUsages().isPresent());
     }
@@ -106,7 +106,7 @@ public class CertificateSpecTest {
     @DisplayName("getters must return values supplied to constructor")
     public void gettersMustReturnConstructorArguments(){
         CertificateSpec spec = new CertificateSpec(subject, KeyStrength.LOW, validityPeriod,
-                new BasicConstraints(false), Set.of(KeyUsage.CertificateSign, KeyUsage.DigitalSignature),
+                new BasicConstraints(false), Set.of(KeyUsage.CERTIFICATE_SIGN, KeyUsage.DIGITAL_SIGNATURE),
                 new ExtendedKeyUsages(Set.of(
                         ExtendedKeyUsage.EMAIL_PROTECTION))
         );

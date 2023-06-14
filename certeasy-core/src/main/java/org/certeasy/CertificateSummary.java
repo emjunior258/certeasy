@@ -8,15 +8,11 @@ package org.certeasy;
  */
 public record CertificateSummary(String commonName, String serial, DateRange validityPeriod) {
 
-    public CertificateSummary(String commonName, String serial,
-                              DateRange validityPeriod){
+    public CertificateSummary{
         if(commonName ==null|| commonName.isEmpty())
             throw new IllegalArgumentException("commonName MUST not be null nor empty");
         if(serial==null || serial.isEmpty())
             throw new IllegalArgumentException("serial MUST not be null nor empty");
-        this.commonName = commonName;
-        this.serial = serial;
-        this.validityPeriod = validityPeriod;
     }
 
 }

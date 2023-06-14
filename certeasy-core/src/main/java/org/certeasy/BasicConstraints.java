@@ -6,8 +6,8 @@ public record BasicConstraints(boolean ca, int pathLength) {
         this(ca, -1);
     }
 
-    public BasicConstraints(int ca){
-        this(true, -1);
+    public BasicConstraints(int pathLength){
+        this(true, pathLength);
     }
     public BasicConstraints(boolean ca, int pathLength){
         this.ca = ca;

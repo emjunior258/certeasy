@@ -45,7 +45,8 @@ public interface CertificateBaseTest {
     @DisplayName("exportDER() must require non-null OutputStream")
     default void exportDER_must_require_non_null_outputStream(){
         assertThrows(IllegalArgumentException.class, () -> {
-            Certificate certificate = getSiteCert().certificate();
+            TestCert testCert = getSiteCert();
+            Certificate certificate = testCert.certificate();
             certificate.exportDER( (OutputStream) null);
         });
     }
@@ -55,7 +56,8 @@ public interface CertificateBaseTest {
     @DisplayName("exportDER() must require non-null file")
     default void exportDER_must_require_non_null_file(){
         assertThrows(IllegalArgumentException.class, () -> {
-            Certificate certificate = getSiteCert().certificate();
+            TestCert testCert = getSiteCert();
+            Certificate certificate = testCert.certificate();
             certificate.exportDER( (File) null);
         });
     }

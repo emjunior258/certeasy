@@ -9,7 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class PersonalIdentitySubjectTest {
+class PersonalIdentitySubjectTest {
 
     @Test
     @DisplayName("Create PersonalIdentitySubject with Required Fields")

@@ -7,7 +7,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class CertificateShortConstructorTest implements CertificateBaseTest {
+class CertificateShortConstructorTest implements CertificateBaseTest {
 
     private TestCert rootCa;
     private TestCert intermediateCa;

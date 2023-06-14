@@ -9,10 +9,10 @@ public enum ExtendedKeyUsageEffect {
     /**
      * The {@link ExtendedKeyUsage} shall be strictly enforced.
      */
-    Enforce,
+    ENFORCE,
 
     /**
      * The {@link ExtendedKeyUsage} should be taken as purely informational.
      */
-    Info
+    INFO
 }

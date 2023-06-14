@@ -12,7 +12,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class DistinguishedNameTest {
+class DistinguishedNameTest {
 
     @Test
     @DisplayName("toString() must return desired output: set1")

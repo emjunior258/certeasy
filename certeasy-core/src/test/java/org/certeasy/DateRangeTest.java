@@ -8,7 +8,7 @@ import java.time.Month;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class DateRangeTest {
+class DateRangeTest {
 
     @Test
     @DisplayName("constructor must not allow null start date")

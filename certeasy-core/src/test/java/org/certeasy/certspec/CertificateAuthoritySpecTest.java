@@ -30,8 +30,8 @@ public class CertificateAuthoritySpecTest {
                 validityPeriod);
         Set<KeyUsage> keyUsages = spec.getKeyUsages();
         assertEquals(2, keyUsages.size());
-        assertTrue(keyUsages.contains(KeyUsage.CertificateSign));
-        assertTrue(keyUsages.contains(KeyUsage.SignCRL));
+        assertTrue(keyUsages.contains(KeyUsage.CERTIFICATE_SIGN));
+        assertTrue(keyUsages.contains(KeyUsage.SIGN_CRL));
     }
 
     @Test

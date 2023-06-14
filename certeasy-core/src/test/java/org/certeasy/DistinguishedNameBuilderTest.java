@@ -10,7 +10,8 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class DistinguishedNameBuilderTest {
+
+class DistinguishedNameBuilderTest {
 
     @Test
     public void musParseDistinguishedNameSuccessfullySet1() {

@@ -9,7 +9,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class CertificateLongConstructorTest implements CertificateBaseTest {
+class CertificateLongConstructorTest implements CertificateBaseTest {
 
     private TestCert rootCa;
     private TestCert intermediateCa;

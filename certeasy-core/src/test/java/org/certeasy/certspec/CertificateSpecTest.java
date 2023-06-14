@@ -2,7 +2,7 @@ package org.certeasy.certspec;
 
 import org.junit.jupiter.api.Test;
 
-public class CertificateSpecTest {
+class CertificateSpecTest {
 
 
     @Test

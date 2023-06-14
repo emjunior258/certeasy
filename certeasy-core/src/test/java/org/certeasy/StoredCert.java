@@ -1,10 +1,8 @@
 package org.certeasy;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.*;
 
 import org.junit.jupiter.api.Assertions;
@@ -26,7 +24,7 @@ public enum StoredCert {
                     DistinguishedName.builder().parse("CN=example-root, C=MZ, O=Example Inc").build(),
                     KeyStrength.HIGH,new DateRange(LocalDate.of(2023, Month.JUNE, 12), LocalDate.of(2050, Month.OCTOBER, 28)),
                     new BasicConstraints(true),
-                    Set.of(KeyUsage.DigitalSignature, KeyUsage.SignCRL), null
+                    Set.of(KeyUsage.DIGITAL_SIGNATURE, KeyUsage.SIGN_CRL), null
             )
     ),
 
@@ -38,7 +36,7 @@ public enum StoredCert {
                     DistinguishedName.builder().parse("CN=example-root, C=MZ, O=Example Inc").build(),
                     KeyStrength.HIGH,new DateRange(LocalDate.of(2023, Month.JUNE, 12), LocalDate.of(2050, Month.OCTOBER, 28)),
                     new BasicConstraints(true, 5),
-                    Set.of(KeyUsage.DigitalSignature, KeyUsage.SignCRL), null
+                    Set.of(KeyUsage.DIGITAL_SIGNATURE, KeyUsage.SIGN_CRL), null
             )
     ),
 
@@ -50,7 +48,7 @@ public enum StoredCert {
                     DistinguishedName.builder().parse("CN=example-intermediate, C=MZ, O=Example Inc").build(),
                     KeyStrength.HIGH,new DateRange(LocalDate.of(2023, Month.JUNE, 12), LocalDate.of(2050, Month.OCTOBER, 28)),
                     new BasicConstraints(false),
-                    Set.of(KeyUsage.DigitalSignature, KeyUsage.SignCRL), null
+                    Set.of(KeyUsage.DIGITAL_SIGNATURE, KeyUsage.SIGN_CRL), null
             )
     );
 
