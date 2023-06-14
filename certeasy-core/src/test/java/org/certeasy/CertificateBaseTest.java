@@ -119,7 +119,13 @@ interface CertificateBaseTest {
     @Test
     @DisplayName("getSummary() must return certificate summary")
     default void getSummary_must_return_certificate_summary(){
-
+        TestCert testCert = getSiteCert();
+        Certificate certificate = testCert.certificate();
+        CertificateSummary summary = certificate.getSummary();
+        CertAttributes attributes = testCert.attributes();
+        assertEquals(attributes.serial(), summary.serial());
+        assertEquals(attributes.validity(), summary.validityPeriod());
+        assertEquals(attributes.subject().getCommonName(), summary.commonName());
     }
 
 

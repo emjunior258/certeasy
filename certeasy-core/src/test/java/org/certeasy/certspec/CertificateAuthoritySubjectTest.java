@@ -39,22 +39,22 @@ class CertificateAuthoritySubjectTest {
         CertificateAuthoritySubject subject = new CertificateAuthoritySubject(name,
                 address);
         DistinguishedName dn = subject.getDistinguishedName();
-        Optional<RelativeDistinguishedName> cn = dn.findFirst(SubjectAttributeType.CommonName);
+        Optional<RelativeDistinguishedName> cn = dn.findFirst(SubjectAttributeType.COMMON_NAME);
         assertTrue(cn.isPresent());
 
-        Optional<RelativeDistinguishedName> countryName = dn.findFirst(SubjectAttributeType.CountryName);
+        Optional<RelativeDistinguishedName> countryName = dn.findFirst(SubjectAttributeType.COUNTRY_NAME);
         assertTrue(countryName.isPresent());
         assertEquals(address.countryIsoCode(), countryName.get().value());
 
-        Optional<RelativeDistinguishedName> province = dn.findFirst(SubjectAttributeType.Province);
+        Optional<RelativeDistinguishedName> province = dn.findFirst(SubjectAttributeType.PROVINCE);
         assertTrue(province.isPresent());
         assertEquals(address.state(), province.get().value());
 
-        Optional<RelativeDistinguishedName> locality = dn.findFirst(SubjectAttributeType.Locality);
+        Optional<RelativeDistinguishedName> locality = dn.findFirst(SubjectAttributeType.LOCALITY);
         assertTrue(locality.isPresent());
         assertEquals(address.locality(), locality.get().value());
 
-        Optional<RelativeDistinguishedName> street = dn.findFirst(SubjectAttributeType.Street);
+        Optional<RelativeDistinguishedName> street = dn.findFirst(SubjectAttributeType.STREET);
         assertTrue(street.isPresent());
         assertEquals(address.streetAddress(), street.get().value());
 

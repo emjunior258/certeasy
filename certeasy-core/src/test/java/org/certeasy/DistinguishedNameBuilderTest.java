@@ -21,20 +21,20 @@ class DistinguishedNameBuilderTest {
                 .build();
 
         Set<SubjectAttributeType> attributeTypes = distinguishedName.getAttributeTypes();
-        assertTrue(attributeTypes.contains(SubjectAttributeType.CommonName));
-        assertTrue(attributeTypes.contains(SubjectAttributeType.DomainComponent));
-        assertTrue(attributeTypes.contains(SubjectAttributeType.OrganizationName));
-        assertTrue(attributeTypes.contains(SubjectAttributeType.CountryName));
+        assertTrue(attributeTypes.contains(SubjectAttributeType.COMMON_NAME));
+        assertTrue(attributeTypes.contains(SubjectAttributeType.DOMAIN_COMPONENT));
+        assertTrue(attributeTypes.contains(SubjectAttributeType.ORGANIZATION_NAME));
+        assertTrue(attributeTypes.contains(SubjectAttributeType.COUNTRY_NAME));
 
         assertEquals("John Doe", distinguishedName.getCommonName());
-        Set<RelativeDistinguishedName> dc = distinguishedName.findAll(SubjectAttributeType.DomainComponent);
+        Set<RelativeDistinguishedName> dc = distinguishedName.findAll(SubjectAttributeType.DOMAIN_COMPONENT);
         assertEquals(3, dc.size());
 
-        Optional<RelativeDistinguishedName> org = distinguishedName.findFirst(SubjectAttributeType.OrganizationName);
+        Optional<RelativeDistinguishedName> org = distinguishedName.findFirst(SubjectAttributeType.ORGANIZATION_NAME);
         assertTrue(org.isPresent());
         assertEquals("Example Organization", org.get().value());
 
-        Optional<RelativeDistinguishedName> country = distinguishedName.findFirst(SubjectAttributeType.CountryName);
+        Optional<RelativeDistinguishedName> country = distinguishedName.findFirst(SubjectAttributeType.COUNTRY_NAME);
         assertTrue(country.isPresent());
         assertEquals("US", country.get().value());
 
@@ -48,32 +48,32 @@ class DistinguishedNameBuilderTest {
                 .build();
 
         Set<SubjectAttributeType> attributeTypes = distinguishedName.getAttributeTypes();
-        assertTrue(attributeTypes.contains(SubjectAttributeType.CommonName));
-        assertTrue(attributeTypes.contains(SubjectAttributeType.OrganizationName));
-        assertTrue(attributeTypes.contains(SubjectAttributeType.OrganizationUnit));
-        assertTrue(attributeTypes.contains(SubjectAttributeType.CountryName));
-        assertTrue(attributeTypes.contains(SubjectAttributeType.Province));
-        assertTrue(attributeTypes.contains(SubjectAttributeType.Locality));
+        assertTrue(attributeTypes.contains(SubjectAttributeType.COMMON_NAME));
+        assertTrue(attributeTypes.contains(SubjectAttributeType.ORGANIZATION_NAME));
+        assertTrue(attributeTypes.contains(SubjectAttributeType.ORGANIZATION_UNIT));
+        assertTrue(attributeTypes.contains(SubjectAttributeType.COUNTRY_NAME));
+        assertTrue(attributeTypes.contains(SubjectAttributeType.PROVINCE));
+        assertTrue(attributeTypes.contains(SubjectAttributeType.LOCALITY));
 
         assertEquals("www.example.com", distinguishedName.getCommonName());
 
-        Optional<RelativeDistinguishedName> org = distinguishedName.findFirst(SubjectAttributeType.OrganizationName);
+        Optional<RelativeDistinguishedName> org = distinguishedName.findFirst(SubjectAttributeType.ORGANIZATION_NAME);
         assertTrue(org.isPresent());
         assertEquals("Dummy Corporation", org.get().value());
 
-        Optional<RelativeDistinguishedName> unit = distinguishedName.findFirst(SubjectAttributeType.OrganizationUnit);
+        Optional<RelativeDistinguishedName> unit = distinguishedName.findFirst(SubjectAttributeType.ORGANIZATION_UNIT);
         assertTrue(unit.isPresent());
         assertEquals("IT Department", unit.get().value());
 
-        Optional<RelativeDistinguishedName> country = distinguishedName.findFirst(SubjectAttributeType.CountryName);
+        Optional<RelativeDistinguishedName> country = distinguishedName.findFirst(SubjectAttributeType.COUNTRY_NAME);
         assertTrue(country.isPresent());
         assertEquals("US", country.get().value());
 
-        Optional<RelativeDistinguishedName> state = distinguishedName.findFirst(SubjectAttributeType.Province);
+        Optional<RelativeDistinguishedName> state = distinguishedName.findFirst(SubjectAttributeType.PROVINCE);
         assertTrue(state.isPresent());
         assertEquals("New York", state.get().value());
 
-        Optional<RelativeDistinguishedName> locality = distinguishedName.findFirst(SubjectAttributeType.Locality);
+        Optional<RelativeDistinguishedName> locality = distinguishedName.findFirst(SubjectAttributeType.LOCALITY);
         assertTrue(locality.isPresent());
         assertEquals("New York", locality.get().value());
 
@@ -126,13 +126,13 @@ class DistinguishedNameBuilderTest {
     void appendedRDNMustBePresent() {
 
         DistinguishedName dn = DistinguishedName.builder()
-                .append(new RelativeDistinguishedName(SubjectAttributeType.CommonName, "John Doe"))
-                .append(new RelativeDistinguishedName(SubjectAttributeType.CountryName, "US"))
+                .append(new RelativeDistinguishedName(SubjectAttributeType.COMMON_NAME, "John Doe"))
+                .append(new RelativeDistinguishedName(SubjectAttributeType.COUNTRY_NAME, "US"))
                 .build();
 
         Set<SubjectAttributeType> attributeTypes = dn.getAttributeTypes();
-        assertTrue(attributeTypes.contains(SubjectAttributeType.CommonName));
-        assertTrue(attributeTypes.contains(SubjectAttributeType.CountryName));
+        assertTrue(attributeTypes.contains(SubjectAttributeType.COMMON_NAME));
+        assertTrue(attributeTypes.contains(SubjectAttributeType.COUNTRY_NAME));
 
     }
 
@@ -141,15 +141,15 @@ class DistinguishedNameBuilderTest {
     void appendedRDNSetMustBePresent() {
 
         DistinguishedName dn = DistinguishedName.builder()
-                .append(Set.of(new RelativeDistinguishedName(SubjectAttributeType.CommonName,
+                .append(Set.of(new RelativeDistinguishedName(SubjectAttributeType.COMMON_NAME,
                                 "John Doe"),
-                        new RelativeDistinguishedName(SubjectAttributeType.CountryName,
+                        new RelativeDistinguishedName(SubjectAttributeType.COUNTRY_NAME,
                                 "US")))
                 .build();
 
         Set<SubjectAttributeType> attributeTypes = dn.getAttributeTypes();
-        assertTrue(attributeTypes.contains(SubjectAttributeType.CommonName));
-        assertTrue(attributeTypes.contains(SubjectAttributeType.CountryName));
+        assertTrue(attributeTypes.contains(SubjectAttributeType.COMMON_NAME));
+        assertTrue(attributeTypes.contains(SubjectAttributeType.COUNTRY_NAME));
 
     }
 
@@ -159,9 +159,9 @@ class DistinguishedNameBuilderTest {
 
         RDNConvertible convertible = Mockito.mock(RDNConvertible.class);
         when(convertible.toRdns()).thenReturn(
-                Set.of(new RelativeDistinguishedName(SubjectAttributeType.CommonName,
+                Set.of(new RelativeDistinguishedName(SubjectAttributeType.COMMON_NAME,
                                 "John Doe"),
-                        new RelativeDistinguishedName(SubjectAttributeType.CountryName,
+                        new RelativeDistinguishedName(SubjectAttributeType.COUNTRY_NAME,
                                 "US"))
         );
 
@@ -170,8 +170,8 @@ class DistinguishedNameBuilderTest {
                 .build();
 
         Set<SubjectAttributeType> attributeTypes = dn.getAttributeTypes();
-        assertTrue(attributeTypes.contains(SubjectAttributeType.CommonName));
-        assertTrue(attributeTypes.contains(SubjectAttributeType.CountryName));
+        assertTrue(attributeTypes.contains(SubjectAttributeType.COMMON_NAME));
+        assertTrue(attributeTypes.contains(SubjectAttributeType.COUNTRY_NAME));
 
     }
 

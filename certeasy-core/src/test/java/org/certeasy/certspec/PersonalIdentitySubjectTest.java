@@ -31,15 +31,15 @@ class PersonalIdentitySubjectTest {
 
     private void assertPersonalIdentitySubject(PersonalIdentitySubject personalIdentitySubject, PersonName personName, GeographicAddress address, Set<String> emails, Set<String> usernames){
         DistinguishedName distinguishedName = personalIdentitySubject.getDistinguishedName();
-        assertTrue(distinguishedName.hasAttribute(SubjectAttributeType.GivenName, personName.givenName()));
-        assertTrue(distinguishedName.hasAttribute(SubjectAttributeType.Surname, personName.surname()));
-        assertTrue(distinguishedName.hasAttribute(SubjectAttributeType.Initials, personName.initials()));
-        assertTrue(distinguishedName.hasAttribute(SubjectAttributeType.CountryName, address.countryIsoCode()));
-        assertTrue(distinguishedName.hasAttribute(SubjectAttributeType.CountryName, address.countryIsoCode()));
-        assertTrue(distinguishedName.hasAttribute(SubjectAttributeType.CountryName, address.countryIsoCode()));
-        assertTrue(distinguishedName.hasAttribute(SubjectAttributeType.Province, address.state()));
-        assertTrue(distinguishedName.hasAttribute(SubjectAttributeType.Locality, address.locality()));
-        assertTrue(distinguishedName.hasAttribute(SubjectAttributeType.Street, address.streetAddress()));
+        assertTrue(distinguishedName.hasAttribute(SubjectAttributeType.GIVEN_NAME, personName.givenName()));
+        assertTrue(distinguishedName.hasAttribute(SubjectAttributeType.SURNAME, personName.surname()));
+        assertTrue(distinguishedName.hasAttribute(SubjectAttributeType.INITIALS, personName.initials()));
+        assertTrue(distinguishedName.hasAttribute(SubjectAttributeType.COUNTRY_NAME, address.countryIsoCode()));
+        assertTrue(distinguishedName.hasAttribute(SubjectAttributeType.COUNTRY_NAME, address.countryIsoCode()));
+        assertTrue(distinguishedName.hasAttribute(SubjectAttributeType.COUNTRY_NAME, address.countryIsoCode()));
+        assertTrue(distinguishedName.hasAttribute(SubjectAttributeType.PROVINCE, address.state()));
+        assertTrue(distinguishedName.hasAttribute(SubjectAttributeType.LOCALITY, address.locality()));
+        assertTrue(distinguishedName.hasAttribute(SubjectAttributeType.STREET, address.streetAddress()));
         assertNotNull(personalIdentitySubject);
         assertEquals(personName.fullName(), personalIdentitySubject.getCommonName());
         assertEquals(emails.size() + usernames.size(), personalIdentitySubject.getAlternativeNames().size());

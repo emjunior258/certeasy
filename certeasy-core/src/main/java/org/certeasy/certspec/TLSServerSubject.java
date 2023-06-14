@@ -15,10 +15,10 @@ public final class TLSServerSubject extends CertificateSubject {
         Set<SubjectAlternativeName> sans = domains.stream().map(email -> new SubjectAlternativeName(SubjectAlternativeNameType.EMAIL, email))
                 .collect(Collectors.toSet());
         DistinguishedName.Builder dnBuilder =  DistinguishedName.builder();
-        dnBuilder.append(new RelativeDistinguishedName(SubjectAttributeType.CommonName,
+        dnBuilder.append(new RelativeDistinguishedName(SubjectAttributeType.COMMON_NAME,
                 domains.iterator().next()));
         if(organizationName!=null && !organizationName.isEmpty())
-            dnBuilder.append(new RelativeDistinguishedName(SubjectAttributeType.OrganizationUnit,
+            dnBuilder.append(new RelativeDistinguishedName(SubjectAttributeType.ORGANIZATION_UNIT,
                     organizationName));
         this.setDistinguishedName(dnBuilder.build());
         this.setAlternativeNames(sans);

@@ -1,8 +1,5 @@
 package org.certeasy;
 
-import org.certeasy.DistinguishedName;
-import org.certeasy.RelativeDistinguishedName;
-import org.certeasy.SubjectAttributeType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -20,11 +17,11 @@ class DistinguishedNameTest {
 
         DistinguishedName dn = DistinguishedName
                 .builder()
-                .append(new RelativeDistinguishedName(SubjectAttributeType.CommonName, "John Doe"))
-                .append(new RelativeDistinguishedName(SubjectAttributeType.Initials, "JD"))
-                .append(new RelativeDistinguishedName(SubjectAttributeType.DomainComponent, "vm", 0))
-                .append(new RelativeDistinguishedName(SubjectAttributeType.DomainComponent, "co", 1))
-                .append(new RelativeDistinguishedName(SubjectAttributeType.DomainComponent, "mz", 2))
+                .append(new RelativeDistinguishedName(SubjectAttributeType.COMMON_NAME, "John Doe"))
+                .append(new RelativeDistinguishedName(SubjectAttributeType.INITIALS, "JD"))
+                .append(new RelativeDistinguishedName(SubjectAttributeType.DOMAIN_COMPONENT, "vm", 0))
+                .append(new RelativeDistinguishedName(SubjectAttributeType.DOMAIN_COMPONENT, "co", 1))
+                .append(new RelativeDistinguishedName(SubjectAttributeType.DOMAIN_COMPONENT, "mz", 2))
                 .build();
 
         assertEquals("CN=John Doe, initials=JD, DC=vm, DC=co, DC=mz", dn.toString());
@@ -36,16 +33,16 @@ class DistinguishedNameTest {
     void toStringMustReturnDesiredOutputSet2(){
         DistinguishedName dn = DistinguishedName
                 .builder()
-                .append(new RelativeDistinguishedName(SubjectAttributeType.CommonName, "John Doe"))
-                .append(new RelativeDistinguishedName(SubjectAttributeType.Initials, "JD"))
-                .append(new RelativeDistinguishedName(SubjectAttributeType.GivenName, "John"))
-                .append(new RelativeDistinguishedName(SubjectAttributeType.Surname, "Doe"))
-                .append(new RelativeDistinguishedName(SubjectAttributeType.CountryName, "MZ"))
-                .append(new RelativeDistinguishedName(SubjectAttributeType.Province, "Maputo"))
-                .append(new RelativeDistinguishedName(SubjectAttributeType.Locality, "Kampfumo"))
-                .append(new RelativeDistinguishedName(SubjectAttributeType.Street, "Av 24 de Julho. Nr300"))
-                .append(new RelativeDistinguishedName(SubjectAttributeType.UserID, "johndoe"))
-                .append(new RelativeDistinguishedName(SubjectAttributeType.TelephoneNumber, "849901010"))
+                .append(new RelativeDistinguishedName(SubjectAttributeType.COMMON_NAME, "John Doe"))
+                .append(new RelativeDistinguishedName(SubjectAttributeType.INITIALS, "JD"))
+                .append(new RelativeDistinguishedName(SubjectAttributeType.GIVEN_NAME, "John"))
+                .append(new RelativeDistinguishedName(SubjectAttributeType.SURNAME, "Doe"))
+                .append(new RelativeDistinguishedName(SubjectAttributeType.COUNTRY_NAME, "MZ"))
+                .append(new RelativeDistinguishedName(SubjectAttributeType.PROVINCE, "Maputo"))
+                .append(new RelativeDistinguishedName(SubjectAttributeType.LOCALITY, "Kampfumo"))
+                .append(new RelativeDistinguishedName(SubjectAttributeType.STREET, "Av 24 de Julho. Nr300"))
+                .append(new RelativeDistinguishedName(SubjectAttributeType.USER_ID, "johndoe"))
+                .append(new RelativeDistinguishedName(SubjectAttributeType.TELEPHONE_NUMBER, "849901010"))
                 .build();
         assertEquals("CN=John Doe, initials=JD, G=John, SN=Doe, telephoneNumber=849901010, UID=johndoe, C=MZ, ST=Maputo, L=Kampfumo, STREET=Av 24 de Julho. Nr300",
                 dn.toString());
@@ -56,10 +53,10 @@ class DistinguishedNameTest {
     void toStringMustReturnDesiredOutputSet3(){
         DistinguishedName dn = DistinguishedName
                 .builder()
-                .append(new RelativeDistinguishedName(SubjectAttributeType.CommonName, "John Wick"))
-                .append(new RelativeDistinguishedName(SubjectAttributeType.Title, "Mr"))
-                .append(new RelativeDistinguishedName(SubjectAttributeType.OrganizationName, "High Table"))
-                .append(new RelativeDistinguishedName(SubjectAttributeType.OrganizationUnit, "Continental Hotel"))
+                .append(new RelativeDistinguishedName(SubjectAttributeType.COMMON_NAME, "John Wick"))
+                .append(new RelativeDistinguishedName(SubjectAttributeType.TITLE, "Mr"))
+                .append(new RelativeDistinguishedName(SubjectAttributeType.ORGANIZATION_NAME, "High Table"))
+                .append(new RelativeDistinguishedName(SubjectAttributeType.ORGANIZATION_UNIT, "Continental Hotel"))
                 .build();
         assertEquals("CN=John Wick, T=Mr, O=High Table, OU=Continental Hotel", dn.toString());
     }
@@ -71,26 +68,26 @@ class DistinguishedNameTest {
 
         DistinguishedName dn = DistinguishedName
                 .builder()
-                .append(new RelativeDistinguishedName(SubjectAttributeType.CommonName, "Example"))
-                .append(new RelativeDistinguishedName(SubjectAttributeType.DomainComponent, "www", 0))
-                .append(new RelativeDistinguishedName(SubjectAttributeType.DomainComponent, "example", 1))
-                .append(new RelativeDistinguishedName(SubjectAttributeType.DomainComponent, "com", 2))
+                .append(new RelativeDistinguishedName(SubjectAttributeType.COMMON_NAME, "Example"))
+                .append(new RelativeDistinguishedName(SubjectAttributeType.DOMAIN_COMPONENT, "www", 0))
+                .append(new RelativeDistinguishedName(SubjectAttributeType.DOMAIN_COMPONENT, "example", 1))
+                .append(new RelativeDistinguishedName(SubjectAttributeType.DOMAIN_COMPONENT, "com", 2))
                 .build();
 
-        Set<RelativeDistinguishedName> domainComponents = dn.findAll(SubjectAttributeType.DomainComponent);
+        Set<RelativeDistinguishedName> domainComponents = dn.findAll(SubjectAttributeType.DOMAIN_COMPONENT);
         assertEquals(3, domainComponents.size());
 
         Iterator<RelativeDistinguishedName> iterator = domainComponents.iterator();
         RelativeDistinguishedName rdn = iterator.next();
-        assertEquals(SubjectAttributeType.DomainComponent, rdn.type());
+        assertEquals(SubjectAttributeType.DOMAIN_COMPONENT, rdn.type());
         assertEquals("www", rdn.value());
 
         rdn = iterator.next();
-        assertEquals(SubjectAttributeType.DomainComponent, rdn.type());
+        assertEquals(SubjectAttributeType.DOMAIN_COMPONENT, rdn.type());
         assertEquals("example", rdn.value());
 
         rdn = iterator.next();
-        assertEquals(SubjectAttributeType.DomainComponent, rdn.type());
+        assertEquals(SubjectAttributeType.DOMAIN_COMPONENT, rdn.type());
         assertEquals("com", rdn.value());
 
     }
@@ -101,12 +98,12 @@ class DistinguishedNameTest {
 
         DistinguishedName dn = DistinguishedName
                 .builder()
-                .append(new RelativeDistinguishedName(SubjectAttributeType.CommonName, "Tim Cook"))
-                .append(new RelativeDistinguishedName(SubjectAttributeType.GivenName, "Tim"))
-                .append(new RelativeDistinguishedName(SubjectAttributeType.Surname, "Cook"))
-                .append(new RelativeDistinguishedName(SubjectAttributeType.Title, "Mr"))
+                .append(new RelativeDistinguishedName(SubjectAttributeType.COMMON_NAME, "Tim Cook"))
+                .append(new RelativeDistinguishedName(SubjectAttributeType.GIVEN_NAME, "Tim"))
+                .append(new RelativeDistinguishedName(SubjectAttributeType.SURNAME, "Cook"))
+                .append(new RelativeDistinguishedName(SubjectAttributeType.TITLE, "Mr"))
                 .build();
-        assertTrue(dn.findAll(SubjectAttributeType.DomainComponent).isEmpty());
+        assertTrue(dn.findAll(SubjectAttributeType.DOMAIN_COMPONENT).isEmpty());
 
     }
 
@@ -117,13 +114,13 @@ class DistinguishedNameTest {
 
         DistinguishedName dn = DistinguishedName
                 .builder()
-                .append(new RelativeDistinguishedName(SubjectAttributeType.CommonName, "Example"))
-                .append(new RelativeDistinguishedName(SubjectAttributeType.DomainComponent, "www", 0))
-                .append(new RelativeDistinguishedName(SubjectAttributeType.DomainComponent, "example", 1))
-                .append(new RelativeDistinguishedName(SubjectAttributeType.DomainComponent, "com", 2))
+                .append(new RelativeDistinguishedName(SubjectAttributeType.COMMON_NAME, "Example"))
+                .append(new RelativeDistinguishedName(SubjectAttributeType.DOMAIN_COMPONENT, "www", 0))
+                .append(new RelativeDistinguishedName(SubjectAttributeType.DOMAIN_COMPONENT, "example", 1))
+                .append(new RelativeDistinguishedName(SubjectAttributeType.DOMAIN_COMPONENT, "com", 2))
                 .build();
 
-        Optional<RelativeDistinguishedName> matched = dn.findFirst(SubjectAttributeType.DomainComponent);
+        Optional<RelativeDistinguishedName> matched = dn.findFirst(SubjectAttributeType.DOMAIN_COMPONENT);
         assertTrue(matched.isPresent());
         assertEquals("www", matched.get().value());
 
@@ -135,10 +132,10 @@ class DistinguishedNameTest {
 
         DistinguishedName dn = DistinguishedName
                 .builder()
-                .append(new RelativeDistinguishedName(SubjectAttributeType.CommonName, "Example"))
+                .append(new RelativeDistinguishedName(SubjectAttributeType.COMMON_NAME, "Example"))
                 .build();
 
-        Optional<RelativeDistinguishedName> matched = dn.findFirst(SubjectAttributeType.DomainComponent);
+        Optional<RelativeDistinguishedName> matched = dn.findFirst(SubjectAttributeType.DOMAIN_COMPONENT);
         assertTrue(matched.isEmpty());
 
     }
@@ -148,10 +145,10 @@ class DistinguishedNameTest {
     void hasAttributeMustReturnTrueIfAttributeIsPresent(){
         DistinguishedName dn = DistinguishedName
                 .builder()
-                .append(new RelativeDistinguishedName(SubjectAttributeType.CommonName, "Example"))
+                .append(new RelativeDistinguishedName(SubjectAttributeType.COMMON_NAME, "Example"))
                 .build();
-        assertTrue(dn.hasAttribute(SubjectAttributeType.CommonName));
-        assertTrue(dn.hasAttribute(SubjectAttributeType.CommonName, "Example"));
+        assertTrue(dn.hasAttribute(SubjectAttributeType.COMMON_NAME));
+        assertTrue(dn.hasAttribute(SubjectAttributeType.COMMON_NAME, "Example"));
     }
 
     @Test
@@ -159,10 +156,10 @@ class DistinguishedNameTest {
     void hasAttributeMustReturnFalseIfAttributeIsNotPresent(){
         DistinguishedName dn = DistinguishedName
                 .builder()
-                .append(new RelativeDistinguishedName(SubjectAttributeType.CommonName, "Example"))
+                .append(new RelativeDistinguishedName(SubjectAttributeType.COMMON_NAME, "Example"))
                 .build();
-        assertFalse(dn.hasAttribute(SubjectAttributeType.DomainComponent));
-        assertFalse(dn.hasAttribute(SubjectAttributeType.CommonName, "Example_"));
+        assertFalse(dn.hasAttribute(SubjectAttributeType.DOMAIN_COMPONENT));
+        assertFalse(dn.hasAttribute(SubjectAttributeType.COMMON_NAME, "Example_"));
     }
 
 

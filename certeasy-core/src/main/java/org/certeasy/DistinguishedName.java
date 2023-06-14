@@ -19,9 +19,9 @@ public record DistinguishedName(Set<RelativeDistinguishedName> relativeDistingui
     public DistinguishedName(Set<RelativeDistinguishedName> relativeDistinguishedNames){
         if(relativeDistinguishedNames==null || relativeDistinguishedNames.isEmpty())
             throw new IllegalArgumentException("relative distinguished names set MUST not be null nor empty");
-        if(relativeDistinguishedNames.stream().filter(it -> it.type() == SubjectAttributeType.CommonName)
+        if(relativeDistinguishedNames.stream().filter(it -> it.type() == SubjectAttributeType.COMMON_NAME)
                 .findAny().isEmpty())
-            throw new IllegalArgumentException("Missing RDN with " + SubjectAttributeType.CommonName.name()+ " attribute type");
+            throw new IllegalArgumentException("Missing RDN with " + SubjectAttributeType.COMMON_NAME.name()+ " attribute type");
         this.relativeDistinguishedNames = Collections.unmodifiableSet(relativeDistinguishedNames);
         Set<SubjectAttributeType> singleAttributes = Set.of(SubjectAttributeType.values())
                 .stream().filter(it -> !it.isMultiValue())
@@ -33,7 +33,7 @@ public record DistinguishedName(Set<RelativeDistinguishedName> relativeDistingui
     }
 
     public String getCommonName(){
-        Optional<RelativeDistinguishedName> relativeDistinguishedName = this.findFirst(SubjectAttributeType.CommonName);
+        Optional<RelativeDistinguishedName> relativeDistinguishedName = this.findFirst(SubjectAttributeType.COMMON_NAME);
         if(relativeDistinguishedName.isEmpty())
             throw new IllegalStateException("distinguishedName doesn't have a common name");
         return relativeDistinguishedName.get().value();

@@ -15,11 +15,11 @@ class SubjectAttributeTypeTest {
     void fromOIDMustSucceedIfMatchingOID(){
         SubjectAttributeType commonName = SubjectAttributeType.fromOID("2.5.4.3");
         assertNotNull(commonName);
-        assertEquals(SubjectAttributeType.CommonName, commonName);
+        assertEquals(SubjectAttributeType.COMMON_NAME, commonName);
         assertEquals("2.5.4.3", commonName.getOid());
         SubjectAttributeType countryName = SubjectAttributeType.fromOID("2.5.4.6");
         assertNotNull(countryName);
-        assertEquals(SubjectAttributeType.CountryName, countryName);
+        assertEquals(SubjectAttributeType.COUNTRY_NAME, countryName);
         assertEquals("2.5.4.6", countryName.getOid());
     }
 
@@ -36,13 +36,13 @@ class SubjectAttributeTypeTest {
     void ofKeyMustReturnAttributeWithMatchingMnemonic(){
         SubjectAttributeType commonName = SubjectAttributeType.ofKey("CN");
         assertNotNull(commonName);
-        assertEquals(SubjectAttributeType.CommonName, commonName);
+        assertEquals(SubjectAttributeType.COMMON_NAME, commonName);
         SubjectAttributeType countryName = SubjectAttributeType.ofKey("C");
         assertNotNull(countryName);
-        assertEquals(SubjectAttributeType.CountryName, countryName);
+        assertEquals(SubjectAttributeType.COUNTRY_NAME, countryName);
         SubjectAttributeType state = SubjectAttributeType.ofKey("ST");
         assertNotNull(state);
-        assertEquals(SubjectAttributeType.Province, state);
+        assertEquals(SubjectAttributeType.PROVINCE, state);
     }
 
     @Test
@@ -51,15 +51,15 @@ class SubjectAttributeTypeTest {
         SubjectAttributeType commonName = SubjectAttributeType.ofKey("commonName");
         assertNotNull(commonName);
         assertEquals("commonName", commonName.getDescription());
-        assertEquals(SubjectAttributeType.CommonName, commonName);
+        assertEquals(SubjectAttributeType.COMMON_NAME, commonName);
         SubjectAttributeType countryName = SubjectAttributeType.ofKey("countryName");
         assertNotNull(countryName);
         assertEquals("countryName", countryName.getDescription());
-        assertEquals(SubjectAttributeType.CountryName, countryName);
+        assertEquals(SubjectAttributeType.COUNTRY_NAME, countryName);
         SubjectAttributeType state = SubjectAttributeType.ofKey("stateOrProvinceName");
         assertNotNull(state);
         assertEquals("stateOrProvinceName", state.getDescription());
-        assertEquals(SubjectAttributeType.Province, state);
+        assertEquals(SubjectAttributeType.PROVINCE, state);
     }
 
     @Test
@@ -76,20 +76,20 @@ class SubjectAttributeTypeTest {
         List<SubjectAttributeType> attributes = Arrays.asList(SubjectAttributeType.values());
         attributes.sort(Comparator.naturalOrder());
         Iterator<SubjectAttributeType> iterator = attributes.iterator();
-        assertEquals(SubjectAttributeType.CommonName, iterator.next());
-        assertEquals(SubjectAttributeType.Title, iterator.next());
-        assertEquals(SubjectAttributeType.Initials, iterator.next());
-        assertEquals(SubjectAttributeType.GivenName, iterator.next());
-        assertEquals(SubjectAttributeType.Surname, iterator.next());
-        assertEquals(SubjectAttributeType.TelephoneNumber, iterator.next());
-        assertEquals(SubjectAttributeType.UserID, iterator.next());
-        assertEquals(SubjectAttributeType.OrganizationName, iterator.next());
-        assertEquals(SubjectAttributeType.OrganizationUnit, iterator.next());
-        assertEquals(SubjectAttributeType.CountryName, iterator.next());
-        assertEquals(SubjectAttributeType.Province, iterator.next());
-        assertEquals(SubjectAttributeType.Locality, iterator.next());
-        assertEquals(SubjectAttributeType.Street, iterator.next());
-        assertEquals(SubjectAttributeType.DomainComponent, iterator.next());
+        assertEquals(SubjectAttributeType.COMMON_NAME, iterator.next());
+        assertEquals(SubjectAttributeType.TITLE, iterator.next());
+        assertEquals(SubjectAttributeType.INITIALS, iterator.next());
+        assertEquals(SubjectAttributeType.GIVEN_NAME, iterator.next());
+        assertEquals(SubjectAttributeType.SURNAME, iterator.next());
+        assertEquals(SubjectAttributeType.TELEPHONE_NUMBER, iterator.next());
+        assertEquals(SubjectAttributeType.USER_ID, iterator.next());
+        assertEquals(SubjectAttributeType.ORGANIZATION_NAME, iterator.next());
+        assertEquals(SubjectAttributeType.ORGANIZATION_UNIT, iterator.next());
+        assertEquals(SubjectAttributeType.COUNTRY_NAME, iterator.next());
+        assertEquals(SubjectAttributeType.PROVINCE, iterator.next());
+        assertEquals(SubjectAttributeType.LOCALITY, iterator.next());
+        assertEquals(SubjectAttributeType.STREET, iterator.next());
+        assertEquals(SubjectAttributeType.DOMAIN_COMPONENT, iterator.next());
     }
 
     @Test
@@ -99,10 +99,10 @@ class SubjectAttributeTypeTest {
                 .filter(SubjectAttributeType::isMultiValue)
                 .collect(Collectors.toSet());
         assertEquals(4, attributeTypeSet.size());
-        assertTrue(attributeTypeSet.contains(SubjectAttributeType.OrganizationUnit));
-        assertTrue(attributeTypeSet.contains(SubjectAttributeType.DomainComponent));
-        assertTrue(attributeTypeSet.contains(SubjectAttributeType.UserID));
-        assertTrue(attributeTypeSet.contains(SubjectAttributeType.GivenName));
+        assertTrue(attributeTypeSet.contains(SubjectAttributeType.ORGANIZATION_UNIT));
+        assertTrue(attributeTypeSet.contains(SubjectAttributeType.DOMAIN_COMPONENT));
+        assertTrue(attributeTypeSet.contains(SubjectAttributeType.USER_ID));
+        assertTrue(attributeTypeSet.contains(SubjectAttributeType.GIVEN_NAME));
     }
 
 }

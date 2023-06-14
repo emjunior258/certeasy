@@ -11,8 +11,8 @@ class RelativeDistinguishedNameTest {
     void toStringMustProduceDesiredOutput(){
 
         String userId = "123456789";
-        RelativeDistinguishedName rdn = new RelativeDistinguishedName(SubjectAttributeType.UserID,userId);
-        Assertions.assertEquals(String.format("%s=%s", SubjectAttributeType.UserID.getMnemonic(), userId),
+        RelativeDistinguishedName rdn = new RelativeDistinguishedName(SubjectAttributeType.USER_ID,userId);
+        Assertions.assertEquals(String.format("%s=%s", SubjectAttributeType.USER_ID.getMnemonic(), userId),
                 rdn.toString());
 
     }

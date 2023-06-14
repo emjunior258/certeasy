@@ -21,8 +21,9 @@ class OrganizationBindingTest {
 
     @Test
     void mustNotRequireTitleAndDepartment() {
-        new OrganizationBinding("Vodafone", null,
+        OrganizationBinding binding = new OrganizationBinding("Vodafone", null,
                 null);
+        assertNotNull(binding);
     }
 
     @Test
@@ -32,7 +33,7 @@ class OrganizationBindingTest {
         Set<RelativeDistinguishedName> rdns = binding.toRdns();
         assertEquals(1, rdns.size());
         RelativeDistinguishedName o = rdns.iterator().next();
-        assertEquals(SubjectAttributeType.OrganizationName, o.type());
+        assertEquals(SubjectAttributeType.ORGANIZATION_NAME, o.type());
         assertEquals("Vodafone", o.value());
     }
 
@@ -45,8 +46,8 @@ class OrganizationBindingTest {
         Set<SubjectAttributeType> subjectAttributeTypes = rdns.stream()
                 .map(RelativeDistinguishedName::type)
                 .collect(Collectors.toSet());
-        assertTrue(subjectAttributeTypes.contains(SubjectAttributeType.OrganizationName));
-        assertTrue(subjectAttributeTypes.contains(SubjectAttributeType.OrganizationUnit));
+        assertTrue(subjectAttributeTypes.contains(SubjectAttributeType.ORGANIZATION_NAME));
+        assertTrue(subjectAttributeTypes.contains(SubjectAttributeType.ORGANIZATION_UNIT));
     }
 
     @Test
@@ -58,9 +59,9 @@ class OrganizationBindingTest {
         Set<SubjectAttributeType> subjectAttributeTypes = rdns.stream()
                 .map(RelativeDistinguishedName::type)
                 .collect(Collectors.toSet());
-        assertTrue(subjectAttributeTypes.contains(SubjectAttributeType.OrganizationName));
-        assertTrue(subjectAttributeTypes.contains(SubjectAttributeType.OrganizationUnit));
-        assertTrue(subjectAttributeTypes.contains(SubjectAttributeType.Title));
+        assertTrue(subjectAttributeTypes.contains(SubjectAttributeType.ORGANIZATION_NAME));
+        assertTrue(subjectAttributeTypes.contains(SubjectAttributeType.ORGANIZATION_UNIT));
+        assertTrue(subjectAttributeTypes.contains(SubjectAttributeType.TITLE));
     }
 
 }

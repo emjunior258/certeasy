@@ -23,7 +23,7 @@ public sealed class PersonalIdentitySubject extends CertificateSubject permits E
         DistinguishedName.Builder builder = DistinguishedName.builder();
         builder.append(personName);
         builder.append(address);
-        builder.append(new RelativeDistinguishedName(SubjectAttributeType.TelephoneNumber, telephone));
+        builder.append(new RelativeDistinguishedName(SubjectAttributeType.TELEPHONE_NUMBER, telephone));
 
         if(organizationBinding!=null)
             builder.append(organizationBinding);
@@ -34,7 +34,7 @@ public sealed class PersonalIdentitySubject extends CertificateSubject permits E
                 .forEach(subjectAlternativeNames::add);
         if(usernames!=null){
             usernames.stream()
-                    .map(name -> new RelativeDistinguishedName(SubjectAttributeType.UserID,name))
+                    .map(name -> new RelativeDistinguishedName(SubjectAttributeType.USER_ID,name))
                     .forEach(builder::append);
 
             usernames.stream()

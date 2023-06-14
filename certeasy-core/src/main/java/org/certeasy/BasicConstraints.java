@@ -9,11 +9,9 @@ public record BasicConstraints(boolean ca, int pathLength) {
     public BasicConstraints(int pathLength){
         this(true, pathLength);
     }
-    public BasicConstraints(boolean ca, int pathLength){
-        this.ca = ca;
+    public BasicConstraints{
         if(pathLength<-1)
             throw new IllegalArgumentException("pathLength MUST not be less than -1");
-        this.pathLength = pathLength;
     }
 
 }

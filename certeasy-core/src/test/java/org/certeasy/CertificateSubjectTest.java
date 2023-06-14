@@ -66,7 +66,7 @@ class CertificateSubjectTest {
                         .build());
         DistinguishedName distinguishedName = subject.getDistinguishedName();
         assertEquals("John Doe", distinguishedName.getCommonName());
-        Optional<RelativeDistinguishedName> countryName = distinguishedName.findFirst(SubjectAttributeType.CountryName);
+        Optional<RelativeDistinguishedName> countryName = distinguishedName.findFirst(SubjectAttributeType.COUNTRY_NAME);
         assertTrue(countryName.isPresent());
         assertEquals("US", countryName.get().value());
     }

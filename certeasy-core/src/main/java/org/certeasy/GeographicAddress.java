@@ -19,13 +19,13 @@ public record GeographicAddress(String countryIsoCode,
     public Set<RelativeDistinguishedName> toRdns() {
         Set<RelativeDistinguishedName> nameSet = new HashSet<>();
         if(countryIsoCode != null)
-            nameSet.add(new RelativeDistinguishedName(SubjectAttributeType.CountryName, countryIsoCode));
+            nameSet.add(new RelativeDistinguishedName(SubjectAttributeType.COUNTRY_NAME, countryIsoCode));
         if(state != null)
-            nameSet.add(new RelativeDistinguishedName(SubjectAttributeType.Province, state));
+            nameSet.add(new RelativeDistinguishedName(SubjectAttributeType.PROVINCE, state));
         if(locality != null)
-            nameSet.add(new RelativeDistinguishedName(SubjectAttributeType.Locality, locality));
+            nameSet.add(new RelativeDistinguishedName(SubjectAttributeType.LOCALITY, locality));
         if(streetAddress != null)
-            nameSet.add(new RelativeDistinguishedName(SubjectAttributeType.Street, streetAddress));
+            nameSet.add(new RelativeDistinguishedName(SubjectAttributeType.STREET, streetAddress));
         return nameSet;
     }
 

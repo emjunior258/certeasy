@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -30,11 +29,11 @@ class GeographicAddressTest {
         assertEquals(2, nameSet.size());
         Map<SubjectAttributeType, String> map = nameSet.stream().collect(Collectors.toMap(RelativeDistinguishedName::type,
                 RelativeDistinguishedName::value));
-        assertTrue(map.containsKey(SubjectAttributeType.Province));
-        String province = map.get(SubjectAttributeType.Province);
+        assertTrue(map.containsKey(SubjectAttributeType.PROVINCE));
+        String province = map.get(SubjectAttributeType.PROVINCE);
         assertEquals("Maputo", province);
-        assertTrue(map.containsKey(SubjectAttributeType.CountryName));
-        String countryName = map.get(SubjectAttributeType.CountryName);
+        assertTrue(map.containsKey(SubjectAttributeType.COUNTRY_NAME));
+        String countryName = map.get(SubjectAttributeType.COUNTRY_NAME);
         assertEquals("MZ", countryName);
     }
 
