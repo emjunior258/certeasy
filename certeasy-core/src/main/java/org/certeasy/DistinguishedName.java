@@ -33,7 +33,10 @@ public record DistinguishedName(Set<RelativeDistinguishedName> relativeDistingui
     }
 
     public String getCommonName(){
-        return this.findFirst(SubjectAttributeType.CommonName).get().value();
+        Optional<RelativeDistinguishedName> relativeDistinguishedName = this.findFirst(SubjectAttributeType.CommonName);
+        if(relativeDistinguishedName.isEmpty())
+            throw new IllegalStateException("distinguishedName doesn't have a common name");
+        return relativeDistinguishedName.get().value();
     }
 
     public Optional<RelativeDistinguishedName> findFirst(SubjectAttributeType attributeType){

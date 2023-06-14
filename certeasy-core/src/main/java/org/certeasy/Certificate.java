@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.PrivateKey;
 import java.util.*;
 
@@ -84,8 +86,8 @@ public class Certificate {
         this.keyUsages = spec.getKeyUsages();
         this.basicConstraints = spec.getBasicConstraints();
         this.subjectAltNames = spec.getSubject().getAlternativeNames();
-        if(spec.getExtendedKeyUsages().isPresent())
-            this.extendedKeyUsages = spec.getExtendedKeyUsages().get();
+        Optional<ExtendedKeyUsages> extendedKeyUsagesOptional = spec.getExtendedKeyUsages();
+        extendedKeyUsagesOptional.ifPresent(usages -> this.extendedKeyUsages = usages);
         this.serial = serial;
         this.privateKey = privateKey;
         this.derBytes = derBytes;
@@ -122,7 +124,7 @@ public class Certificate {
         if(file.isDirectory())
             throw new IllegalArgumentException("file MUST not be a directory: "+ file.getAbsolutePath());
         try {
-            file.createNewFile();
+            Files.createFile(file.toPath());
         } catch (IOException ex) {
             throw new CertEasyException("failed to create file: "+file.getAbsolutePath(), ex);
         }
