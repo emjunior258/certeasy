@@ -8,7 +8,7 @@ class RelativeDistinguishedNameTest {
 
     @Test
     @DisplayName("toString() must return desired output")
-    public void toStringMustProduceDesiredOutput(){
+    void toStringMustProduceDesiredOutput(){
 
         String userId = "123456789";
         RelativeDistinguishedName rdn = new RelativeDistinguishedName(SubjectAttributeType.UserID,userId);

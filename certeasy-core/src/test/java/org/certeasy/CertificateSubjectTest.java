@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -12,7 +13,7 @@ class CertificateSubjectTest {
 
     @Test
     @DisplayName("constructor must succeed with null alternative names")
-    public void constructorMustSucceedWithNullAlternativeNames(){
+    void constructorMustSucceedWithNullAlternativeNames(){
         new CertificateSubject(
                 DistinguishedName.builder()
                         .parse("CN=John Wick, C=MZ")
@@ -22,7 +23,7 @@ class CertificateSubjectTest {
 
     @Test
     @DisplayName("constructor must not succeed with null DistinguishedName")
-    public void constructorMustNotSucceedWithNullDistinguishedName(){
+    void constructorMustNotSucceedWithNullDistinguishedName(){
         assertThrows(IllegalArgumentException.class, () -> {
             new CertificateSubject(
                     null,
@@ -35,7 +36,7 @@ class CertificateSubjectTest {
 
     @Test
     @DisplayName("constructor must succeed if distinguished name and alternatives are provided")
-    public void mustConstructCertificateSubjectSuccessfullyWithDistinguishedNameAndAlternatives(){
+    void mustConstructCertificateSubjectSuccessfullyWithDistinguishedNameAndAlternatives(){
         new CertificateSubject(
                 DistinguishedName.builder()
                         .parse("CN=John Wick, C=MZ")
@@ -48,13 +49,13 @@ class CertificateSubjectTest {
 
     @Test
     @DisplayName("constructor must succeed with zero arguments")
-    public void mustConstructCertificateSubjectWithZeroArguments(){
+    void mustConstructCertificateSubjectWithZeroArguments(){
         new CertificateSubject();
     }
 
     @Test
     @DisplayName("setDistinguishedName() must change distinguishedName")
-    public void setDistinguishedNameMustChangeDistinguishedName(){
+    void setDistinguishedNameMustChangeDistinguishedName(){
         CertificateSubject subject =  new CertificateSubject(
                 DistinguishedName.builder()
                         .parse("CN=John Wick, C=UK")
@@ -73,7 +74,7 @@ class CertificateSubjectTest {
 
     @Test
     @DisplayName("setAlternativeNames() must change alternative names")
-    public void setAlternativeNamesMustSubjectChangeAlternativeNames(){
+    void setAlternativeNamesMustSubjectChangeAlternativeNames(){
         CertificateSubject subject =  new CertificateSubject(
                 DistinguishedName.builder()
                         .parse("CN=John Wick, C=UK")
@@ -82,11 +83,15 @@ class CertificateSubjectTest {
                 new SubjectAlternativeName(SubjectAlternativeNameType.OTHER_NAME, "Baga Yaga"),
                 new SubjectAlternativeName(SubjectAlternativeNameType.DNS, "johnwick.com")
         ));
+        Set<String> alternativeNames = subject.getAlternativeNames().stream().map(SubjectAlternativeName::value)
+                .collect(Collectors.toSet());
+        assertTrue(alternativeNames.contains("Baga Yaga"));
+        assertTrue(alternativeNames.contains("johnwick.com"));
     }
 
     @Test
     @DisplayName("getCommonName() must return DistinguishedName CN attribute")
-    public void getCommonNameMustReturnDistinguishedNameCN(){
+    void getCommonNameMustReturnDistinguishedNameCN(){
         CertificateSubject subject =  new CertificateSubject(
                 DistinguishedName.builder()
                         .parse("CN=John Wick, C=UK")
@@ -96,7 +101,7 @@ class CertificateSubjectTest {
 
     @Test
     @DisplayName("hasAlternativeNames() must return false if alternative names are not set")
-    public void hasAlternativeNamesMustReturnFalseIfAlternativeNamesAreNotSet(){
+    void hasAlternativeNamesMustReturnFalseIfAlternativeNamesAreNotSet(){
         CertificateSubject subject =  new CertificateSubject(
                 DistinguishedName.builder()
                         .parse("CN=John Wick, C=UK")
@@ -106,7 +111,7 @@ class CertificateSubjectTest {
 
     @Test
     @DisplayName("hasAlternativeNames() must return true if alternative names are set")
-    public void hasAlternativeNamesMustReturnTrueIfAlternativeNamesAreSet(){
+    void hasAlternativeNamesMustReturnTrueIfAlternativeNamesAreSet(){
         CertificateSubject subject =  new CertificateSubject(
                 DistinguishedName.builder()
                         .parse("CN=John Wick, C=UK")
@@ -120,7 +125,7 @@ class CertificateSubjectTest {
 
     @Test
     @DisplayName("getAlternativeNames() must return all alternative names set")
-    public void getAlternativeNamesMustReturnAllAlternativeNamesSet(){
+    void getAlternativeNamesMustReturnAllAlternativeNamesSet(){
         CertificateSubject subject =  new CertificateSubject(
                 DistinguishedName.builder()
                         .parse("CN=John Wick, C=UK")

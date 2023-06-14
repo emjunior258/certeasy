@@ -63,7 +63,7 @@ public enum StoredCert {
         this.attributes = attributes;
     }
 
-    public void load(){
+    void load(){
         if(derBytes==null)
             this.loadDerBytes();
         if(privateKey==null)

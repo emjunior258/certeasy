@@ -46,7 +46,7 @@ class CertificateLongConstructorTest implements CertificateBaseTest {
 
     @Test
     @DisplayName("constructor must require non-null serial")
-    public void constructor_must_require_non_null_serial(){
+    void constructor_must_require_non_null_serial(){
         assertThrows(IllegalArgumentException.class, () -> {
             TestCert cert = getSiteCert();
             CertAttributes attrs = cert.attributes();
@@ -67,7 +67,7 @@ class CertificateLongConstructorTest implements CertificateBaseTest {
 
     @Test
     @DisplayName("constructor must require non-null distinguishedName")
-    public void constructor_must_require_non_null_distinguished_name(){
+    void constructor_must_require_non_null_distinguished_name(){
         assertThrows(IllegalArgumentException.class, () -> {
             TestCert cert = getSiteCert();
             CertAttributes attrs = cert.attributes();
@@ -87,7 +87,7 @@ class CertificateLongConstructorTest implements CertificateBaseTest {
 
     @Test
     @DisplayName("constructor must require non-null validityPeriod")
-    public void constructor_must_require_non_null_validity_period(){
+    void constructor_must_require_non_null_validity_period(){
         assertThrows(IllegalArgumentException.class, () -> {
             TestCert cert = getSiteCert();
             CertAttributes attrs = cert.attributes();
@@ -108,7 +108,7 @@ class CertificateLongConstructorTest implements CertificateBaseTest {
 
     @Test
     @DisplayName("constructor must require non-null keyStrength")
-    public void constructor_must_require_non_null_key_strength(){
+    void constructor_must_require_non_null_key_strength(){
         assertThrows(IllegalArgumentException.class, () -> {
             TestCert cert = getSiteCert();
             CertAttributes attrs = cert.attributes();
@@ -129,7 +129,7 @@ class CertificateLongConstructorTest implements CertificateBaseTest {
 
     @Test
     @DisplayName("constructor must require non-null basicConstraints")
-    public void constructor_must_require_non_null_basic_constraints(){
+    void constructor_must_require_non_null_basic_constraints(){
         assertThrows(IllegalArgumentException.class, () -> {
             TestCert cert = getSiteCert();
             CertAttributes attrs = cert.attributes();
@@ -150,7 +150,7 @@ class CertificateLongConstructorTest implements CertificateBaseTest {
 
     @Test
     @DisplayName("constructor must require non-null privateKey")
-    public void constructor_must_require_non_null_private_key(){
+    void constructor_must_require_non_null_private_key(){
         assertThrows(IllegalArgumentException.class, () -> {
             TestCert cert = getSiteCert();
             CertAttributes attrs = cert.attributes();
@@ -171,7 +171,7 @@ class CertificateLongConstructorTest implements CertificateBaseTest {
 
     @Test
     @DisplayName("constructor must require non-null key usages")
-    public void constructor_must_require_non_null_key_usages(){
+    void constructor_must_require_non_null_key_usages(){
         assertThrows(IllegalArgumentException.class, () -> {
             TestCert cert = getSiteCert();
             CertAttributes attrs = cert.attributes();
@@ -191,7 +191,7 @@ class CertificateLongConstructorTest implements CertificateBaseTest {
 
     @Test
     @DisplayName("constructor must require non-null der-bytes")
-    public void constructor_must_require_non_null_der_bytes(){
+    void constructor_must_require_non_null_der_bytes(){
         assertThrows(IllegalArgumentException.class, () -> {
             TestCert cert = getSiteCert();
             CertAttributes attrs = cert.attributes();
@@ -212,7 +212,7 @@ class CertificateLongConstructorTest implements CertificateBaseTest {
 
     @Test
     @DisplayName("constructor must require non-empty der-bytes")
-    public void constructor_must_require_non_empty_der_bytes(){
+    void constructor_must_require_non_empty_der_bytes(){
         assertThrows(IllegalArgumentException.class, () -> {
             TestCert cert = getSiteCert();
             CertAttributes attrs = cert.attributes();
@@ -233,7 +233,7 @@ class CertificateLongConstructorTest implements CertificateBaseTest {
 
     @Test
     @DisplayName("constructor must require non-null issuer distinguished name")
-    public void constructor_must_require_non_null_issuer_distinguished_name(){
+    void constructor_must_require_non_null_issuer_distinguished_name(){
         assertThrows(IllegalArgumentException.class, () -> {
             TestCert cert = getSiteCert();
             CertAttributes attrs = cert.attributes();
@@ -253,7 +253,7 @@ class CertificateLongConstructorTest implements CertificateBaseTest {
 
     @Test
     @DisplayName("constructor must allow null extended key usages")
-    public void constructor_must_allow_null_extended_key_usages(){
+    void constructor_must_allow_null_extended_key_usages(){
         TestCert cert = getSiteCert();
         CertAttributes attrs = cert.attributes();
         new Certificate("1234567890",
@@ -272,7 +272,7 @@ class CertificateLongConstructorTest implements CertificateBaseTest {
 
     @Test
     @DisplayName("constructor must allow null subject alt names")
-    public void constructor_must_allow_null_subject_alt_names(){
+    void constructor_must_allow_null_subject_alt_names(){
         TestCert cert = getSiteCert();
         CertAttributes attrs = cert.attributes();
         new Certificate("1234567890",
@@ -290,7 +290,7 @@ class CertificateLongConstructorTest implements CertificateBaseTest {
 
     @Test
     @DisplayName("getKeyStrength() must return the KeyStrength value from constructor argument")
-    public void getKeyStrength_must_return_the_KeyStrength_value_from_constructor_argument(){
+    void getKeyStrength_must_return_the_KeyStrength_value_from_constructor_argument(){
         TestCert cert = getSiteCert();
         CertAttributes attrs = cert.attributes();
         assertEquals(attrs.keyStrength(), cert.certificate().getKeyStrength());
@@ -298,7 +298,7 @@ class CertificateLongConstructorTest implements CertificateBaseTest {
 
     @Test
     @DisplayName("getValidityPeriod() must return validity from constructor argument")
-    public void getValidityPeriod_must_return_validity_from_constructor_argument(){
+    void getValidityPeriod_must_return_validity_from_constructor_argument(){
         TestCert cert = getSiteCert();
         CertAttributes attrs = cert.attributes();
         assertEquals(attrs.validity(), cert.certificate().getValidityPeriod());
@@ -306,7 +306,7 @@ class CertificateLongConstructorTest implements CertificateBaseTest {
 
     @Test
     @DisplayName("getDistinguishedName() must return DistinguishedName from constructor argument")
-    public void getDistinguishedName_must_return_DistinguishedName_from_constructor_argument(){
+    void getDistinguishedName_must_return_DistinguishedName_from_constructor_argument(){
         TestCert cert = getSiteCert();
         CertAttributes attrs = cert.attributes();
         assertEquals(attrs.subject(), cert.certificate().getDistinguishedName());
@@ -314,7 +314,7 @@ class CertificateLongConstructorTest implements CertificateBaseTest {
 
     @Test
     @DisplayName("getExtendedKeyUsages() must return non-empty optional when constructor argument is not null")
-    public void getExtendedKeyUsages_must_return_non_empty_optional_when_constructor_argument_is_not_null(){
+    void getExtendedKeyUsages_must_return_non_empty_optional_when_constructor_argument_is_not_null(){
         TestCert cert = getSiteCert();
         CertAttributes attrs = cert.attributes();
         Certificate certificate = new Certificate("1234567890",
@@ -333,7 +333,7 @@ class CertificateLongConstructorTest implements CertificateBaseTest {
 
     @Test
     @DisplayName("getExtendedKeyUsages() must return empty optional when constructor argument is null")
-    public void getExtendedKeyUsages_must_return_empty_optional_when_constructor_argument_is_null(){
+    void getExtendedKeyUsages_must_return_empty_optional_when_constructor_argument_is_null(){
         TestCert cert = getSiteCert();
         CertAttributes attrs = cert.attributes();
         Certificate certificate = new Certificate("1234567890",
@@ -352,7 +352,7 @@ class CertificateLongConstructorTest implements CertificateBaseTest {
 
     @Test
     @DisplayName("getSubjectAltNames() must return empty set if constructor argument is null")
-    public void getSubjectAltNames_must_return_empty_set_if_constructor_argument_is_null(){
+    void getSubjectAltNames_must_return_empty_set_if_constructor_argument_is_null(){
         TestCert cert = getSiteCert();
         CertAttributes attrs = cert.attributes();
         Certificate certificate = new Certificate("1234567890",
@@ -371,7 +371,7 @@ class CertificateLongConstructorTest implements CertificateBaseTest {
 
     @Test
     @DisplayName("getSubjectAltNames() must return empty set if constructor argument is empty collection")
-    public void getSubjectAltNames_must_return_empty_set_if_constructor_argument_is_empty_collection(){
+    void getSubjectAltNames_must_return_empty_set_if_constructor_argument_is_empty_collection(){
         TestCert cert = getSiteCert();
         CertAttributes attrs = cert.attributes();
         Certificate certificate = new Certificate("1234567890",
@@ -390,7 +390,7 @@ class CertificateLongConstructorTest implements CertificateBaseTest {
 
     @Test
     @DisplayName("getSubjectAltNames() must return non-empty if constructor argument is not null")
-    public void getSubjectAltNames_must_return_non_empty_if_constructor_argument_is_not_null(){
+    void getSubjectAltNames_must_return_non_empty_if_constructor_argument_is_not_null(){
         TestCert cert = getSiteCert();
         CertAttributes attrs = cert.attributes();
         Certificate certificate = new Certificate("1234567890",
@@ -410,7 +410,7 @@ class CertificateLongConstructorTest implements CertificateBaseTest {
 
     @Test
     @DisplayName("getBasicConstraints() must return basic constraint from constructor argument")
-    public void getBasicConstraints_must_return_basic_constraint_from_constructor_argument(){
+    void getBasicConstraints_must_return_basic_constraint_from_constructor_argument(){
         TestCert cert = getSiteCert();
         CertAttributes attrs = cert.attributes();
         Certificate certificate = new Certificate("1234567890",

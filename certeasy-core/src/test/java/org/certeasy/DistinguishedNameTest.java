@@ -16,7 +16,7 @@ class DistinguishedNameTest {
 
     @Test
     @DisplayName("toString() must return desired output: set1")
-    public void toStringMustReturnDesiredOutputSet1(){
+    void toStringMustReturnDesiredOutputSet1(){
 
         DistinguishedName dn = DistinguishedName
                 .builder()
@@ -33,7 +33,7 @@ class DistinguishedNameTest {
 
     @Test
     @DisplayName("toString() must return desired output: set2")
-    public void toStringMustReturnDesiredOutputSet2(){
+    void toStringMustReturnDesiredOutputSet2(){
         DistinguishedName dn = DistinguishedName
                 .builder()
                 .append(new RelativeDistinguishedName(SubjectAttributeType.CommonName, "John Doe"))
@@ -53,7 +53,7 @@ class DistinguishedNameTest {
 
     @Test
     @DisplayName("toString() must return desired output: set3")
-    public void toStringMustReturnDesiredOutputSet3(){
+    void toStringMustReturnDesiredOutputSet3(){
         DistinguishedName dn = DistinguishedName
                 .builder()
                 .append(new RelativeDistinguishedName(SubjectAttributeType.CommonName, "John Wick"))
@@ -67,7 +67,7 @@ class DistinguishedNameTest {
 
     @Test
     @DisplayName("findAll() must return all RDNs of specified type in expected order")
-    public void findAllMustFindAllRDNsOfSpecifiedTypeInExpectedOrder(){
+    void findAllMustFindAllRDNsOfSpecifiedTypeInExpectedOrder(){
 
         DistinguishedName dn = DistinguishedName
                 .builder()
@@ -97,7 +97,7 @@ class DistinguishedNameTest {
 
     @Test
     @DisplayName("findAll() must return empty set of RDNs of specified type")
-    public void findAllMustReturnEmptySetOfSpecifiedType(){
+    void findAllMustReturnEmptySetOfSpecifiedType(){
 
         DistinguishedName dn = DistinguishedName
                 .builder()
@@ -113,7 +113,7 @@ class DistinguishedNameTest {
 
     @Test
     @DisplayName("findFirst() must return first matching RDN")
-    public void findFirstMustReturnFirstMatchingRDN(){
+    void findFirstMustReturnFirstMatchingRDN(){
 
         DistinguishedName dn = DistinguishedName
                 .builder()
@@ -131,7 +131,7 @@ class DistinguishedNameTest {
 
     @Test
     @DisplayName("findFirst() must return empty optional")
-    public void findFirstMustReturnEmptyOptional(){
+    void findFirstMustReturnEmptyOptional(){
 
         DistinguishedName dn = DistinguishedName
                 .builder()
@@ -145,7 +145,7 @@ class DistinguishedNameTest {
 
     @Test
     @DisplayName("hasAttribute() must return true if attribute is present")
-    public void hasAttributeMustReturnTrueIfAttributeIsPresent(){
+    void hasAttributeMustReturnTrueIfAttributeIsPresent(){
         DistinguishedName dn = DistinguishedName
                 .builder()
                 .append(new RelativeDistinguishedName(SubjectAttributeType.CommonName, "Example"))
@@ -156,7 +156,7 @@ class DistinguishedNameTest {
 
     @Test
     @DisplayName("hasAttribute() must return false if attribute is not present")
-    public void hasAttributeMustReturnFalseIfAttributeIsNotPresent(){
+    void hasAttributeMustReturnFalseIfAttributeIsNotPresent(){
         DistinguishedName dn = DistinguishedName
                 .builder()
                 .append(new RelativeDistinguishedName(SubjectAttributeType.CommonName, "Example"))

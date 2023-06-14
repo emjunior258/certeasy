@@ -28,7 +28,7 @@ class CertificateSpecTest {
 
     @Test
     @DisplayName("constructor must require non null subject argument")
-    public void mustRequireNonNullSubject(){
+    void mustRequireNonNullSubject(){
         assertThrows(IllegalArgumentException.class, () -> {
             new CertificateSpec(null, KeyStrength.LOW, validityPeriod,
                     new BasicConstraints(false),
@@ -39,7 +39,7 @@ class CertificateSpecTest {
 
     @Test
     @DisplayName("constructor must require non null keyStrength argument")
-    public void mustRequireNonNullKeyStrength(){
+    void mustRequireNonNullKeyStrength(){
         assertThrows(IllegalArgumentException.class, () -> {
             new CertificateSpec(subject, null, validityPeriod,
                     new BasicConstraints(false),
@@ -50,7 +50,7 @@ class CertificateSpecTest {
 
     @Test
     @DisplayName("constructor must require non null validityPeriod argument")
-    public void mustRequireNonNullValidityPeriod(){
+    void mustRequireNonNullValidityPeriod(){
         assertThrows(IllegalArgumentException.class, () -> {
             new CertificateSpec(subject, KeyStrength.LOW, null,
                     new BasicConstraints(false),
@@ -61,7 +61,7 @@ class CertificateSpecTest {
 
     @Test
     @DisplayName("constructor must require non null basicConstraints argument")
-    public void mustRequireNonNullBasicConstraints(){
+    void mustRequireNonNullBasicConstraints(){
         assertThrows(IllegalArgumentException.class, () -> {
             new CertificateSpec(subject, KeyStrength.LOW, validityPeriod,
                     null, Set.of(KeyUsage.DECIPHER_ONLY),
@@ -72,7 +72,7 @@ class CertificateSpecTest {
 
     @Test
     @DisplayName("constructor must require non null keyUsages argument")
-    public void mustRequireNonNullKeyUsages(){
+    void mustRequireNonNullKeyUsages(){
         assertThrows(IllegalArgumentException.class, () -> {
             new CertificateSpec(subject, KeyStrength.LOW, validityPeriod,
                     new BasicConstraints(false),
@@ -83,7 +83,7 @@ class CertificateSpecTest {
 
     @Test
     @DisplayName("constructor must require non empty keyUsages argument")
-    public void mustRequireNonEmptyKeyUsagesSet(){
+    void mustRequireNonEmptyKeyUsagesSet(){
         assertThrows(IllegalArgumentException.class, () -> {
             new CertificateSpec(subject, KeyStrength.LOW, validityPeriod,
                     new BasicConstraints(false), new HashSet<>(),
@@ -95,7 +95,7 @@ class CertificateSpecTest {
 
     @Test
     @DisplayName("constructor must allow null extendedKeyUsages argument")
-    public void mustAllowNullExtendedKeyUsages(){
+    void mustAllowNullExtendedKeyUsages(){
         CertificateSpec spec = new CertificateSpec(subject, KeyStrength.LOW, validityPeriod,
                 new BasicConstraints(false), Set.of(KeyUsage.CERTIFICATE_SIGN),
                 null);
@@ -104,7 +104,7 @@ class CertificateSpecTest {
 
     @Test
     @DisplayName("getters must return values supplied to constructor")
-    public void gettersMustReturnConstructorArguments(){
+    void gettersMustReturnConstructorArguments(){
         CertificateSpec spec = new CertificateSpec(subject, KeyStrength.LOW, validityPeriod,
                 new BasicConstraints(false), Set.of(KeyUsage.CERTIFICATE_SIGN, KeyUsage.DIGITAL_SIGNATURE),
                 new ExtendedKeyUsages(Set.of(

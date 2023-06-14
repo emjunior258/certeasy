@@ -6,38 +6,38 @@ class CertificateSpecTest {
 
 
     @Test
-    public void constructorMustAllowNullExtendedKeyUsage(){
+    void constructorMustAllowNullExtendedKeyUsage(){
 
     }
 
 
     @Test
-    public void mustReturnProvidedSubject(){
+    void mustReturnProvidedSubject(){
 
     }
 
     @Test
-    public void mustReturnProvidedKeyStrength(){
+    void mustReturnProvidedKeyStrength(){
 
     }
 
     @Test
-    public void mustReturnProvidedValidityPeriod(){
+    void mustReturnProvidedValidityPeriod(){
 
     }
 
     @Test
-    public void mustReturnProvidedBasicConstraints(){
+    void mustReturnProvidedBasicConstraints(){
 
     }
 
     @Test
-    public void mustReturnProvidedKeyUsage(){
+    void mustReturnProvidedKeyUsage(){
 
     }
 
     @Test
-    public void mustReturnProvidedExtendedKeyUsage(){
+    void mustReturnProvidedExtendedKeyUsage(){
 
     }
 

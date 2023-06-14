@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class CertificateAuthoritySubjectTest {
 
     @Test
-    public void constructorMustNotAcceptNullName(){
+    void constructorMustNotAcceptNullName(){
         assertThrows(IllegalArgumentException.class, () -> {
             new CertificateAuthoritySubject(null,
                     new GeographicAddress("MZ", "Maputo", "Kampfumo", "Av. 24 de Julho"));
@@ -23,7 +23,7 @@ class CertificateAuthoritySubjectTest {
 
 
     @Test
-    public void constructorMustNotAcceptNullAddress(){
+    void constructorMustNotAcceptNullAddress(){
         assertThrows(IllegalArgumentException.class, () -> {
             String name = "example.com";
             new CertificateAuthoritySubject(name,
@@ -33,7 +33,7 @@ class CertificateAuthoritySubjectTest {
 
 
     @Test
-    public void mustSetDistinguishedNameWithSubjectAttributes(){
+    void mustSetDistinguishedNameWithSubjectAttributes(){
         String name = "lorem-ipsum";
         GeographicAddress address = new GeographicAddress("MZ", "Maputo", "Kampfumo", "Av. 24 de Julho");
         CertificateAuthoritySubject subject = new CertificateAuthoritySubject(name,

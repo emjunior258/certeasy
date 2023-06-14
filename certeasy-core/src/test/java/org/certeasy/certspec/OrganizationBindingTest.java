@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class OrganizationBindingTest {
 
     @Test
-    public void mustRequireNonNullOrganizationName() {
+    void mustRequireNonNullOrganizationName() {
         assertThrows(IllegalArgumentException.class, () -> {
             new OrganizationBinding(null, "IT Department",
                     "Software Engineer");
@@ -20,13 +20,13 @@ class OrganizationBindingTest {
     }
 
     @Test
-    public void mustNotRequireTitleAndDepartment() {
+    void mustNotRequireTitleAndDepartment() {
         new OrganizationBinding("Vodafone", null,
                 null);
     }
 
     @Test
-    public void mustMapOrganizationNameToOUAttributeType(){
+    void mustMapOrganizationNameToOUAttributeType(){
         OrganizationBinding binding = new OrganizationBinding("Vodafone", null,
                 null);
         Set<RelativeDistinguishedName> rdns = binding.toRdns();
@@ -37,7 +37,7 @@ class OrganizationBindingTest {
     }
 
     @Test
-    public void mustMapDepartmentToOUAttributeType(){
+    void mustMapDepartmentToOUAttributeType(){
         OrganizationBinding binding = new OrganizationBinding("Vodafone", "Financial services",
                 null);
         Set<RelativeDistinguishedName> rdns = binding.toRdns();
@@ -50,7 +50,7 @@ class OrganizationBindingTest {
     }
 
     @Test
-    public void mustMapTitleAttributeType(){
+    void mustMapTitleAttributeType(){
         OrganizationBinding binding = new OrganizationBinding("Vodafone", "Financial services",
                 "Head of Engineering");
         Set<RelativeDistinguishedName> rdns = binding.toRdns();

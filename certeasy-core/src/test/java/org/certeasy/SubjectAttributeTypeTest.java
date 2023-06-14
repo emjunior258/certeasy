@@ -12,7 +12,7 @@ class SubjectAttributeTypeTest {
 
     @Test
     @DisplayName("fromOID() must succeed if matching OID")
-    public void fromOIDMustSucceedIfMatchingOID(){
+    void fromOIDMustSucceedIfMatchingOID(){
         SubjectAttributeType commonName = SubjectAttributeType.fromOID("2.5.4.3");
         assertNotNull(commonName);
         assertEquals(SubjectAttributeType.CommonName, commonName);
@@ -25,7 +25,7 @@ class SubjectAttributeTypeTest {
 
     @Test
     @DisplayName("fromOID() must fail if no matching OID")
-    public void fromOIDMustFailIfNoMatchingOID(){
+    void fromOIDMustFailIfNoMatchingOID(){
         assertThrows(IllegalArgumentException.class, () -> {
             SubjectAttributeType.fromOID("0000000");
         });
@@ -33,7 +33,7 @@ class SubjectAttributeTypeTest {
 
     @Test
     @DisplayName("ofKey() must return attribute with matching mnemonic")
-    public void ofKeyMustReturnAttributeWithMatchingMnemonic(){
+    void ofKeyMustReturnAttributeWithMatchingMnemonic(){
         SubjectAttributeType commonName = SubjectAttributeType.ofKey("CN");
         assertNotNull(commonName);
         assertEquals(SubjectAttributeType.CommonName, commonName);
@@ -47,7 +47,7 @@ class SubjectAttributeTypeTest {
 
     @Test
     @DisplayName("ofKey() must return attribute with matching description")
-    public void ofKeyMustReturnAttributeWithMatchingDescription(){
+    void ofKeyMustReturnAttributeWithMatchingDescription(){
         SubjectAttributeType commonName = SubjectAttributeType.ofKey("commonName");
         assertNotNull(commonName);
         assertEquals("commonName", commonName.getDescription());
@@ -64,7 +64,7 @@ class SubjectAttributeTypeTest {
 
     @Test
     @DisplayName("ofKey() must fail if no matching key")
-    public void ofKeyMustFailIfNoMatchingKey(){
+    void ofKeyMustFailIfNoMatchingKey(){
         assertThrows(IllegalArgumentException.class, () -> {
             SubjectAttributeType.ofKey("DDD");
         });
@@ -72,7 +72,7 @@ class SubjectAttributeTypeTest {
 
     @Test
     @DisplayName("attributeTypes must be ordered as expected")
-    public void attributeTypesMustBeOrderedAsExpected(){
+    void attributeTypesMustBeOrderedAsExpected(){
         List<SubjectAttributeType> attributes = Arrays.asList(SubjectAttributeType.values());
         attributes.sort(Comparator.naturalOrder());
         Iterator<SubjectAttributeType> iterator = attributes.iterator();
@@ -94,7 +94,7 @@ class SubjectAttributeTypeTest {
 
     @Test
     @DisplayName("must match MultiValue attributes")
-    public void mustMatchMultivalueAttributes(){
+    void mustMatchMultivalueAttributes(){
         Set<SubjectAttributeType> attributeTypeSet = Arrays.stream(SubjectAttributeType.values())
                 .filter(SubjectAttributeType::isMultiValue)
                 .collect(Collectors.toSet());

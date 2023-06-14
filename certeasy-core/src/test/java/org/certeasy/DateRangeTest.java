@@ -12,7 +12,7 @@ class DateRangeTest {
 
     @Test
     @DisplayName("constructor must not allow null start date")
-    public void constructorMustNotAllowNullStartDate() {
+    void constructorMustNotAllowNullStartDate() {
         assertThrows(IllegalArgumentException.class, () -> {
             new DateRange(null, LocalDate.now());
         });
@@ -21,7 +21,7 @@ class DateRangeTest {
 
     @Test
     @DisplayName("constructor must not allow null end date")
-    public void constructorMustNotAllowNullEndDate() {
+    void constructorMustNotAllowNullEndDate() {
         assertThrows(IllegalArgumentException.class, () -> {
             new DateRange(LocalDate.now(), null);
         });
@@ -29,7 +29,7 @@ class DateRangeTest {
 
     @Test
     @DisplayName("constructor must not allow end date earlier than start date")
-    public void constructorMustNotAllowEndDateEarlierThanStartDate() {
+    void constructorMustNotAllowEndDateEarlierThanStartDate() {
         assertThrows(IllegalArgumentException.class, () -> {
             new DateRange(LocalDate.of(2023, Month.AUGUST, 10),
                     LocalDate.of(2023, Month.JULY, 10));
@@ -38,7 +38,7 @@ class DateRangeTest {
 
     @Test
     @DisplayName("constructor must assume start date is today when not provided")
-    public void constructorMustAssumeStartDateIsTodayWhenNotProvided() {
+    void constructorMustAssumeStartDateIsTodayWhenNotProvided() {
         LocalDate today = LocalDate.now();
         DateRange range = new DateRange(LocalDate.of(2023, Month.SEPTEMBER, 28));
         LocalDate start = range.start();
@@ -47,7 +47,7 @@ class DateRangeTest {
 
     @Test
     @DisplayName("isWithin() must return false if date is outside range")
-    public void isWithinMustReturnFalseIfOutOfRange() {
+    void isWithinMustReturnFalseIfOutOfRange() {
 
         DateRange range = new DateRange(LocalDate.of(2023, Month.JANUARY, 1),
                 LocalDate.of(2023, Month.SEPTEMBER, 28));
@@ -57,7 +57,7 @@ class DateRangeTest {
 
     @Test
     @DisplayName("isWithin() must return true if date is within range")
-    public void isWithinMustReturnTrueIfWithinRange() {
+    void isWithinMustReturnTrueIfWithinRange() {
 
         DateRange range = new DateRange(LocalDate.of(2023, Month.JANUARY, 1),
                 LocalDate.of(2023, Month.SEPTEMBER, 28));
@@ -67,7 +67,7 @@ class DateRangeTest {
 
     @Test
     @DisplayName("isWithin() must fail if date is null")
-    public void isWithinMustFailIfDateIsNull() {
+    void isWithinMustFailIfDateIsNull() {
         assertThrows(IllegalArgumentException.class, () -> {
             DateRange range = new DateRange(LocalDate.of(2023, Month.JANUARY, 1),
                     LocalDate.of(2023, Month.SEPTEMBER, 28));

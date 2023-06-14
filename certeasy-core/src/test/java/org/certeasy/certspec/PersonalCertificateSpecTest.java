@@ -29,7 +29,7 @@ class PersonalCertificateSpecTest {
 
     @Test
     @DisplayName("spec must be constructed and must have all expected attributes")
-    public void must_be_constructed_and_must_have_all_expected_attributes() {
+    void must_be_constructed_and_must_have_all_expected_attributes() {
 
         PersonalCertificateSpec spec = new PersonalCertificateSpec(subject, KeyStrength.HIGH, new DateRange(LocalDate.of(2050, Month.JANUARY, 1)));
         assertFalse(spec.getBasicConstraints().ca());
@@ -48,7 +48,7 @@ class PersonalCertificateSpecTest {
 
     @Test
     @DisplayName("must fail to construct with null subject")
-    public void must_fail_to_construct_with_null_subject(){
+    void must_fail_to_construct_with_null_subject(){
         assertThrows(IllegalArgumentException.class, () -> {
             new PersonalCertificateSpec(null, KeyStrength.LOW, new DateRange(LocalDate.of(2050, Month.JANUARY, 1)));
         });
@@ -56,7 +56,7 @@ class PersonalCertificateSpecTest {
 
     @Test
     @DisplayName("must fail to construct with null key strength")
-    public void must_fail_to_construct_with_null_key_strength(){
+    void must_fail_to_construct_with_null_key_strength(){
         assertThrows(IllegalArgumentException.class, () -> {
             new PersonalCertificateSpec(subject, null, new DateRange(LocalDate.of(2050, Month.JANUARY, 1)));
         });
@@ -64,7 +64,7 @@ class PersonalCertificateSpecTest {
 
     @Test
     @DisplayName("must fail to construct with null validity")
-    public void must_fail_to_construct_with_null_validity(){
+    void must_fail_to_construct_with_null_validity(){
         assertThrows(IllegalArgumentException.class, () -> {
             new PersonalCertificateSpec(subject, KeyStrength.MEDIUM, null);
         });

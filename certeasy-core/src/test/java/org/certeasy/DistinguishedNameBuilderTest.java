@@ -14,7 +14,7 @@ import static org.mockito.Mockito.*;
 class DistinguishedNameBuilderTest {
 
     @Test
-    public void musParseDistinguishedNameSuccessfullySet1() {
+    void musParseDistinguishedNameSuccessfullySet1() {
 
         DistinguishedName distinguishedName =  DistinguishedName.builder()
                 .parse("CN=John Doe, DC=www, DC=example, DC=com, O=Example Organization, C=US")
@@ -41,7 +41,7 @@ class DistinguishedNameBuilderTest {
     }
 
     @Test
-    public void musParseDistinguishedNameSuccessfullySet2() {
+    void musParseDistinguishedNameSuccessfullySet2() {
 
         DistinguishedName distinguishedName =  DistinguishedName.builder()
                 .parse("CN=www.example.com, OU=IT Department, O=Dummy Corporation, L=New York, ST=New York, C=US")
@@ -81,7 +81,7 @@ class DistinguishedNameBuilderTest {
 
     @Test
     @DisplayName("parse() must require CN attribute")
-    public void parseMusRequireCommonName() {
+    void parseMusRequireCommonName() {
         assertThrows(IllegalArgumentException.class, () -> {
             DistinguishedName.builder()
                     .parse("OU=IT Department, O=Dummy Corporation, L=New York, ST=New York, C=US")
@@ -92,7 +92,7 @@ class DistinguishedNameBuilderTest {
 
     @Test
     @DisplayName("parse() must reject empty string")
-    public void parseMusRejectEmptyString() {
+    void parseMusRejectEmptyString() {
         assertThrows(IllegalArgumentException.class, () -> {
             DistinguishedName.builder()
                     .parse("")
@@ -102,7 +102,7 @@ class DistinguishedNameBuilderTest {
 
     @Test
     @DisplayName("parse() must reject null string")
-    public void parseMusRejectNullString() {
+    void parseMusRejectNullString() {
         assertThrows(IllegalArgumentException.class, () -> {
             DistinguishedName.builder()
                     .parse(null)
@@ -113,7 +113,7 @@ class DistinguishedNameBuilderTest {
 
     @Test
     @DisplayName("parse() must fail to parse Unknown attribute")
-    public void mustFailToParseUnknownAttribute() {
+    void mustFailToParseUnknownAttribute() {
         assertThrows(IllegalSubjectAttributeTypeException.class, () -> {
             DistinguishedName.builder()
                     .parse("OUA=IT Department, O=Dummy Corporation")
@@ -123,7 +123,7 @@ class DistinguishedNameBuilderTest {
 
     @Test
     @DisplayName("append() must cause the RDN to be present in resulting DistinguishedName")
-    public void appendedRDNMustBePresent() {
+    void appendedRDNMustBePresent() {
 
         DistinguishedName dn = DistinguishedName.builder()
                 .append(new RelativeDistinguishedName(SubjectAttributeType.CommonName, "John Doe"))
@@ -138,7 +138,7 @@ class DistinguishedNameBuilderTest {
 
     @Test
     @DisplayName("append() must cause the RDN Set to be present in resulting DistinguishedName")
-    public void appendedRDNSetMustBePresent() {
+    void appendedRDNSetMustBePresent() {
 
         DistinguishedName dn = DistinguishedName.builder()
                 .append(Set.of(new RelativeDistinguishedName(SubjectAttributeType.CommonName,
@@ -155,7 +155,7 @@ class DistinguishedNameBuilderTest {
 
     @Test
     @DisplayName("append() must cause the Convertible RDNs to be present in resulting DistinguishedName")
-    public void appendedConvertiblesRDNsMustBePresent() {
+    void appendedConvertiblesRDNsMustBePresent() {
 
         RDNConvertible convertible = Mockito.mock(RDNConvertible.class);
         when(convertible.toRdns()).thenReturn(

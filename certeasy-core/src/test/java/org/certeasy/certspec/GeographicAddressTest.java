@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class GeographicAddressTest {
 
     @Test
-    public void toRdnsMustReturnCountryAttribute() {
+    void toRdnsMustReturnCountryAttribute() {
         GeographicAddress address = new GeographicAddress("US", null, null, null);
         Set<RelativeDistinguishedName> nameSet = address.toRdns();
         assertEquals(1, nameSet.size());
@@ -24,7 +24,7 @@ class GeographicAddressTest {
     }
 
     @Test
-    public void toRdnsMustReturnCountryProvinceAttributes() {
+    void toRdnsMustReturnCountryProvinceAttributes() {
         GeographicAddress address = new GeographicAddress("MZ", "Maputo", null, null);
         Set<RelativeDistinguishedName> nameSet = address.toRdns();
         assertEquals(2, nameSet.size());
@@ -39,7 +39,7 @@ class GeographicAddressTest {
     }
 
     @Test
-    public void toRdnsMustReturnCountryProvinceLocalityStreetAttributes() {
+    void toRdnsMustReturnCountryProvinceLocalityStreetAttributes() {
         GeographicAddress address = new GeographicAddress("MZ", "Maputo", "Kampfumo", "Av. 25 de Setembro");
         Set<RelativeDistinguishedName> nameSet = address.toRdns().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toCollection(LinkedHashSet::new));
         assertEquals(4, nameSet.size());

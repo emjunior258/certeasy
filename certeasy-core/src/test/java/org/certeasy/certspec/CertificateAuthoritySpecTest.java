@@ -10,12 +10,12 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class CertificateAuthoritySpecTest {
+class CertificateAuthoritySpecTest {
 
     private CertificateAuthoritySubject subject;
     private DateRange validityPeriod;
 
-    public CertificateAuthoritySpecTest(){
+    CertificateAuthoritySpecTest(){
         this.validityPeriod = new DateRange(LocalDate.of(2023, Month.JANUARY, 1),
                 LocalDate.of(2023, Month.DECEMBER, 31));
         this.subject = new CertificateAuthoritySubject("lorem-ipsum",
@@ -25,7 +25,7 @@ public class CertificateAuthoritySpecTest {
     }
 
     @Test
-    public void mustOnlyHaveCARelatedKeyUsages(){
+    void mustOnlyHaveCARelatedKeyUsages(){
         CertificateAuthoritySpec spec = new CertificateAuthoritySpec(subject, 0, KeyStrength.LOW,
                 validityPeriod);
         Set<KeyUsage> keyUsages = spec.getKeyUsages();
@@ -35,7 +35,7 @@ public class CertificateAuthoritySpecTest {
     }
 
     @Test
-    public void mustHaveCaBasicConstraints(){
+    void mustHaveCaBasicConstraints(){
         CertificateAuthoritySpec spec = new CertificateAuthoritySpec(subject, 0, KeyStrength.LOW,
                 validityPeriod);
         BasicConstraints basicConstraints = spec.getBasicConstraints();
@@ -45,7 +45,7 @@ public class CertificateAuthoritySpecTest {
     }
 
     @Test
-    public void specMustNotHaveAnyExtendedKeyUsages(){
+    void specMustNotHaveAnyExtendedKeyUsages(){
         CertificateAuthoritySpec spec = new CertificateAuthoritySpec(subject, 0, KeyStrength.LOW,
                 validityPeriod);
         Optional<ExtendedKeyUsages> extendedKeyUsages =  spec.getExtendedKeyUsages();
