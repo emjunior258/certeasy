@@ -22,7 +22,7 @@ public enum SubjectAttributeType {
     COUNTRY_NAME("C", "countryName", "2.5.4.6", Integer.MAX_VALUE - 9),
     PROVINCE("ST", "stateOrProvinceName", "2.5.4.8", Integer.MAX_VALUE - 10),
     LOCALITY("L", "localityName", "2.5.4.7", Integer.MAX_VALUE - 11),
-    STREET("COMMON_NAME", "streetAddress", "2.5.4.9", Integer.MAX_VALUE - 12),
+    STREET("STREET", "streetAddress", "2.5.4.9", Integer.MAX_VALUE - 12),
     DOMAIN_COMPONENT("DC", "domainComponent", "0.9.2342.19200300.100.1.25",  Integer.MAX_VALUE - 13, true);
 
     private String mnemonic;
