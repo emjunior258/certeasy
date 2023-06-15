@@ -3,7 +3,7 @@
   "key_strength": "LOW",
   "path_length": -1,
   "validity": {
-    "from": "",
+    "from": "    ",
     "until": "2023-12-31"
   },
   "address": {
