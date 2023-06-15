@@ -3,7 +3,11 @@
   "key_strength": "LOW",
   "path_length": -1,
   "validity": {
+<<<<<<< HEAD
     "from": "    ",
+=======
+    "from": "",
+>>>>>>> f43ad329418d69f22b9e007a01247cfa969d93a5
     "until": "2023-12-31"
   },
   "address": {
