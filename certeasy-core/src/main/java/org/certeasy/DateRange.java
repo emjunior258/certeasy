@@ -8,13 +8,11 @@ public record DateRange(LocalDate start, LocalDate end) {
         this(LocalDate.now(), end);
     }
 
-    public DateRange(LocalDate start, LocalDate end){
+    public DateRange{
         if(start==null||end==null)
             throw new IllegalArgumentException("neither start nor end date should be null");
         if(end.isBefore(start))
             throw new IllegalArgumentException("end date MUST be after start date");
-        this.start = start;
-        this.end = end;
     }
 
     public boolean isWithin(LocalDate date){
