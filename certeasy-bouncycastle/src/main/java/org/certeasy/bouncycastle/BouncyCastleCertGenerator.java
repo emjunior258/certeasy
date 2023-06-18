@@ -86,7 +86,7 @@ public class BouncyCastleCertGenerator implements CertificateGenerator {
             builder.addExtension(Extension.keyUsage, true, makeKeyUsage(spec));
             if(spec.getExtendedKeyUsages().isPresent()){
                 ExtendedKeyUsages extendedKeyUsageDef = spec.getExtendedKeyUsages().get();
-                boolean critical  = ExtendedKeyUsageEffect.Enforce == extendedKeyUsageDef.effect();
+                boolean critical  = ExtendedKeyUsageEffect.ENFORCE == extendedKeyUsageDef.effect();
                 builder.addExtension(Extension.extendedKeyUsage, critical,  makeExtendedKeyUsage(spec));
             }
             X509CertificateHolder holder = builder.build(contentSigner);
@@ -170,15 +170,15 @@ public class BouncyCastleCertGenerator implements CertificateGenerator {
         int keyUsageInt = 0;
         for(KeyUsage keyUsage: spec.getKeyUsages()){
             switch (keyUsage){
-                case DigitalSignature -> keyUsageInt += org.bouncycastle.asn1.x509.KeyUsage.digitalSignature;
-                case CertificateSign -> keyUsageInt += org.bouncycastle.asn1.x509.KeyUsage.keyCertSign;
-                case KeyEncipherment -> keyUsageInt += org.bouncycastle.asn1.x509.KeyUsage.keyEncipherment;
-                case NonRepudiation -> keyUsageInt += org.bouncycastle.asn1.x509.KeyUsage.nonRepudiation;
-                case DataEncipherment -> keyUsageInt += org.bouncycastle.asn1.x509.KeyUsage.dataEncipherment;
-                case SignCRL -> keyUsageInt += org.bouncycastle.asn1.x509.KeyUsage.cRLSign;
-                case KeyAgreement -> keyUsageInt += org.bouncycastle.asn1.x509.KeyUsage.keyAgreement;
-                case DecipherOnly -> keyUsageInt += org.bouncycastle.asn1.x509.KeyUsage.decipherOnly;
-                case EncipherOnly -> keyUsageInt += org.bouncycastle.asn1.x509.KeyUsage.encipherOnly;
+                case DIGITAL_SIGNATURE -> keyUsageInt += org.bouncycastle.asn1.x509.KeyUsage.digitalSignature;
+                case CERTIFICATE_SIGN -> keyUsageInt += org.bouncycastle.asn1.x509.KeyUsage.keyCertSign;
+                case KEY_ENCIPHERMENT -> keyUsageInt += org.bouncycastle.asn1.x509.KeyUsage.keyEncipherment;
+                case NON_REPUDIATION -> keyUsageInt += org.bouncycastle.asn1.x509.KeyUsage.nonRepudiation;
+                case DATA_ENCIPHERMENT -> keyUsageInt += org.bouncycastle.asn1.x509.KeyUsage.dataEncipherment;
+                case SIGN_CRL -> keyUsageInt += org.bouncycastle.asn1.x509.KeyUsage.cRLSign;
+                case KEY_AGREEMENT -> keyUsageInt += org.bouncycastle.asn1.x509.KeyUsage.keyAgreement;
+                case DECIPHER_ONLY -> keyUsageInt += org.bouncycastle.asn1.x509.KeyUsage.decipherOnly;
+                case ENCIPHER_ONLY -> keyUsageInt += org.bouncycastle.asn1.x509.KeyUsage.encipherOnly;
             }
         }
         return new org.bouncycastle.asn1.x509.KeyUsage(keyUsageInt);

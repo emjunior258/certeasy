@@ -10,7 +10,7 @@ public final class CertificateAuthoritySubject extends CertificateSubject {
         if(address==null)
             throw new IllegalArgumentException("address MUST not be null");
         this.setDistinguishedName(DistinguishedName.builder()
-                .append(new RelativeDistinguishedName(SubjectAttributeType.CommonName, name))
+                .append(new RelativeDistinguishedName(SubjectAttributeType.COMMON_NAME, name))
                 .append(address)
                 .build()
         );

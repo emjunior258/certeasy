@@ -7,13 +7,11 @@ package org.certeasy;
  */
 public record SubjectAlternativeName(SubjectAlternativeNameType type, String value) {
 
-    public SubjectAlternativeName(SubjectAlternativeNameType type, String value){
+    public SubjectAlternativeName{
         if(type==null)
             throw new IllegalArgumentException("type must NOT be null");
         if(value==null || value.isEmpty())
             throw new IllegalArgumentException("value MUST NOT be null nor empty");
-        this.type = type;
-        this.value = value;
     }
 
 }

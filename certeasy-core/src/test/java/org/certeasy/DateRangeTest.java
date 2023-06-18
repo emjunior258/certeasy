@@ -1,0 +1,78 @@
+package org.certeasy;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import java.time.LocalDate;
+import java.time.Month;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class DateRangeTest {
+
+    @Test
+    @DisplayName("constructor must not allow null start date")
+    void constructorMustNotAllowNullStartDate() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            new DateRange(null, LocalDate.now());
+        });
+    }
+
+
+    @Test
+    @DisplayName("constructor must not allow null end date")
+    void constructorMustNotAllowNullEndDate() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            new DateRange(LocalDate.now(), null);
+        });
+    }
+
+    @Test
+    @DisplayName("constructor must not allow end date earlier than start date")
+    void constructorMustNotAllowEndDateEarlierThanStartDate() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            new DateRange(LocalDate.of(2023, Month.AUGUST, 10),
+                    LocalDate.of(2023, Month.JULY, 10));
+        });
+    }
+
+    @Test
+    @DisplayName("constructor must assume start date is today when not provided")
+    void constructorMustAssumeStartDateIsTodayWhenNotProvided() {
+        LocalDate today = LocalDate.now();
+        DateRange range = new DateRange(LocalDate.of(2023, Month.SEPTEMBER, 28));
+        LocalDate start = range.start();
+        assertEquals(today, start);
+    }
+
+    @Test
+    @DisplayName("isWithin() must return false if date is outside range")
+    void isWithinMustReturnFalseIfOutOfRange() {
+
+        DateRange range = new DateRange(LocalDate.of(2023, Month.JANUARY, 1),
+                LocalDate.of(2023, Month.SEPTEMBER, 28));
+        range.isWithin(LocalDate.of(2023, Month.DECEMBER, 10));
+
+    }
+
+    @Test
+    @DisplayName("isWithin() must return true if date is within range")
+    void isWithinMustReturnTrueIfWithinRange() {
+
+        DateRange range = new DateRange(LocalDate.of(2023, Month.JANUARY, 1),
+                LocalDate.of(2023, Month.SEPTEMBER, 28));
+        range.isWithin(LocalDate.of(2023, Month.MARCH, 10));
+
+    }
+
+    @Test
+    @DisplayName("isWithin() must fail if date is null")
+    void isWithinMustFailIfDateIsNull() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            DateRange range = new DateRange(LocalDate.of(2023, Month.JANUARY, 1),
+                    LocalDate.of(2023, Month.SEPTEMBER, 28));
+            range.isWithin(null);
+        });
+    }
+
+}

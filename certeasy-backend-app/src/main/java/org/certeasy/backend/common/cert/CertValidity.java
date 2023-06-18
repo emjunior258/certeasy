@@ -16,6 +16,9 @@ public record CertValidity(String from, String until) implements Validable {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_DATE;
 
+    private static final String FROM_ISO_DATE_MESSAGE = "from date is not in ISO date format";
+    private static final String UNTIL_ISO_DATE_MESSAGE = "until date is not in ISO date format";
+
     public CertValidity(String from, String until) {
         this.from = from;
         this.until = until;
@@ -36,20 +39,26 @@ public record CertValidity(String from, String until) implements Validable {
             violations.add(new Violation(path, "from", ViolationType.REQUIRED, "from date is required"));
         if (until == null)
             violations.add(new Violation(path, "until", ViolationType.REQUIRED, "until date is required"));
+
+        if (from != null && from.trim().isEmpty())
+            violations.add(new Violation(path, "from", ViolationType.FORMAT, FROM_ISO_DATE_MESSAGE));
+        if(until != null && until.trim().isEmpty())
+            violations.add(new Violation(path, "until", ViolationType.FORMAT, UNTIL_ISO_DATE_MESSAGE));
+
         LocalDate fromLocalDate = null;
-        if (from != null && !from.isEmpty()){
+        if (from != null && !from.trim().isEmpty()){
             try {
-                fromLocalDate = LocalDate.parse(from, DATE_FORMATTER);
+                fromLocalDate = LocalDate.parse(from.trim(), DATE_FORMATTER);
             } catch (DateTimeParseException ex) {
-                violations.add(new Violation(path, "from", ViolationType.FORMAT, "from date is not ISO date"));
+                violations.add(new Violation(path, "from", ViolationType.FORMAT, FROM_ISO_DATE_MESSAGE));
             }
         }
         LocalDate untilLocalDate = null;
-        if (until != null && !until.isEmpty()){
+        if (until != null && !until.trim().isEmpty()){
             try {
-                untilLocalDate = LocalDate.parse(until, DATE_FORMATTER);
+                untilLocalDate = LocalDate.parse(until.trim(), DATE_FORMATTER);
             } catch (DateTimeParseException ex) {
-                violations.add(new Violation(path, "until", ViolationType.FORMAT, "until date is not ISO date"));
+                violations.add(new Violation(path, "until", ViolationType.FORMAT, UNTIL_ISO_DATE_MESSAGE));
             }
         }
         if (fromLocalDate != null && untilLocalDate != null){

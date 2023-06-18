@@ -119,23 +119,23 @@ public class CertificateDecoder {
         if (keyUsageExtension != null) {
             KeyUsage keyUsage = KeyUsage.getInstance(keyUsageExtension.getParsedValue());
             if(keyUsage.hasUsages(KeyUsage.cRLSign))
-                keyUsageSet.add(org.certeasy.KeyUsage.SignCRL);
+                keyUsageSet.add(org.certeasy.KeyUsage.SIGN_CRL);
             if(keyUsage.hasUsages(KeyUsage.keyAgreement))
-                keyUsageSet.add(org.certeasy.KeyUsage.KeyAgreement);
+                keyUsageSet.add(org.certeasy.KeyUsage.KEY_AGREEMENT);
             if(keyUsage.hasUsages(KeyUsage.keyEncipherment))
-                keyUsageSet.add(org.certeasy.KeyUsage.KeyEncipherment);
+                keyUsageSet.add(org.certeasy.KeyUsage.KEY_ENCIPHERMENT);
             if(keyUsage.hasUsages(KeyUsage.keyCertSign))
-                keyUsageSet.add(org.certeasy.KeyUsage.CertificateSign);
+                keyUsageSet.add(org.certeasy.KeyUsage.CERTIFICATE_SIGN);
             if(keyUsage.hasUsages(KeyUsage.digitalSignature))
-                keyUsageSet.add(org.certeasy.KeyUsage.DigitalSignature);
+                keyUsageSet.add(org.certeasy.KeyUsage.DIGITAL_SIGNATURE);
             if(keyUsage.hasUsages(KeyUsage.decipherOnly))
-                keyUsageSet.add(org.certeasy.KeyUsage.DecipherOnly);
+                keyUsageSet.add(org.certeasy.KeyUsage.DECIPHER_ONLY);
             if(keyUsage.hasUsages(KeyUsage.encipherOnly))
-                keyUsageSet.add(org.certeasy.KeyUsage.EncipherOnly);
+                keyUsageSet.add(org.certeasy.KeyUsage.ENCIPHER_ONLY);
             if(keyUsage.hasUsages(KeyUsage.dataEncipherment))
-                keyUsageSet.add(org.certeasy.KeyUsage.DataEncipherment);
+                keyUsageSet.add(org.certeasy.KeyUsage.DATA_ENCIPHERMENT);
             if(keyUsage.hasUsages(KeyUsage.nonRepudiation))
-                keyUsageSet.add(org.certeasy.KeyUsage.NonRepudiation);
+                keyUsageSet.add(org.certeasy.KeyUsage.NON_REPUDIATION);
         }
         return Collections.unmodifiableSet(keyUsageSet);
     }
@@ -168,7 +168,7 @@ public class CertificateDecoder {
                 extendedKeyUsageSet.add(org.certeasy.ExtendedKeyUsage.SIGN_CODE);
             else throw new BouncyCastleCoderException("Unknown Extended Key Usage with ID "+keyPurposeId.getId());
         }
-        ExtendedKeyUsageEffect effect = extendedKeyUsageExtension.isCritical() ? ExtendedKeyUsageEffect.Enforce : ExtendedKeyUsageEffect.Info;
+        ExtendedKeyUsageEffect effect = extendedKeyUsageExtension.isCritical() ? ExtendedKeyUsageEffect.ENFORCE : ExtendedKeyUsageEffect.INFO;
         return new ExtendedKeyUsages(extendedKeyUsageSet,
                 effect);
     }
