@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.certeasy.backend.persistence.StoredCert;
 import org.certeasy.certspec.*;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -63,6 +64,7 @@ public class CertIssuerTest {
 
 
     @Test
+    @DisplayName("create instance using short constructor")
     void create_instance_using_short_constructor(){
         IssuerDatastore datastore = new MapIssuerDatastore(context);
         assertThrows(IllegalArgumentException.class, () -> new CertIssuer(null, datastore, context));
@@ -74,6 +76,7 @@ public class CertIssuerTest {
 
 
     @Test
+    @DisplayName("create instance using long constructor")
     void create_instance_using_long_constructor(){
         Certificate certificate = context.generator().generate(certificateAuthoritySpec);
         IssuerDatastore datastore = new MapIssuerDatastore(context);
@@ -86,7 +89,8 @@ public class CertIssuerTest {
     }
 
     @Test
-    void must_have_certificate_if_passed_on_constructor(){
+    @DisplayName("hasCertificate() must be true if certificate passed on constructor")
+    void hasCertificate_must_be_true_if_certificate_passed_on_constructor(){
         Certificate certificate = context.generator().generate(certificateAuthoritySpec);
         IssuerDatastore datastore = new MapIssuerDatastore(context);
         CertIssuer issuer = new CertIssuer(ISSUER_NAME, datastore, context, certificate);
@@ -94,6 +98,7 @@ public class CertIssuerTest {
     }
 
     @Test
+    @DisplayName("getId() must return value passed on constructor")
     void getId_must_return_value_passed_on_constructor(){
         IssuerDatastore datastore = Mockito.spy(new MapIssuerDatastore(context));
         CertIssuer issuer = new CertIssuer(ISSUER_NAME, datastore, context);
@@ -101,6 +106,7 @@ public class CertIssuerTest {
     }
 
     @Test
+    @DisplayName("listCerts() must return whats in the datastore")
     void listCerts_must_return_whats_in_the_datastore(){
         IssuerDatastore datastore = Mockito.spy(new MapIssuerDatastore(context));
         CertIssuer issuer = new CertIssuer(ISSUER_NAME, datastore, context);
@@ -115,7 +121,8 @@ public class CertIssuerTest {
     }
 
     @Test
-    void issueCert_must_fail_when_issuer_does_have_certificate(){
+    @DisplayName("issueCert() must fail when issuer does not have a certificate")
+    void issueCert_must_fail_when_issuer_does_not_have_certificate(){
         IssuerDatastore datastore = Mockito.spy(new MapIssuerDatastore(context));
         CertIssuer issuer = new CertIssuer(ISSUER_NAME, datastore, context);
         assertThrows(IllegalStateException.class, () -> issuer.issueCert(certificateAuthoritySpec));
@@ -123,6 +130,7 @@ public class CertIssuerTest {
     }
 
     @Test
+    @DisplayName("issueCert() must issue and store personal certificate")
     void issueCert_must_issue_and_store_personal_certificate(){
         Certificate certificate = context.generator().generate(certificateAuthoritySpec);
         IssuerDatastore datastore = Mockito.spy(new MapIssuerDatastore(context));
@@ -135,6 +143,7 @@ public class CertIssuerTest {
     }
 
     @Test
+    @DisplayName("listCerts() must return all previously issued certs")
     void listCerts_must_return_all_previously_issued_certs(){
 
         IssuerDatastore datastore = new MapIssuerDatastore(context);
@@ -156,6 +165,7 @@ public class CertIssuerTest {
 
 
     @Test
+    @DisplayName("listCerts() must not contain deleted certificate")
     void listCerts_must_not_contain_deleted_certificate(){
         IssuerDatastore datastore = Mockito.spy(new MapIssuerDatastore(context));
 
@@ -184,6 +194,7 @@ public class CertIssuerTest {
     }
 
     @Test
+    @DisplayName("getIssuedCert() must return empty optional when datastore return empty issuerSerial")
     void getIssuedCert_must_return_empty_optional_when_datastore_returns_empty_issuerSerial(){
 
         IssuerDatastore datastore = Mockito.spy(new MapIssuerDatastore(context));
@@ -197,7 +208,8 @@ public class CertIssuerTest {
 
 
     @Test
-    void must_have_certificate_if_datastore_returns_issuerSerial(){
+    @DisplayName("hasCertificate() must be true if datastore returns issuerCertSerial")
+    void hasCertificate_must_be_true_if_datastore_returns_issuerCertSerial(){
 
         IssuerDatastore datastore = Mockito.spy(new MapIssuerDatastore(context));
         datastore.putIssuerCertSerial("0123456789");
@@ -209,7 +221,8 @@ public class CertIssuerTest {
     }
 
     @Test
-    void must_not_have_certificate_if_datastore_does_not_have_issuer_serial(){
+    @DisplayName("hasCertificate() must be false if datastore does not have issuerCertSerial")
+    void hasCertificate_must_be_false_if_datastore_does_not_have_issuerCertSerial(){
 
         IssuerDatastore datastore = Mockito.spy(new MapIssuerDatastore(context));
         CertIssuer issuer = new CertIssuer(ISSUER_NAME, datastore, context);
@@ -219,6 +232,7 @@ public class CertIssuerTest {
     }
 
     @Test
+    @DisplayName("disable() must cause issuer to not issue certificates")
     void disable_must_cause_issuer_to_not_issue_certificates(){
 
         IssuerDatastore datastore = new MapIssuerDatastore(context);
