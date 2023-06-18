@@ -184,9 +184,9 @@ jobs:
           name: certeasy-bouncycastle
           path: ~/.m2/repository/org/certeasy/certeasy-bouncycastle
       - name: Run Unit tests
-        run: mvn clean test --batch-mode org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+        run: mvn test --batch-mode org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
           -Dsonar.projectKey=certeasy-backend \
-          -Dsonar.branch.name=${GITHUB_REF##*/} \
+          -Dsonar.branch.name=${GITHUB_REF_NAME}
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             SONAR_TOKEN: ${{ secrets.SONAR_BACKEND_TOKEN }}
@@ -200,7 +200,7 @@ jobs:
 
       - name: Build binary
         run: |
-          ./mvnw package -Pnative -Dquarkus.native.container-build=true
+          ./mvnw package -Pnative -Dquarkus.native.container-build=true -DskipTests
       - name: Upload certeasy-binary
         uses: actions/upload-artifact@v3
         with:
