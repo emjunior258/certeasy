@@ -33,16 +33,6 @@ public class DirectoryInitializer {
         if(!dataDir.exists()) {
             throw new CertEasyException("Data directory not found: "+dataDir.getAbsolutePath());
         }
-        File certificatesDir = new File(dataDir,CertConstants.CERTIFICATES_SUBDIR);
-        if(!certificatesDir.exists()){
-            LOGGER.info("Creating certificates subdirectory");
-            try {
-                Files.createDirectories(certificatesDir.toPath());
-                LOGGER.info("Certificates subdirectory created successfully");
-            }catch (IOException ex){
-                throw new CertEasyException("failed to create certificates subdirectory", ex);
-            }
-        }else LOGGER.info("Certificates subdirectory already exists");
         this.store = new DirectoryIssuerDatastore(dataDir, context);
     }
 

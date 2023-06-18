@@ -20,15 +20,17 @@ import java.util.*;
 @ApplicationScoped
 public class DirectoryIssuerRegistry implements IssuerRegistry {
 
-    private File dataDirectory;
-    private CertEasyContext context;
-    private Map<String, CertIssuer> cache = new HashMap<>();
+    private final File dataDirectory;
+    private final CertEasyContext context;
+    private final Map<String, CertIssuer> cache = new HashMap<>();
     private boolean scanned = false;
     private static final Logger LOGGER = Logger.getLogger(DirectoryIssuerRegistry.class);
 
     public DirectoryIssuerRegistry(@ConfigProperty(name = CertConstants.DATA_DIRECTORY_CONFIG) String dataDirectory, CertEasyContext context){
         if(dataDirectory==null || dataDirectory.isEmpty())
             throw new IllegalArgumentException("dataDirectory path cannot be null or empty");
+        if(context==null)
+            throw new IllegalArgumentException("context must not be null");
         this.dataDirectory = new File(dataDirectory);
         if(!this.dataDirectory.exists() || !this.dataDirectory.isDirectory())
             throw new IllegalArgumentException("dataDirectory path must point to existing directory");
