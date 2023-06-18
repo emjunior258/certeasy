@@ -10,6 +10,9 @@ import static org.hamcrest.Matchers.*;
 import io.restassured.http.ContentType;
 import org.certeasy.*;
 import org.certeasy.backend.common.CertPEM;
+import org.certeasy.backend.common.SubCaSpec;
+import org.certeasy.backend.common.cert.CertValidity;
+import org.certeasy.backend.common.cert.GeographicAddressInfo;
 import org.certeasy.backend.persistence.IssuerRegistry;
 import org.certeasy.backend.persistence.MapIssuerRegistry;
 import org.certeasy.backend.persistence.MemoryPersistenceProfile;
@@ -152,4 +155,26 @@ public class IssuersResourceTest {
                 .body("violations[0].message", equalTo("cert_file is does not have CA basic constraint"));
 
     }
+
+    @Test
+    @DisplayName("createFromSpec() must create issuer successfully")
+    void createFromSpec_must_create_issuer_successfully() throws IOException {
+
+        SubCaSpec spec = new SubCaSpec();
+        spec.setName("apple-ca");
+        spec.setKeyStrength(KeyStrength.HIGH.name());
+        spec.setPathLength(4);
+        spec.setGeographicAddressInfo(new GeographicAddressInfo("US", "California", "Cupertino", "One Apple Park Way, Cupertino, CA 95014"));
+        spec.setValidity(new CertValidity("2023-01-01", "2099-12-31"));
+
+        given().contentType(ContentType.JSON)
+                .body(spec)
+                .when()
+                .post("/apple/cert-spec")
+                .then()
+                .statusCode(204)
+                .log().all();
+
+    }
+
 }
