@@ -50,15 +50,9 @@ jobs:
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Sonar report
-        run: mvn verify --batch-mode org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-            -Dsonar.projectKey=certeasy-core \
-            -Dsonar.branch.name=${GITHUB_REF_NAME} \
-            -DskipTests
+        run: mvn clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=certeasy-core -Dsonar.branch.name=${GITHUB_REF_NAME} -DskipTests
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_CORE_TOKEN }}
-          SONAR_PROJECT_KEY: certeasy-core
-          SONAR_BRANCH_NAME: ${GITHUB_REF_NAME}
       - name: Archive Test Reports
         uses: actions/upload-artifact@v3
         with:
