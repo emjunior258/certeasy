@@ -117,6 +117,8 @@ public class IssuersResourceTest {
     @DisplayName("createFromPem() must create issuer successfully")
     void createFromPem_must_create_issuer_successfully() throws IOException {
 
+        assertFalse(registry.exists("ipsum"));
+
         Path pemDirectory = Paths.get("src/test/resources/pem/ca");
         String certPem = Files.readString(pemDirectory.resolve("cert.pem"));
         String keyPem = Files.readString(pemDirectory.resolve("key.pem"));
@@ -128,6 +130,8 @@ public class IssuersResourceTest {
                     .post("/ipsum/cert-pem")
                 .then()
                 .statusCode(204);
+
+        assertTrue(registry.exists("ipsum"));
 
     }
 
@@ -167,6 +171,8 @@ public class IssuersResourceTest {
         spec.setGeographicAddressInfo(new GeographicAddressInfo("US", "California", "Cupertino", "One Apple Park Way, Cupertino, CA 95014"));
         spec.setValidity(new CertValidity("2023-01-01", "2099-12-31"));
 
+        assertFalse(registry.exists("apple-ca"));
+
         given().contentType(ContentType.JSON)
                 .body(spec)
                 .when()
@@ -174,6 +180,8 @@ public class IssuersResourceTest {
                 .then()
                 .statusCode(204)
                 .log().all();
+
+        assertTrue(registry.exists("apple"));
 
     }
 
