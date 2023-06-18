@@ -2,7 +2,7 @@ package org.certeasy;
 
 public class IllegalSubjectAttributeTypeException extends IllegalArgumentException {
 
-    private String attributeType;
+    private final String attributeType;
 
     public IllegalSubjectAttributeTypeException(String attributeType) {
         super(String.format("The subject attribute type %s is unknown", attributeType));

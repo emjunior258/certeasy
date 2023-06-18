@@ -9,7 +9,7 @@ import org.certeasy.backend.common.validation.ViolationType;
 import java.util.HashSet;
 import java.util.Set;
 
-public record IssuerCertRef(@JsonProperty("issuer_id") String issuerId, String serial) implements Validable {
+public record IssuerCertRef(@JsonProperty("issuer_id") String issuerId, @JsonProperty("serial") String serial) implements Validable {
 
     @Override
     public Set<Violation> validate(ValidationPath path) {

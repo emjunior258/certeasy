@@ -19,9 +19,9 @@ public record DistinguishedName(Set<RelativeDistinguishedName> relativeDistingui
     public DistinguishedName(Set<RelativeDistinguishedName> relativeDistinguishedNames){
         if(relativeDistinguishedNames==null || relativeDistinguishedNames.isEmpty())
             throw new IllegalArgumentException("relative distinguished names set MUST not be null nor empty");
-        if(relativeDistinguishedNames.stream().filter(it -> it.type() == SubjectAttributeType.CommonName)
+        if(relativeDistinguishedNames.stream().filter(it -> it.type() == SubjectAttributeType.COMMON_NAME)
                 .findAny().isEmpty())
-            throw new IllegalArgumentException("Missing RDN with " + SubjectAttributeType.CommonName.name()+ " attribute type");
+            throw new IllegalArgumentException("Missing RDN with " + SubjectAttributeType.COMMON_NAME.name()+ " attribute type");
         this.relativeDistinguishedNames = Collections.unmodifiableSet(relativeDistinguishedNames);
         Set<SubjectAttributeType> singleAttributes = Set.of(SubjectAttributeType.values())
                 .stream().filter(it -> !it.isMultiValue())
@@ -33,14 +33,18 @@ public record DistinguishedName(Set<RelativeDistinguishedName> relativeDistingui
     }
 
     public String getCommonName(){
-        return this.findFirst(SubjectAttributeType.CommonName).get().value();
+        Optional<RelativeDistinguishedName> relativeDistinguishedName = this.findFirst(SubjectAttributeType.COMMON_NAME);
+        if(relativeDistinguishedName.isEmpty())
+            throw new IllegalStateException("distinguishedName doesn't have a common name");
+        return relativeDistinguishedName.get().value();
     }
 
     public Optional<RelativeDistinguishedName> findFirst(SubjectAttributeType attributeType){
         if(attributeType==null)
             throw new IllegalArgumentException("attributeType MUST not be null nor empty");
         return this.relativeDistinguishedNames
-                .stream().filter(it -> it.type() == attributeType)
+                .stream().sorted(Comparator.reverseOrder())
+                .filter(it -> it.type() == attributeType)
                 .findFirst();
     }
 
@@ -48,8 +52,30 @@ public record DistinguishedName(Set<RelativeDistinguishedName> relativeDistingui
         if(attributeType==null)
             throw new IllegalArgumentException("attributeType MUST not be null nor empty");
         return this.relativeDistinguishedNames
-                .stream().filter(it -> it.type() == attributeType)
+                .stream()
+                .filter(it -> it.type() == attributeType)
+                .sorted(Comparator.reverseOrder())
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    public Set<SubjectAttributeType> getAttributeTypes(){
+        return this.relativeDistinguishedNames
+                .stream()
+                .map(RelativeDistinguishedName::type)
                 .collect(Collectors.toSet());
+    }
+
+    public boolean hasAttribute(SubjectAttributeType type){
+        return this.findFirst(type).isPresent();
+    }
+
+    public boolean hasAttribute(SubjectAttributeType type, String value){
+        if(type==null)
+            throw new IllegalArgumentException("type MUST not be null");
+        if(value==null)
+            throw new IllegalArgumentException("value MUST not be null nor empty");
+        Optional<RelativeDistinguishedName> optional = this.findFirst(type);
+        return (optional.isPresent() && optional.get().value().equals(value));
     }
 
     public String toString(){
@@ -85,7 +111,7 @@ public record DistinguishedName(Set<RelativeDistinguishedName> relativeDistingui
                 if(attributeArray.length!=2)
                     throw new IllegalArgumentException("Invalid RDN format: "+rdn);
                 try {
-                    SubjectAttributeType attributeType = SubjectAttributeType.ofKey(attributeArray[0]);
+                    SubjectAttributeType attributeType = SubjectAttributeType.ofKey(attributeArray[0].trim());
                     String attributeValue = attributeArray[1];
                     this.distinguishedNameSet.add(new RelativeDistinguishedName(attributeType, attributeValue));
                 }catch (IllegalArgumentException ex){

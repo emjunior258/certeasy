@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.security.PrivateKey;
 import java.util.*;
 
@@ -83,8 +84,9 @@ public class Certificate {
         this.keyStrength = spec.getKeyStrength();
         this.keyUsages = spec.getKeyUsages();
         this.basicConstraints = spec.getBasicConstraints();
-        if(spec.getExtendedKeyUsages().isPresent())
-            this.extendedKeyUsages = spec.getExtendedKeyUsages().get();
+        this.subjectAltNames = spec.getSubject().getAlternativeNames();
+        Optional<ExtendedKeyUsages> extendedKeyUsagesOptional = spec.getExtendedKeyUsages();
+        extendedKeyUsagesOptional.ifPresent(usages -> this.extendedKeyUsages = usages);
         this.serial = serial;
         this.privateKey = privateKey;
         this.derBytes = derBytes;
@@ -121,7 +123,8 @@ public class Certificate {
         if(file.isDirectory())
             throw new IllegalArgumentException("file MUST not be a directory: "+ file.getAbsolutePath());
         try {
-            file.createNewFile();
+            if(!file.exists())
+                Files.createFile(file.toPath());
         } catch (IOException ex) {
             throw new CertEasyException("failed to create file: "+file.getAbsolutePath(), ex);
         }
@@ -140,7 +143,7 @@ public class Certificate {
         try {
             stream.write(derBytes);
         } catch (IOException ex) {
-            throw new CertEasyException("error writing encoded certificate to stream", ex);
+            throw new CertEasyException("error writing DER encoded certificate to stream", ex);
         }
     }
 
@@ -175,6 +178,10 @@ public class Certificate {
 
     public boolean isSelfSignedCA(){
         return this.issuerName.equals(distinguishedName) && this.basicConstraints.ca();
+    }
+
+    public boolean isCA(){
+        return this.basicConstraints.ca();
     }
 
 }

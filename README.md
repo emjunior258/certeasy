@@ -40,6 +40,20 @@ The cereasy project is a monorepo, with multiple sub-projects hosted under the s
 | `./certeasy-frontend-app` | Implements the certeasy web GUI | Undefined |
 | `./site` | The Website of the project | Undefined |
 
+
+## Build & run locally
+
+### Build Locally
+You must have `Java17 JDK` and `Docker` installed in order to build locally.
+All you need to do is to execute the `./build-local.sh` script. The script will produce a docker image tagged as `certeasy:local`.
+
+### Run locally
+Once you run the local build you can execute the certeasy headless using `docker run` as follows:
+```bash
+docker run -p 8080:8080 certeasy:local
+```
+You can access the API under `http://localhost:8080/api/`.
+
 ## Help wanted
 Checkout the [Issues page](https://github.com/emjunior258/certeasy/issues) for a detailed list.
 
