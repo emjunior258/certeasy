@@ -58,7 +58,6 @@ def test_should_not_allows_creation_of_issuer_with_empty_body(app_container):
         response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID}/cert-spec', json=VALID_BODY)
         response_status = response.status_code
     assert response_status == 409
-<<<<<<< HEAD
 
 
 def test_should_not_allows_creation_of_issuer_with_empty_name(app_container):
@@ -342,5 +341,3 @@ def test_should_not_allows_creation_of_issuer_with_null_street_address(app_conta
     # Make a request to the API
     response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID}/cert-spec', json=VALID_BODY)
     assert response.status_code == 422
-=======
->>>>>>> f43ad329418d69f22b9e007a01247cfa969d93a5
