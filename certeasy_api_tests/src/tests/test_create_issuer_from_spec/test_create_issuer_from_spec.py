@@ -1,5 +1,4 @@
 import requests
-from certeasy_api_tests.services.create_issuer_from_spec.create_issuer_from_spec import create_issuer_from_spec
 from certeasy_api_tests.services.file_reader import file_reader
 from certeasy_api_tests.services.generate_issuer_id import generate_issuer_id
 from certeasy_api_tests.src.config import BASE_URL
