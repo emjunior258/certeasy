@@ -46,7 +46,7 @@ jobs:
           distribution: 'temurin'
           cache: maven
       - name: Run unit tests
-        run: mvn test org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+        run: mvn clean test org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
           -Dsonar.projectKey=certeasy-core \
           -Dsonar.branch.name=${GITHUB_REF_NAME} \
           --batch-mode
