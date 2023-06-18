@@ -53,6 +53,8 @@ jobs:
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             SONAR_TOKEN: ${{ secrets.SONAR_CORE_TOKEN }}
+            SONAR_PROJECT_KEY: certeasy-core
+            SONAR_BRANCH_NAME: ${GITHUB_REF_NAME}
       - name: Archive Test Reports
         uses: actions/upload-artifact@v3
         with:
