@@ -37,8 +37,8 @@ public class MapIssuerRegistry implements IssuerRegistry {
     }
 
     @Override
-    public boolean exists(String name) throws IssuerRegistryException {
-        return issuerMap.containsKey(name);
+    public boolean exists(String issuerId) throws IssuerRegistryException {
+        return issuerMap.containsKey(issuerId);
     }
 
     @Override

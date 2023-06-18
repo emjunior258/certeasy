@@ -90,11 +90,11 @@ public class DirectoryIssuerRegistry implements IssuerRegistry {
     }
 
     @Override
-    public boolean exists(String name) throws IssuerRegistryException {
-        if(name==null || name.isEmpty())
+    public boolean exists(String issuerId) throws IssuerRegistryException {
+        if(issuerId ==null || issuerId.isEmpty())
             throw new IllegalArgumentException("name MUST not be null");
         this.scanIfNotYet();
-        return(cache.containsKey(name));
+        return(cache.containsKey(issuerId));
     }
 
     @Override
