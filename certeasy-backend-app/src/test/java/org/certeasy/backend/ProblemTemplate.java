@@ -37,5 +37,5 @@ public enum ProblemTemplate {
     public String getDetail() {
         return detail;
     }
-    
+
 }
