@@ -4,11 +4,12 @@ import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import static io.restassured.RestAssured.*;
-import static io.restassured.matcher.RestAssuredMatchers.*;
 import static org.hamcrest.Matchers.*;
 
 import io.restassured.http.ContentType;
 import org.certeasy.*;
+import org.certeasy.backend.BaseRestTest;
+import org.certeasy.backend.ProblemTemplate;
 import org.certeasy.backend.common.CertPEM;
 import org.certeasy.backend.common.SubCaSpec;
 import org.certeasy.backend.common.cert.CertValidity;
@@ -22,6 +23,7 @@ import org.certeasy.certspec.PersonalCertificateSpec;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import javax.inject.Inject;
@@ -35,7 +37,7 @@ import java.time.Month;
 @QuarkusTest
 @TestProfile(MemoryPersistenceProfile.class)
 @TestHTTPEndpoint(IssuersResource.class)
-public class IssuersResourceTest {
+public class IssuersResourceTest extends BaseRestTest {
 
     @Inject
     IssuerRegistry registry;
@@ -114,6 +116,7 @@ public class IssuersResourceTest {
     }
 
     @Test
+    @Tag("createFromPem")
     @DisplayName("createFromPem() must create issuer successfully")
     void createFromPem_must_create_issuer_successfully() throws IOException {
 
@@ -136,6 +139,7 @@ public class IssuersResourceTest {
     }
 
     @Test
+    @Tag("createFromPem")
     @DisplayName("createFromPem() must fail when cert is not ca")
     void createFromPem_must_fail_when_cert_is_not_ca() throws IOException {
 
@@ -150,10 +154,10 @@ public class IssuersResourceTest {
                 .post("/ipsum/cert-pem")
                 .then()
                 .statusCode(422)
-                .body("type", equalTo("/problems/constraint-violation"))
-                .body("title", equalTo("Constraint Violation"))
-                .body("detail", equalTo("The request violates one or more constraints"))
-                .body("status", equalTo(422))
+                .body("type", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getType()))
+                .body("title", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getTitle()))
+                .body("detail", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getDetail()))
+                .body("status", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getStatus()))
                 .body("violations", hasSize(1))
                 .body("violations[0].field", equalTo("body.pem.cert_file"))
                 .body("violations[0].type", equalTo("state"))
@@ -162,6 +166,86 @@ public class IssuersResourceTest {
     }
 
     @Test
+    @Tag("createFromPem")
+    @DisplayName("createFromPem() must fail when cert_file is not valid")
+    void createFromPem_must_fail_when_cert_file_is_not_valid() throws IOException {
+
+        Path pemDirectory = Paths.get("src/test/resources/pem/ca");
+        String certPem = "Lorem Ipsum";
+        String keyPem = Files.readString(pemDirectory.resolve("key.pem"));
+
+        CertPEM pem = new CertPEM(certPem, keyPem);
+        given().contentType(ContentType.JSON)
+                .body(pem)
+                .when()
+                .post("/ipsum/cert-pem")
+                .then()
+                .statusCode(422)
+                .body("type", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getType()))
+                .body("title", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getTitle()))
+                .body("detail", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getDetail()))
+                .body("status", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getStatus()))
+                .body("violations", hasSize(1))
+                .body("violations[0].field", equalTo("body.pem.cert_file"))
+                .body("violations[0].type", equalTo("format"))
+                .body("violations[0].message", equalTo("cert_file is NOT a valid PEM encoded certificate"));
+
+    }
+
+    @Test
+    @Tag("createFromPem")
+    @DisplayName("createFromPem() must fail when key_file is not valid")
+    void createFromPem_must_fail_when_key_file_is_not_valid() throws IOException {
+
+        Path pemDirectory = Paths.get("src/test/resources/pem/personal");
+        String certPem = Files.readString(pemDirectory.resolve("cert.pem"));
+        String keyPem = "Lorem ipsum dolor";
+
+        CertPEM pem = new CertPEM(certPem, keyPem);
+        given().contentType(ContentType.JSON)
+                .body(pem)
+                .when()
+                .post("/ipsum/cert-pem")
+                .then()
+                .statusCode(422)
+                .body("type", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getType()))
+                .body("title", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getTitle()))
+                .body("detail", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getDetail()))
+                .body("status", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getStatus()))
+                .body("violations", hasSize(1))
+                .body("violations[0].field", equalTo("body.pem.key_file"))
+                .body("violations[0].type", equalTo("format"))
+                .body("violations[0].message", equalTo("key_file is NOT a valid PEM encoded private key"));
+
+    }
+
+    @Test
+    @Tag("createFromPem")
+    @DisplayName("createFromPem() must fail when issuerId is taken")
+    void createFromPem_must_fail_when_issuer_id_is_taken() throws IOException {
+
+        Certificate certificate = context.generator().generate(certificateAuthoritySpec);
+        registry.add("microsoft", certificate);
+
+        Path pemDirectory = Paths.get("src/test/resources/pem/ca");
+        String certPem = Files.readString(pemDirectory.resolve("cert.pem"));
+        String keyPem = Files.readString(pemDirectory.resolve("key.pem"));
+
+        CertPEM pem = new CertPEM(certPem, keyPem);
+        given().contentType(ContentType.JSON)
+                .body(pem)
+                .when()
+                .post("/microsoft/cert-pem")
+                .then()
+                .statusCode(409)
+                .body("type", equalTo(ProblemTemplate.ISSUER_ID_TAKEN.getType()))
+                .body("title", equalTo(ProblemTemplate.ISSUER_ID_TAKEN.getTitle()))
+                .body("status", equalTo(ProblemTemplate.ISSUER_ID_TAKEN.getStatus()));
+
+    }
+
+    @Test
+    @Tag("createFromSpec")
     @DisplayName("createFromSpec() must create issuer successfully")
     void createFromSpec_must_create_issuer_successfully() throws IOException {
 
@@ -187,6 +271,7 @@ public class IssuersResourceTest {
     }
 
     @Test
+    @Tag("createFromSpec")
     @DisplayName("createFromSpec() must fail whe issuer id is taken")
     void createFromSpec_must_fail_when_issuer_id_is_taken() {
 
@@ -208,12 +293,13 @@ public class IssuersResourceTest {
                 .post("/microsoft/cert-spec")
                 .then()
                 .statusCode(409)
-                .body("type", equalTo("/problems/issuerId/id-taken"))
-                .body("title", equalTo("Issuer ID Taken"))
-                .body("status", equalTo(409));
+                .body("type", equalTo(ProblemTemplate.ISSUER_ID_TAKEN.getType()))
+                .body("title", equalTo(ProblemTemplate.ISSUER_ID_TAKEN.getTitle()))
+                .body("status", equalTo(ProblemTemplate.ISSUER_ID_TAKEN.getStatus()));
     }
 
     @Test
+    @Tag("createFromSpec")
     @DisplayName("createFromSpec() must fail when validity is null")
     void createFromSpec_must_fail_when_validity_is_null() {
 
@@ -230,10 +316,10 @@ public class IssuersResourceTest {
                 .post("/google/cert-spec")
                 .then()
                 .statusCode(422)
-                .body("type", equalTo("/problems/constraint-violation"))
-                .body("title", equalTo("Constraint Violation"))
-                .body("detail", equalTo("The request violates one or more constraints"))
-                .body("status", equalTo(422))
+                .body("type", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getType()))
+                .body("title", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getTitle()))
+                .body("detail", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getDetail()))
+                .body("status", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getStatus()))
                 .body("violations", hasSize(1))
                 .body("violations[0].field", equalTo("body.validity"))
                 .body("violations[0].type", equalTo("required"))
@@ -242,6 +328,7 @@ public class IssuersResourceTest {
     }
 
     @Test
+    @Tag("createFromSpec")
     @DisplayName("createFromSpec() must fail when geographic address is null")
     void createFromSpec_must_fail_when_geographic_address_is_null() {
 
@@ -258,10 +345,10 @@ public class IssuersResourceTest {
                 .post("/netflix/cert-spec")
                 .then()
                 .statusCode(422)
-                .body("type", equalTo("/problems/constraint-violation"))
-                .body("title", equalTo("Constraint Violation"))
-                .body("detail", equalTo("The request violates one or more constraints"))
-                .body("status", equalTo(422))
+                .body("type", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getType()))
+                .body("title", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getTitle()))
+                .body("detail", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getDetail()))
+                .body("status", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getStatus()))
                 .body("violations", hasSize(1))
                 .body("violations[0].field", equalTo("body.address"))
                 .body("violations[0].type", equalTo("required"))
@@ -271,6 +358,7 @@ public class IssuersResourceTest {
 
 
     @Test
+    @Tag("createFromSpec")
     @DisplayName("createFromSpec() must fail when path_length is less than -1")
     void createFromSpec_must_fail_when_path_length_is_less_than_minus_1() {
 
@@ -288,10 +376,10 @@ public class IssuersResourceTest {
                 .post("/netflix/cert-spec")
                 .then()
                 .statusCode(422)
-                .body("type", equalTo("/problems/constraint-violation"))
-                .body("title", equalTo("Constraint Violation"))
-                .body("detail", equalTo("The request violates one or more constraints"))
-                .body("status", equalTo(422))
+                .body("type", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getType()))
+                .body("title", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getTitle()))
+                .body("detail", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getDetail()))
+                .body("status", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getStatus()))
                 .body("violations", hasSize(1))
                 .body("violations[0].field", equalTo("body.path_length"))
                 .body("violations[0].type", equalTo("range"))
@@ -300,6 +388,7 @@ public class IssuersResourceTest {
     }
 
     @Test
+    @Tag("createFromSpec")
     @DisplayName("createFromSpec() must fail when name is null or empty")
     void createFromSpec_must_fail_when_name_is_null_nor_empty() {
 
@@ -316,10 +405,10 @@ public class IssuersResourceTest {
                 .post("/emptyname/cert-spec")
                 .then()
                 .statusCode(422)
-                .body("type", equalTo("/problems/constraint-violation"))
-                .body("title", equalTo("Constraint Violation"))
-                .body("detail", equalTo("The request violates one or more constraints"))
-                .body("status", equalTo(422))
+                .body("type", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getType()))
+                .body("title", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getTitle()))
+                .body("detail", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getDetail()))
+                .body("status", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getStatus()))
                 .body("violations", hasSize(1))
                 .body("violations[0].field", equalTo("body.name"))
                 .body("violations[0].type", equalTo("required"))
@@ -327,21 +416,65 @@ public class IssuersResourceTest {
 
 
         spec.setName(null);
-
         given().contentType(ContentType.JSON)
                 .body(spec)
                 .when()
                 .post("/nameless/cert-spec")
                 .then()
                 .statusCode(422)
-                .body("type", equalTo("/problems/constraint-violation"))
-                .body("title", equalTo("Constraint Violation"))
-                .body("detail", equalTo("The request violates one or more constraints"))
-                .body("status", equalTo(422))
+                .body("type", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getType()))
+                .body("title", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getTitle()))
+                .body("detail", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getDetail()))
+                .body("status", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getStatus()))
                 .body("violations", hasSize(1))
                 .body("violations[0].field", equalTo("body.name"))
                 .body("violations[0].type", equalTo("required"))
                 .body("violations[0].message", equalTo("name is required"));
+
+    }
+
+    @Test
+    @Tag("createFromSpec")
+    @DisplayName("createFromSpec() must fail when key_strength is invalid")
+    void createFromSpec_must_fail_when_key_strength_is_invalid() {
+
+        SubCaSpec spec = new SubCaSpec();
+        spec.setName("Vodacom");
+        spec.setKeyStrength("");
+        spec.setPathLength(-1);
+        spec.setValidity(new CertValidity("2020-01-01", "2099-12-31"));
+        spec.setGeographicAddressInfo(new GeographicAddressInfo("MZ", "Maputo", "Kapmfumo", "Av. 25 de Setembro. Rua dos Desportistas"));
+
+        given().contentType(ContentType.JSON)
+                .body(spec)
+                .when()
+                .post("/vodacom/cert-spec")
+                .then()
+                .statusCode(422)
+                .body("type", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getType()))
+                .body("title", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getTitle()))
+                .body("detail", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getDetail()))
+                .body("status", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getStatus()))
+                .body("violations", hasSize(1))
+                .body("violations[0].field", equalTo("body.key_strength"))
+                .body("violations[0].type", equalTo("enum"))
+                .body("violations[0].message", equalTo("key_strength should be one of [LOW, MEDIUM, HIGH, VERY_HIGH]"));
+
+        spec.setKeyStrength("IPSUM");
+        given().contentType(ContentType.JSON)
+                .body(spec)
+                .when()
+                .post("/vodacom/cert-spec")
+                .then()
+                .statusCode(422)
+                .body("type", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getType()))
+                .body("title", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getTitle()))
+                .body("detail", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getDetail()))
+                .body("status", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getStatus()))
+                .body("violations", hasSize(1))
+                .body("violations[0].field", equalTo("body.key_strength"))
+                .body("violations[0].type", equalTo("enum"))
+                .body("violations[0].message", equalTo("key_strength should be one of [LOW, MEDIUM, HIGH, VERY_HIGH]"));
 
     }
 
