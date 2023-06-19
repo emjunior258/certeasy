@@ -1,21 +1,6 @@
 package org.certeasy.bouncycastle;
 
-import org.certeasy.BasicConstraints;
-import org.certeasy.Certificate;
-import org.certeasy.CertificateSpec;
-import org.certeasy.CertificateSubject;
-import org.certeasy.DateRange;
-import org.certeasy.DistinguishedName;
-import org.certeasy.ExtendedKeyUsage;
-import org.certeasy.ExtendedKeyUsages;
-import org.certeasy.GeographicAddress;
-import org.certeasy.KeyStrength;
-import org.certeasy.KeyUsage;
-import org.certeasy.PEMCoderException;
-import org.certeasy.RelativeDistinguishedName;
-import org.certeasy.SubjectAlternativeName;
-import org.certeasy.SubjectAlternativeNameType;
-import org.certeasy.SubjectAttributeType;
+import org.certeasy.*;
 import org.certeasy.certspec.CertificateAuthoritySpec;
 import org.certeasy.certspec.CertificateAuthoritySubject;
 import org.junit.jupiter.api.BeforeAll;
@@ -108,8 +93,7 @@ class BouncyCastlePEMCoderTest {
     @Test
     @DisplayName("must throw an exception when decode ")
     void mustThrowExceptionWhenDecode() {
-
-        assertThrows(PEMCoderException.class,
+        assertThrows(IllegalPrivateKeyPemException.class,
                 () -> bcPEMCoder.decodeCertificate("certPem", "privateKeyPem"));
 
     }
