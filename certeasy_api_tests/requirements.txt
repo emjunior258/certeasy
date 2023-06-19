@@ -6,3 +6,4 @@ requests
 assertpy
 precisely
 PyHamcrest==1.9.0
+testcontainers
