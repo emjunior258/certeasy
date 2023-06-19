@@ -62,8 +62,6 @@ public abstract class BaseCertSpec implements Validable {
             }
         }
         if(geographicAddressInfo==null)
-            violations.add(new Violation(path, "address", ViolationType.REQUIRED, "location is required"));
-        if(geographicAddressInfo==null)
             violations.add(new Violation(path,"address", ViolationType.REQUIRED, "address MUST not be null"));
         if(geographicAddressInfo!=null)
             violations.addAll(geographicAddressInfo.validate(path.append("address")));

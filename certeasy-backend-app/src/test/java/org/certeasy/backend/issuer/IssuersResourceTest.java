@@ -153,6 +153,7 @@ public class IssuersResourceTest {
                 .body("type", equalTo("/problems/constraint-violation"))
                 .body("title", equalTo("Constraint Violation"))
                 .body("detail", equalTo("The request violates one or more constraints"))
+                .body("status", equalTo(422))
                 .body("violations", hasSize(1))
                 .body("violations[0].field", equalTo("body.pem.cert_file"))
                 .body("violations[0].type", equalTo("state"))
@@ -182,6 +183,165 @@ public class IssuersResourceTest {
                 .log().all();
 
         assertTrue(registry.exists("apple"));
+
+    }
+
+    @Test
+    @DisplayName("createFromSpec() must fail whe issuer id is taken")
+    void createFromSpec_must_fail_when_issuer_id_is_taken() {
+
+        Certificate certificate = context.generator().generate(certificateAuthoritySpec);
+        registry.add("microsoft", certificate);
+        
+        SubCaSpec spec = new SubCaSpec();
+        spec.setName("Microsoft-CA");
+        spec.setKeyStrength(KeyStrength.HIGH.name());
+        spec.setPathLength(4);
+        spec.setGeographicAddressInfo(new GeographicAddressInfo("US", "California", "Cupertino", "One Apple Park Way, Cupertino, CA 95014"));
+        spec.setValidity(new CertValidity("2023-01-01", "2099-12-31"));
+
+        assertFalse(registry.exists("apple-ca"));
+
+        given().contentType(ContentType.JSON)
+                .body(spec)
+                .when()
+                .post("/microsoft/cert-spec")
+                .then()
+                .statusCode(409)
+                .body("type", equalTo("/problems/issuerId/id-taken"))
+                .body("title", equalTo("Issuer ID Taken"))
+                .body("status", equalTo(409));
+    }
+
+    @Test
+    @DisplayName("createFromSpec() must fail when validity is null")
+    void createFromSpec_must_fail_when_validity_is_null() {
+
+        SubCaSpec spec = new SubCaSpec();
+        spec.setName("Google");
+        spec.setKeyStrength(KeyStrength.VERY_HIGH.name());
+        spec.setPathLength(3);
+        spec.setGeographicAddressInfo(new GeographicAddressInfo("US", "California", "Mountain View", "1600 Amphitheatre Parkway"));
+
+        assertFalse(registry.exists("google"));
+        given().contentType(ContentType.JSON)
+                .body(spec)
+                .when()
+                .post("/google/cert-spec")
+                .then()
+                .statusCode(422)
+                .body("type", equalTo("/problems/constraint-violation"))
+                .body("title", equalTo("Constraint Violation"))
+                .body("detail", equalTo("The request violates one or more constraints"))
+                .body("status", equalTo(422))
+                .body("violations", hasSize(1))
+                .body("violations[0].field", equalTo("body.validity"))
+                .body("violations[0].type", equalTo("required"))
+                .body("violations[0].message", equalTo("validity is required"));
+
+    }
+
+    @Test
+    @DisplayName("createFromSpec() must fail when geographic address is null")
+    void createFromSpec_must_fail_when_geographic_address_is_null() {
+
+        SubCaSpec spec = new SubCaSpec();
+        spec.setName("Netflix");
+        spec.setKeyStrength(KeyStrength.VERY_HIGH.name());
+        spec.setPathLength(1);
+        spec.setValidity(new CertValidity("2023-01-01", "2099-12-31"));
+
+        assertFalse(registry.exists("netflix"));
+        given().contentType(ContentType.JSON)
+                .body(spec)
+                .when()
+                .post("/netflix/cert-spec")
+                .then()
+                .statusCode(422)
+                .body("type", equalTo("/problems/constraint-violation"))
+                .body("title", equalTo("Constraint Violation"))
+                .body("detail", equalTo("The request violates one or more constraints"))
+                .body("status", equalTo(422))
+                .body("violations", hasSize(1))
+                .body("violations[0].field", equalTo("body.address"))
+                .body("violations[0].type", equalTo("required"))
+                .body("violations[0].message", equalTo("address MUST not be null"));
+
+    }
+
+
+    @Test
+    @DisplayName("createFromSpec() must fail when path_length is less than -1")
+    void createFromSpec_must_fail_when_path_length_is_less_than_minus_1() {
+
+        SubCaSpec spec = new SubCaSpec();
+        spec.setName("Netflix");
+        spec.setKeyStrength(KeyStrength.LOW.name());
+        spec.setPathLength(-2);
+        spec.setValidity(new CertValidity("2025-01-01", "2099-12-31"));
+        spec.setGeographicAddressInfo(new GeographicAddressInfo("US", "California", "Mountain View", "1600 Amphitheatre Parkway"));
+
+        assertFalse(registry.exists("netflix"));
+        given().contentType(ContentType.JSON)
+                .body(spec)
+                .when()
+                .post("/netflix/cert-spec")
+                .then()
+                .statusCode(422)
+                .body("type", equalTo("/problems/constraint-violation"))
+                .body("title", equalTo("Constraint Violation"))
+                .body("detail", equalTo("The request violates one or more constraints"))
+                .body("status", equalTo(422))
+                .body("violations", hasSize(1))
+                .body("violations[0].field", equalTo("body.path_length"))
+                .body("violations[0].type", equalTo("range"))
+                .body("violations[0].message", equalTo("path_length should be >= -1"));
+
+    }
+
+    @Test
+    @DisplayName("createFromSpec() must fail when name is null or empty")
+    void createFromSpec_must_fail_when_name_is_null_nor_empty() {
+
+        SubCaSpec spec = new SubCaSpec();
+        spec.setName("");
+        spec.setKeyStrength(KeyStrength.LOW.name());
+        spec.setPathLength(-1);
+        spec.setValidity(new CertValidity("2020-01-01", "2099-12-31"));
+        spec.setGeographicAddressInfo(new GeographicAddressInfo("US", "California", "Mountain View", "1600 Amphitheatre Parkway"));
+
+        given().contentType(ContentType.JSON)
+                .body(spec)
+                .when()
+                .post("/emptyname/cert-spec")
+                .then()
+                .statusCode(422)
+                .body("type", equalTo("/problems/constraint-violation"))
+                .body("title", equalTo("Constraint Violation"))
+                .body("detail", equalTo("The request violates one or more constraints"))
+                .body("status", equalTo(422))
+                .body("violations", hasSize(1))
+                .body("violations[0].field", equalTo("body.name"))
+                .body("violations[0].type", equalTo("required"))
+                .body("violations[0].message", equalTo("name is required"));
+
+
+        spec.setName(null);
+
+        given().contentType(ContentType.JSON)
+                .body(spec)
+                .when()
+                .post("/nameless/cert-spec")
+                .then()
+                .statusCode(422)
+                .body("type", equalTo("/problems/constraint-violation"))
+                .body("title", equalTo("Constraint Violation"))
+                .body("detail", equalTo("The request violates one or more constraints"))
+                .body("status", equalTo(422))
+                .body("violations", hasSize(1))
+                .body("violations[0].field", equalTo("body.name"))
+                .body("violations[0].type", equalTo("required"))
+                .body("violations[0].message", equalTo("name is required"));
 
     }
 
