@@ -11,7 +11,7 @@ on:
       - 'certeasy-core/**'
       - 'certeasy-bouncycastle/**'
       - 'certeasy-backend-app/**'
-      - 'certeasy-api-tests/**'
+      - 'certeasy_api_tests/**'
       - '.github/workflows/certeasy-no-publish.yaml'
 
   push:
@@ -19,7 +19,7 @@ on:
       - 'certeasy-core/**'
       - 'certeasy-bouncycastle/**'
       - 'certeasy-backend-app/**'
-      - 'certeasy-api-tests/**'
+      - 'certeasy_api_tests/**'
       - '.github/workflows/certeasy-no-publish.yaml'
     branches-ignore:
       - main
@@ -265,7 +265,7 @@ jobs:
         with:
           python-version: 3.9
       - name: Install dependencies
-        run: pip install -r certeasy-api-tests/requirements.txt
+        run: pip install -r certeasy_api_tests/requirements.txt
       - name: Run tests
-        run: pytest certeasy-api-tests/src/tests
+        run: pytest certeasy_api_tests/src/tests
 
