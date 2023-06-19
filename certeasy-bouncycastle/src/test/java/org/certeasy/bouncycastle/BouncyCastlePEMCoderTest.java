@@ -1,13 +1,21 @@
 package org.certeasy.bouncycastle;
 
+import org.certeasy.BasicConstraints;
 import org.certeasy.Certificate;
+import org.certeasy.CertificateSpec;
 import org.certeasy.CertificateSubject;
 import org.certeasy.DateRange;
+import org.certeasy.DistinguishedName;
+import org.certeasy.ExtendedKeyUsage;
+import org.certeasy.ExtendedKeyUsages;
 import org.certeasy.GeographicAddress;
 import org.certeasy.KeyStrength;
+import org.certeasy.KeyUsage;
 import org.certeasy.PEMCoderException;
+import org.certeasy.RelativeDistinguishedName;
 import org.certeasy.SubjectAlternativeName;
 import org.certeasy.SubjectAlternativeNameType;
+import org.certeasy.SubjectAttributeType;
 import org.certeasy.certspec.CertificateAuthoritySpec;
 import org.certeasy.certspec.CertificateAuthoritySubject;
 import org.junit.jupiter.api.BeforeAll;
@@ -17,10 +25,14 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 class BouncyCastlePEMCoderTest {
+
+    static CertEasyBouncyCastle bouncyCastle;
     static BouncyCastlePEMCoder bcPEMCoder;
     static Certificate certificate;
     static String certPem;
@@ -28,18 +40,18 @@ class BouncyCastlePEMCoderTest {
 
     @BeforeAll
     static void initAll() {
-        bcPEMCoder = new BouncyCastlePEMCoder();
+        bouncyCastle = new CertEasyBouncyCastle();
+        bcPEMCoder = (BouncyCastlePEMCoder) bouncyCastle.pemCoder();
 
         CertificateAuthoritySubject subject = new CertificateAuthoritySubject("John Tester",
                 new GeographicAddress("MZ", "Maputo", "KaMabukwane", "Av. F"));
 
-        CertificateSubject certSubject = new CertificateSubject(subject.getDistinguishedName(),
-                Set.of(new SubjectAlternativeName(SubjectAlternativeNameType.DNS, "jtester")));
 
         DateRange dateRange = new DateRange(LocalDate.now().plusDays(2));
         CertificateAuthoritySpec spec = new CertificateAuthoritySpec(subject, 0, KeyStrength.LOW, dateRange);
 
-        certificate = new BouncyCastleCertGenerator().generate(spec);
+
+        certificate = bouncyCastle.generator().generate(spec);
 
         privateKeyPem = """
                 -----BEGIN PRIVATE KEY-----
@@ -88,7 +100,7 @@ class BouncyCastlePEMCoderTest {
                 "privateKeyPem MUST not be null nor empty");
 
         assertThrows(IllegalArgumentException.class,
-                () -> bcPEMCoder.decodeCertificate(certPem, ""),
+                () -> bcPEMCoder.decodeCertificate(certPem, null),
                 "privateKeyPem MUST not be null nor empty");
 
     }
@@ -149,8 +161,11 @@ class BouncyCastlePEMCoderTest {
                 () -> bcPEMCoder.encodeChain(null),
                 "chain MUST not be null nor empty");
 
+
+
+        Set<Certificate> chain = Set.of();
         assertThrows(IllegalArgumentException.class,
-                () -> bcPEMCoder.encodeChain(Set.of()),
+                () -> bcPEMCoder.encodeChain(chain),
                 "chain MUST not be null nor empty");
     }
 
@@ -160,6 +175,36 @@ class BouncyCastlePEMCoderTest {
         String chain = bcPEMCoder.encodeChain(Set.of(certificate));
         assertNotNull(chain);
         assertNotEquals("", chain);
+    }
+
+    @Test
+    @DisplayName("must Decode Certificate")
+    void mustDecodeCertificateFull() {
+
+        CertificateSubject certSubject = new CertificateSubject(
+                new DistinguishedName(Set.of(new RelativeDistinguishedName(SubjectAttributeType.COMMON_NAME, "John Certified"))),
+                Set.of(
+                        new SubjectAlternativeName(SubjectAlternativeNameType.DNS, "jcertified.com"),
+                        new SubjectAlternativeName(SubjectAlternativeNameType.IP_ADDRESS, "0.0.0.0"),
+                        new SubjectAlternativeName(SubjectAlternativeNameType.URI, "jcertified"),
+                        new SubjectAlternativeName(SubjectAlternativeNameType.EMAIL, "jcertified@email.com")
+//                        new SubjectAlternativeName(SubjectAlternativeNameType.DIRECTORY_NAME, "/jcertified"),
+//                        new SubjectAlternativeName(SubjectAlternativeNameType.OTHER_NAME, "testa dor")
+                        ));
+
+        CertificateSpec certificateSpec = new CertificateSpec(certSubject, KeyStrength.MEDIUM,
+                new DateRange(LocalDate.now().plusDays(2)),
+                new BasicConstraints(false), Set.of(KeyUsage.values()),
+                new ExtendedKeyUsages(Set.of(ExtendedKeyUsage.values())));
+
+        Certificate generatedCert = bouncyCastle.generator().generate(certificateSpec, certificate);
+        Certificate decodedCertificate = bouncyCastle.pemCoder().decodeCertificate(
+                bouncyCastle.pemCoder().encodeCert(generatedCert),
+                bouncyCastle.pemCoder().encodePrivateKey(generatedCert));
+
+
+        assertNotNull(decodedCertificate);
+        assertNotEquals(generatedCert, decodedCertificate);
     }
 
 }
