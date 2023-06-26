@@ -232,7 +232,7 @@ jobs:
       packages: write
     needs: ["build-binary"]
     outputs:
-      image_tag: ${{ steps.meta.outputs.tags }}
+      image_tag: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:test
     steps:
       - uses: actions/checkout@v3
         name: Git checkout
@@ -268,7 +268,9 @@ jobs:
     permissions:
       contents: read
       packages: write
-    needs: [ "build-binary", "build-image"]
+    needs: ["build-image"]
+    env:
+      DOCKER_IMAGE_NAME: ${{ needs.build-image.outputs.image_tag }}
     steps:
       - uses: actions/checkout@v3
         name: Git checkout
@@ -286,7 +288,6 @@ jobs:
         run: |
             docker load --input /tmp/${{ env.IMAGE_NAME }}.tar
             docker image ls -a
-            echo ${{ needs.build-image.outputs.image_tag }}
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
