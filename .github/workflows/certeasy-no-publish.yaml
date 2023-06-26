@@ -286,7 +286,6 @@ jobs:
         run: |
             docker load --input /tmp/${{ env.IMAGE_NAME }}.tar
             docker image ls -a
-            echo ${{ jobs.build-image.steps.meta.outputs.tags }}
             echo ${{ jobs.build-image.outputs.image_tag }}
       - name: Set up Python
         uses: actions/setup-python@v2
