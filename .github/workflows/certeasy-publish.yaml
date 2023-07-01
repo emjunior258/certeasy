@@ -206,6 +206,8 @@ jobs:
       contents: read
       packages: write
     needs: [ "build-binary" ]
+    outputs:
+      image_tag: ${{ steps.meta.outputs.tags }}
     steps:
       - uses: actions/checkout@v3
         name: Git checkout
@@ -240,6 +242,8 @@ jobs:
         contents: read
         packages: write
       needs: ["build-image"]
+      env:
+        DOCKER_IMAGE_NAME: ${{ needs.build-image.outputs.image_tag }}
       steps:
         - name: Checkout code
           uses: actions/checkout@v3

@@ -231,6 +231,8 @@ jobs:
       contents: read
       packages: write
     needs: ["build-binary"]
+    outputs:
+      image_tag: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:test
     steps:
       - uses: actions/checkout@v3
         name: Git checkout
@@ -266,7 +268,9 @@ jobs:
     permissions:
       contents: read
       packages: write
-    needs: [ "build-binary", "build-image"]
+    needs: ["build-image"]
+    env:
+      DOCKER_IMAGE_NAME: ${{ needs.build-image.outputs.image_tag }}
     steps:
       - uses: actions/checkout@v3
         name: Git checkout
