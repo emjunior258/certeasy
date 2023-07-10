@@ -20,6 +20,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Comparator;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.Optional;
@@ -32,7 +33,8 @@ public class CertificatesResource extends BaseResource {
     @GET
     public Response list(@PathParam("issuerId") String issuerId){
         return this.checkIssuerExistsThen(issuerId, (issuer) -> {
-            Set<IssuedCertInfo> issuedCertInfoSet =  issuer.listCerts().stream().map(storedCert -> {
+            Set<IssuedCertInfo> issuedCertInfoSet =
+                    issuer.listCerts().stream().sorted(Comparator.reverseOrder()).map(storedCert -> {
                 Certificate cert = storedCert.getCertificate();
                 return new IssuedCertInfo(cert.getDistinguishedName().getCommonName(),
                         cert.getSerial(),

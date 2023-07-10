@@ -3,10 +3,8 @@ package org.certeasy.backend.persistence;
 import org.certeasy.CertEasyContext;
 import org.certeasy.Certificate;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class MapIssuerDatastore implements IssuerDatastore {
 
