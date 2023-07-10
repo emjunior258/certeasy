@@ -6,6 +6,9 @@ import io.quarkus.test.junit.TestProfile;
 import org.certeasy.*;
 import org.certeasy.backend.BaseRestTest;
 import org.certeasy.backend.common.CertPEM;
+import org.certeasy.backend.common.SubCaSpec;
+import org.certeasy.backend.common.cert.CertValidity;
+import org.certeasy.backend.common.cert.GeographicAddressInfo;
 import org.certeasy.backend.issuer.CertIssuer;
 import org.certeasy.backend.issuer.IssuersResource;
 import org.certeasy.backend.persistence.IssuerRegistry;
@@ -21,11 +24,8 @@ import javax.ws.rs.core.MediaType;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static io.restassured.RestAssured.given;
-
-import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -117,7 +117,46 @@ public class CertificatesResourceTest extends BaseRestTest {
     @Test
     void must_fail_to_issue_sub_ca_cert_for_unknown_issuer(){
 
+        SubCaSpec spec = new SubCaSpec();
+        spec.setName("dumb");
+        spec.setKeyStrength(KeyStrength.MEDIUM.name());
+        spec.setPathLength(-1);
+        spec.setValidity(new CertValidity(new DateRange(LocalDate.of(2099, Month.DECEMBER,
+                31))));
 
+        given()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(spec)
+                .post("/api/issuers/dumb/certificates/sub-ca")
+                .then()
+                .contentType(MediaType.APPLICATION_JSON)
+                .statusCode(404);
+
+
+    }
+
+    @Test
+    void must_succeed_issuing_sub_ca_cert_with_valid_spec(){
+
+        Certificate authorityCert = context.generator().generate(certificateAuthoritySpec);
+        registry.add("example", authorityCert);
+
+
+        SubCaSpec spec = new SubCaSpec();
+        spec.setName("intermediate");
+        spec.setKeyStrength(KeyStrength.MEDIUM.name());
+        spec.setPathLength(-1);
+        spec.setGeographicAddressInfo(new GeographicAddressInfo("ZA","Nelspruit", "Mpumalanga", "Third Base Urban. Fashion. UG73"));
+        spec.setValidity(new CertValidity(new DateRange(LocalDate.of(3099, Month.DECEMBER,
+                31))));
+
+        given()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(spec)
+                .post("/api/issuers/example/certificates/sub-ca")
+                .then()
+                .contentType(MediaType.APPLICATION_JSON)
+                .statusCode(200);
 
     }
 
