@@ -171,7 +171,6 @@ public class CertificatesResourceTest extends BaseRestTest {
         assertEquals(2, certIssuer.listCerts().size());
         given().delete("/api/issuers/example/certificates/"+personCertificate.getSerial())
                 .then()
-                .contentType(MediaType.APPLICATION_JSON)
                 .statusCode(204);
         assertEquals(1, certIssuer.listCerts().size());
 
