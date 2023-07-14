@@ -34,7 +34,7 @@ public class CertificatesResource extends BaseResource {
     public Response list(@PathParam("issuerId") String issuerId){
         return this.checkIssuerExistsThen(issuerId, (issuer) -> {
             Set<IssuedCertInfo> issuedCertInfoSet =
-                    issuer.listCerts().stream().sorted(Comparator.reverseOrder()).map(storedCert -> {
+                    issuer.listCerts().stream().map(storedCert -> {
                 Certificate cert = storedCert.getCertificate();
                 return new IssuedCertInfo(cert.getDistinguishedName().getCommonName(),
                         cert.getSerial(),
