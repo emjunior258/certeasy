@@ -274,5 +274,6 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: certeasy-console-dist
-          path: dist
+          path: |
+            certeasy-console-app/dist
 
