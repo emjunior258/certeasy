@@ -169,8 +169,6 @@ jobs:
         with:
           name: certeasy-bouncycastle
           path: ~/.m2/repository/org/certeasy/certeasy-bouncycastle
-      - name: Create test data directory
-        run: mkdir -p target/test
       - name: Run Unit tests
         run: mvn test --batch-mode org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=certeasy-backend -Dsonar.branch.name=${GITHUB_REF_NAME}
         env:
