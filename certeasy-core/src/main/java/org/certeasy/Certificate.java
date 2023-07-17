@@ -11,7 +11,7 @@ import java.util.*;
 /**
  * Represents an X509 V3 Certificate along with the respective private-key.
  */
-public class Certificate {
+public class Certificate implements Comparable<Certificate> {
 
     private final String serial;
     private final KeyStrength keyStrength;
@@ -184,4 +184,9 @@ public class Certificate {
         return this.basicConstraints.ca();
     }
 
+    @Override
+    public int compareTo(Certificate certificate) {
+        return this.getDistinguishedName().getCommonName().compareTo(certificate.getDistinguishedName().
+                getCommonName());
+    }
 }

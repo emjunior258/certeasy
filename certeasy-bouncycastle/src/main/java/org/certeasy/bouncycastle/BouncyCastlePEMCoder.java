@@ -61,7 +61,7 @@ public class BouncyCastlePEMCoder implements PEMCoder  {
                 PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(privateKeyBytes);
                 KeyFactory keyFactory = KeyFactory.getInstance("RSA", BouncyCastleProvider.PROVIDER_NAME);
                 return keyFactory.generatePrivate(keySpec);
-            } else throw new PEMCoderException("provided PEM content doesn't contain a privateKey");
+            } else throw new IllegalPrivateKeyPemException("provided PEM content doesn't contain a privateKey");
         }catch (IOException | NoSuchAlgorithmException | NoSuchProviderException ex){
             throw new PEMCoderException("error decoding RSA private key", ex);
         }catch (InvalidKeySpecException | DecoderException ex){

@@ -7,14 +7,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 /**
  * Represents a certificate issuerId: issues certificates and keeps record of them.
  */
 public class CertIssuer {
-
 
     private String id;
     private IssuerDatastore store;

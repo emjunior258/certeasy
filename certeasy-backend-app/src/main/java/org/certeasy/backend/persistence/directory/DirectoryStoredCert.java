@@ -156,4 +156,7 @@ public class DirectoryStoredCert implements StoredCert {
         }
     }
 
+    public File getDirectory() {
+        return directory;
+    }
 }
