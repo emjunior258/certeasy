@@ -37,7 +37,7 @@ The cereasy project is a monorepo, with multiple sub-projects hosted under the s
 | `./certeasy-bouncycastle` | Implements a certificate generator using bouncycastle library | Java |
 | `./certeasy-backend-app` | Implements all the functionality and exposes a Restful API | Java/Quarkus |
 | `./certeasy-api-tests` | Implements API integration tests | Python |
-| `./certeasy-frontend-app` | Implements the certeasy web GUI | Vuejs |
+| `./certeasy-console-app` | Implements the certeasy web GUI | Vuejs |
 | `./site` | The Website of the project | Undefined |
 
 
