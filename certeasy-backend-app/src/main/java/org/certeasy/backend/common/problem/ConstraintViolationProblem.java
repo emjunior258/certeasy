@@ -1,6 +1,7 @@
 package org.certeasy.backend.common.problem;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.certeasy.backend.common.validation.Violation;
 
 import java.util.Collections;
@@ -8,6 +9,7 @@ import java.util.Set;
 
 
 @JsonPropertyOrder({ "type", "title", "status", "detail", "violations" })
+@RegisterForReflection
 public class ConstraintViolationProblem extends Problem {
 
     private Set<Violation> violations;

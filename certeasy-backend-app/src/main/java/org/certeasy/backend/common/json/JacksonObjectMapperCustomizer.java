@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import io.quarkus.jackson.ObjectMapperCustomizer;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.certeasy.Certificate;
 import org.certeasy.backend.common.cert.CertificateInfo;
 import org.certeasy.backend.common.cert.CreatedCertInfo;

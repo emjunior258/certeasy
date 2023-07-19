@@ -2,8 +2,10 @@ package org.certeasy.backend.common.problem;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @JsonPropertyOrder({ "type", "title", "status", "detail" })
+@RegisterForReflection
 public class Problem {
 
     @JsonProperty("type")
