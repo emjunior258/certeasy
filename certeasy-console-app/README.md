@@ -1,6 +1,48 @@
-# certeasy-frontend-app
+# Certeasy Console App
+The easiest certificate authority for development and experiments
 
-## Project setup
+
+## Project structure
+- [`src`](#src)
+  - [`assets`](#assets)
+  - [`components`](#components)
+  - [`views`](#views)
+  - [`config`](#config)
+  - [`router`](#router)
+  - [`services`](#services)
+  - [`store`](#store)
+  - [`main.js`](#mainjs)
+
+### `src`
+Source 
+
+### `assets`
+Images
+
+### `components`
+Shared components folder.
+
+
+### `config`
+App config files.
+
+
+### `views`
+Page wrapper components(Pages) and Local components.
+
+### `router`
+Router instance and routing declaration.
+- `index` - router initialization.
+
+### `store`
+App store with separate modules.
+
+
+### `main.js`
+Root app initialization file.
+
+
+## Build Setup
 ```
 npm install
 ```
@@ -23,7 +65,3 @@ npm run test:e2e
 ### Lints and fixes files
 ```
 npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
