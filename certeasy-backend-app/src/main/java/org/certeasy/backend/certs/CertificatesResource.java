@@ -1,6 +1,7 @@
 package org.certeasy.backend.certs;
 
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.certeasy.Certificate;
 import org.certeasy.KeyStrength;
 import org.certeasy.backend.common.BaseResource;

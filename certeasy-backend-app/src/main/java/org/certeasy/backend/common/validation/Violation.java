@@ -3,8 +3,10 @@ package org.certeasy.backend.common.validation;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @JsonPropertyOrder({"field", "type", "subType", "message"})
+@RegisterForReflection
 public record  Violation (String field, String type, @JsonProperty("sub_type") String subType, String message){
 
     public Violation(String field, String type, String subType,  String message){
