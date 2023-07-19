@@ -46,8 +46,7 @@ jobs:
           distribution: 'temurin'
           cache: maven
       - name: Run Unit tests
-        run: mvn clean test --batch-mode
-#         org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=certeasy-core -Dsonar.branch.name=${GITHUB_REF_NAME}
+        run: mvn clean test --batch-mode org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=certeasy-core -Dsonar.branch.name=${GITHUB_REF_NAME}
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             SONAR_TOKEN: ${{ secrets.SONAR_CORE_TOKEN }}
@@ -65,11 +64,6 @@ jobs:
             name: Core Test Results
             path: certeasy-core/target/surefire-reports/TEST-*.xml
             reporter: java-junit
-      - name: Sonar Report
-        run: mvn test org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=certeasy-core -Dsonar.branch.name=${GITHUB_REF_NAME}
-        env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            SONAR_TOKEN: ${{ secrets.SONAR_CORE_TOKEN }}
       - name: Maven package
         run: mvn --batch-mode package install -DskipTests
         env:
@@ -106,8 +100,7 @@ jobs:
           name: certeasy-core
           path: ~/.m2/repository/org/certeasy/certeasy-core
       - name: Run Unit Tests
-        run: mvn clean test --batch-mode
-#         org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=certeasy-bouncycastle -Dsonar.branch.name=${GITHUB_REF_NAME}
+        run: mvn test --batch-mode org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=certeasy-bouncycastle -Dsonar.branch.name=${GITHUB_REF_NAME}
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             SONAR_TOKEN: ${{ secrets.SONAR_BOUNCYCASTLE_TOKEN }}
@@ -125,11 +118,6 @@ jobs:
             name: BouncyCastle Test Results
             path: certeasy-bouncycastle/target/surefire-reports/TEST-*.xml
             reporter: java-junit
-      - name: Sonar Report
-        run: mvn test org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=certeasy-bouncycastle -Dsonar.branch.name=${GITHUB_REF_NAME}
-        env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            SONAR_TOKEN: ${{ secrets.SONAR_BOUNCYCASTLE_TOKEN }}
       - name: Maven package
         run: mvn --batch-mode package install -DskipTests
         env:
