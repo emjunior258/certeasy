@@ -19,8 +19,11 @@ import org.certeasy.backend.persistence.MapIssuerRegistry;
 import org.certeasy.backend.persistence.MemoryPersistenceProfile;
 import org.certeasy.certspec.CertificateAuthoritySpec;
 import org.certeasy.certspec.CertificateAuthoritySubject;
+import org.certeasy.certspec.PersonName;
 import org.certeasy.certspec.PersonalCertificateSpec;
 import static org.junit.jupiter.api.Assertions.*;
+
+import org.certeasy.certspec.PersonalIdentitySubject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -33,6 +36,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.Set;
 
 @QuarkusTest
 @TestProfile(MemoryPersistenceProfile.class)
@@ -59,6 +63,17 @@ public class IssuersResourceTest extends BaseRestTest {
                 KeyStrength.HIGH,
                 new DateRange(LocalDate.of(2099, Month.DECEMBER,
                         31)));
+
+        PersonalIdentitySubject personalIdentitySubject = new PersonalIdentitySubject(new PersonName("John", "Traveller"),
+                geographicAddress,
+                "+27890123456",
+                Set.of("traveller@emailk.com"),
+                Set.of("jt"));
+        personalCertificateSpec = new PersonalCertificateSpec(personalIdentitySubject,
+                KeyStrength.LOW,
+                new DateRange(LocalDate.of(2099, Month.DECEMBER,
+                        31)));
+
     }
 
     @BeforeEach
@@ -475,6 +490,133 @@ public class IssuersResourceTest extends BaseRestTest {
                 .body("violations[0].field", equalTo("body.key_strength"))
                 .body("violations[0].type", equalTo("enum"))
                 .body("violations[0].message", equalTo("key_strength should be one of [LOW, MEDIUM, HIGH, VERY_HIGH]"));
+
+    }
+
+//    @Test
+//    @Tag("createFromRef")
+//    @DisplayName("createFromRef() must create issuer successfully")
+//    void createFromRef_must_create_issuer_successfully(){
+//        Certificate authorityCert = context.generator().generate(certificateAuthoritySpec);
+//        registry.add("amazon", authorityCert);
+//        IssuerCertRef certRef = new IssuerCertRef("amazon", authorityCert.getSerial());
+//
+//        given().contentType(ContentType.JSON)
+//                .body(certRef)
+//                .when()
+//                .post("/orange/cert-ref")
+//                .then()
+//                .statusCode(422)
+//                .body("type", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getType()))
+//                .body("title", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getTitle()))
+//                .body("detail", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getDetail()))
+//                .body("status", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getStatus()))
+//                .body("violations", hasSize(1))
+//                .body("violations[0].field", equalTo("body.serial"))
+//                .body("violations[0].type", equalTo("state"))
+//                .body("violations[0].message", equalTo("No certificate found with a matching serial: "+authorityCert.getSerial()))
+//                .log().all();
+//
+////        assertTrue(registry.exists("orange"));
+//    }
+
+    @Test
+    @Tag("createFromRef")
+    @DisplayName("createFromRef() must fail when certificate not found")
+    void createFromRef_must_fail_when_certificate_not_found(){
+        Certificate authorityCert = context.generator().generate(certificateAuthoritySpec);
+        registry.add("amazon", authorityCert);
+        IssuerCertRef certRef = new IssuerCertRef("amazon", authorityCert.getSerial());
+
+        given().contentType(ContentType.JSON)
+                .body(certRef)
+                .when()
+                .post("/orange/cert-ref")
+                .then()
+                .statusCode(422)
+                .body("type", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getType()))
+                .body("title", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getTitle()))
+                .body("detail", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getDetail()))
+                .body("status", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getStatus()))
+                .body("violations", hasSize(1))
+                .body("violations[0].field", equalTo("body.serial"))
+                .body("violations[0].type", equalTo("state"))
+                .body("violations[0].message", equalTo("No certificate found with a matching serial: "+authorityCert.getSerial()));
+
+    }
+
+    @Test
+    @Tag("createFromRef")
+    @DisplayName("createFromRef() must fail when certificate issuer is empty")
+    void createFromRef_must_fail_when_cert_issuer_is_empty(){
+
+        given().contentType(ContentType.JSON)
+                .body(new IssuerCertRef("amazon", "1689614819994"))
+                .when()
+                .post("/orange/cert-ref")
+                .then()
+                .statusCode(422)
+                .body("type", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getType()))
+                .body("title", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getTitle()))
+                .body("detail", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getDetail()))
+                .body("status", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getStatus()))
+                .body("violations", hasSize(1))
+                .body("violations[0].field", equalTo("body.issuer_id"))
+                .body("violations[0].type", equalTo("state"))
+                .body("violations[0].message", equalTo("No issuer found with a matching Id: amazon"));
+
+    }
+
+    @Test
+    @Tag("createFromRef")
+    @DisplayName("createFromRef() must fail when certificate referenced is not ca")
+    void createFromRef_must_fail_when_cert_ref_is_not_ca(){
+
+        Certificate authorityCert = context.generator().generate(certificateAuthoritySpec);
+        registry.add("amazon", authorityCert);
+//        IssuerCertRef certRef = new IssuerCertRef("amazon", authorityCert.getSerial());
+
+        Certificate certificate = context.generator().generate(personalCertificateSpec, authorityCert);
+
+        given().contentType(ContentType.JSON)
+                .body(new IssuerCertRef("amazon", authorityCert.getSerial()))
+                .when()
+                .post("/amazon/cert-ref")
+                .then()
+                .statusCode(422)
+                .body("type", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getType()))
+                .body("title", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getTitle()))
+                .body("detail", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getDetail()))
+                .body("status", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getStatus()))
+                .body("violations", hasSize(1))
+                .body("violations[0].field", equalTo("body.serial"))
+                .body("violations[0].type", equalTo("not-ca"))
+                .body("violations[0].message", equalTo("The referenced certificate is not a CA: "+ certificate.getSerial()));
+
+    }
+
+    @Test
+    @Tag("createFromRef")
+    @DisplayName("createFromRef() must fail when body not found")
+    void createFromRef_must_fail_when_body_not_found(){
+        Certificate authorityCert = context.generator().generate(certificateAuthoritySpec);
+        registry.add("amazon", authorityCert);
+        IssuerCertRef certRef = new IssuerCertRef("amazon", "");
+
+        given().contentType(ContentType.JSON)
+                .body(certRef)
+                .when()
+                .post("/orange/cert-ref")
+                .then()
+                .statusCode(422)
+                .body("type", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getType()))
+                .body("title", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getTitle()))
+                .body("detail", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getDetail()))
+                .body("status", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getStatus()))
+                .body("violations", hasSize(1))
+                .body("violations[0].field", equalTo("body.serial"))
+                .body("violations[0].type", equalTo("required"))
+                .body("violations[0].message", equalTo("serial must not be be null nor empty"));
 
     }
 
