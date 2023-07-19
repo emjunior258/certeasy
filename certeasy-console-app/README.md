@@ -12,7 +12,7 @@ The easiest certificate authority for development and experiments
   - [`services`](#services)
   - [`store`](#store)
   - [`main.js`](#mainjs)
-- [`testes`](#tests)
+- [`tests`](#tests)
 
 ### `src`
 Source 
