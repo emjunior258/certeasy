@@ -50,7 +50,7 @@ All you need to do is to execute the `./build-local.sh` script. The script will 
 ### Run locally
 Once you run the local build you can execute certeasy using `docker run` as follows:
 ```bash
-docker run -p 8080:8080 -p 8081:80 certeasy:local
+docker run -d -p 8080:8080 -p 8081:80 certeasy:local
 ```
 You can then access the interfaces using the following links :
 * API - `http://localhost:8080/api/` 
