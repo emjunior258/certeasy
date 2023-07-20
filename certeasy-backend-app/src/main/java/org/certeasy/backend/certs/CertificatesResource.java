@@ -1,11 +1,13 @@
 package org.certeasy.backend.certs;
 
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.certeasy.Certificate;
 import org.certeasy.KeyStrength;
 import org.certeasy.backend.common.BaseResource;
 import org.certeasy.backend.common.CertPEM;
 import org.certeasy.backend.common.SubCaSpec;
+import org.certeasy.backend.common.cert.CertificateConverter;
 import org.certeasy.backend.common.cert.NotFoundProblem;
 import org.certeasy.backend.common.problem.Problem;
 import org.certeasy.backend.common.problem.ProblemResponse;
@@ -32,7 +34,7 @@ public class CertificatesResource extends BaseResource {
 
     @GET
     public Response list(@PathParam("issuerId") String issuerId){
-        return this.checkIssuerExistsThen(issuerId, (issuer) -> {
+        return this.checkIssuerExistsThen(issuerId, issuer -> {
             Set<IssuedCertInfo> issuedCertInfoSet =  issuer.listCerts().stream().map(storedCert -> {
                 Certificate cert = storedCert.getCertificate();
                 return new IssuedCertInfo(cert.getDistinguishedName().getCommonName(),
@@ -56,7 +58,7 @@ public class CertificatesResource extends BaseResource {
     @POST
     @Path("/sub-ca")
     public Response issueSubCaCertificate(@PathParam("issuerId") String issuerId, SubCaSpec spec){
-        return this.checkIssuerExistsThen(issuerId, (issuer) -> {
+        return this.checkIssuerExistsThen(issuerId, issuer -> {
             CertificateAuthoritySubject subCaSubject = new CertificateAuthoritySubject(
                     spec.getName(),
                     spec.getGeographicAddressInfo().
@@ -73,10 +75,9 @@ public class CertificatesResource extends BaseResource {
     @GET
     @Path("/{serial}")
     public Response getCertInfo(@PathParam("issuerId") String issuerId, @PathParam("serial") String serial){
-
-        //TODO: Implement
-        throw new UnsupportedOperationException();
-
+        return this.checkIssuerExistsThen(issuerId, issuer -> checkCertExistsThen(issuer, serial, cert -> Response.ok(
+                CertificateConverter.convert(cert.getCertificate()))
+                .build()));
     }
 
     @DELETE

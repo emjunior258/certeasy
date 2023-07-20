@@ -1,5 +1,6 @@
 package org.certeasy.backend.issuer;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.certeasy.*;
 import org.certeasy.backend.common.BaseResource;
 import org.certeasy.backend.common.CertPEM;
@@ -80,26 +81,33 @@ public class IssuersResource extends BaseResource {
     @Path("/{issuerId}/cert-pem")
     public Response createFromPem(@PathParam("issuerId") String issuerId, CertPEM pem){
         return this.checkIssuerNotExistsThen(issuerId,  ()->{
+            LOGGER.info("Issuer name not taken: "+issuerId);
             Set<Violation> violationSet = pem.validate(ValidationPath.of("body"));
-            if(!violationSet.isEmpty())
+            if(!violationSet.isEmpty()) {
+                LOGGER.debug(String.format("%d constraint violations found", violationSet.size()));
                 return ProblemResponse.constraintViolations(violationSet);
+            }
             try{
                 Certificate certificate = context().pemCoder().decodeCertificate(pem.certFile(),
                         pem.keyFile());
                 BasicConstraints basicConstraints = certificate.getBasicConstraints();
-                if(basicConstraints==null || !basicConstraints.ca())
+                if(basicConstraints==null || !basicConstraints.ca()) {
+                    LOGGER.debug("Basic constraints extension missing on certificate");
                     return Response.status(422).entity(new ConstraintViolationProblem(
                             new Violation("body.pem.cert_file", ViolationType.STATE,
                                     "not_ca", "cert_file is does not have CA basic constraint"
                             ))).build();
+                }
                 registry().add(issuerId, certificate);
                 return Response.noContent().build();
             }catch (IllegalCertPemException ex) {
+                LOGGER.debug("Certificate not a valid PEM", ex);
                 return Response.status(422).entity(new ConstraintViolationProblem(
                         new Violation("body.pem.cert_file", ViolationType.FORMAT,
                                 "cert_file is NOT a valid PEM encoded certificate"
                         ))).build();
             }catch (IllegalPrivateKeyPemException ex){
+                LOGGER.debug("Key not a valid PEM", ex);
                 return Response.status(422).entity(new ConstraintViolationProblem(
                         new Violation("body.pem.key_file", ViolationType.FORMAT,
                                 "key_file is NOT a valid PEM encoded private key"
@@ -131,7 +139,7 @@ public class IssuersResource extends BaseResource {
             }
             CertIssuer certIssuer = optionalCertIssuer.get();
             Optional<StoredCert> optionalStoredCert = certIssuer.listCerts().stream()
-                    .filter(cert -> cert.getCertificate().getSerial().equals(issuerId))
+                    .filter(cert -> cert.getCertificate().getSerial().equals(ref.serial()))
                     .findAny();
             //Certificate not found
             if (optionalStoredCert.isEmpty()) {
