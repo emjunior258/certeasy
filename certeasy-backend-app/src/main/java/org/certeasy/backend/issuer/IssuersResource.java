@@ -139,7 +139,7 @@ public class IssuersResource extends BaseResource {
             }
             CertIssuer certIssuer = optionalCertIssuer.get();
             Optional<StoredCert> optionalStoredCert = certIssuer.listCerts().stream()
-                    .filter(cert -> cert.getCertificate().getSerial().equals(issuerId))
+                    .filter(cert -> cert.getCertificate().getSerial().equals(ref.serial()))
                     .findAny();
             //Certificate not found
             if (optionalStoredCert.isEmpty()) {
