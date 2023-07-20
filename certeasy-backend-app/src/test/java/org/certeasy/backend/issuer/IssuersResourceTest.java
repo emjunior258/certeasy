@@ -565,14 +565,14 @@ public class IssuersResourceTest extends BaseRestTest {
 
         Certificate authorityCert = context.generator().generate(certificateAuthoritySpec);
         registry.add("amazon", authorityCert);
-//        IssuerCertRef certRef = new IssuerCertRef("amazon", authorityCert.getSerial());
 
         Certificate certificate = context.generator().generate(personalCertificateSpec, authorityCert);
+        registry.add("amazon", certificate);
 
         given().contentType(ContentType.JSON)
-                .body(new IssuerCertRef("amazon", authorityCert.getSerial()))
+                .body(new IssuerCertRef("amazon", certificate.getSerial()))
                 .when()
-                .post("/amazon/cert-ref")
+                .post("/orange/cert-ref")
                 .then()
                 .statusCode(422)
                 .body("type", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getType()))
@@ -581,8 +581,9 @@ public class IssuersResourceTest extends BaseRestTest {
                 .body("status", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getStatus()))
                 .body("violations", hasSize(1))
                 .body("violations[0].field", equalTo("body.serial"))
-                .body("violations[0].type", equalTo("not-ca"))
-                .body("violations[0].message", equalTo("The referenced certificate is not a CA: "+ certificate.getSerial()));
+                .body("violations[0].type", equalTo("state"))
+                .body("violations[0].message", equalTo("The referenced certificate is not a CA: "+ certificate.getSerial()))
+                .log().all();
 
     }
 
