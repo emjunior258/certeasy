@@ -63,8 +63,6 @@ public class CertIssuer {
     }
 
     private void setCertificate(Certificate certificate){
-        if(certificate==null)
-            throw new IllegalArgumentException("certificate MUST not be null");
         this.store.put(certificate);
         this.certificate = certificate;
         this.serial = certificate.getSerial();
@@ -92,7 +90,7 @@ public class CertIssuer {
     }
 
     private void loadCertIfNotYet() {
-        if(certificate!=null || !hasCertificate())
+        if(certificate!=null)
             return;
         Optional<StoredCert> storedCert = store.getCert(serial);
         storedCert.ifPresent(cert -> this.certificate = cert.getCertificate());
