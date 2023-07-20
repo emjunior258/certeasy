@@ -493,32 +493,23 @@ public class IssuersResourceTest extends BaseRestTest {
 
     }
 
-//    @Test
-//    @Tag("createFromRef")
-//    @DisplayName("createFromRef() must create issuer successfully")
-//    void createFromRef_must_create_issuer_successfully(){
-//        Certificate authorityCert = context.generator().generate(certificateAuthoritySpec);
-//        registry.add("amazon", authorityCert);
-//        IssuerCertRef certRef = new IssuerCertRef("amazon", authorityCert.getSerial());
-//
-//        given().contentType(ContentType.JSON)
-//                .body(certRef)
-//                .when()
-//                .post("/orange/cert-ref")
-//                .then()
-//                .statusCode(422)
-//                .body("type", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getType()))
-//                .body("title", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getTitle()))
-//                .body("detail", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getDetail()))
-//                .body("status", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getStatus()))
-//                .body("violations", hasSize(1))
-//                .body("violations[0].field", equalTo("body.serial"))
-//                .body("violations[0].type", equalTo("state"))
-//                .body("violations[0].message", equalTo("No certificate found with a matching serial: "+authorityCert.getSerial()))
-//                .log().all();
-//
-////        assertTrue(registry.exists("orange"));
-//    }
+    @Test
+    @Tag("createFromRef")
+    @DisplayName("createFromRef() must create issuer successfully")
+    void createFromRef_must_create_issuer_successfully(){
+        Certificate authorityCert = context.generator().generate(certificateAuthoritySpec);
+        registry.add("amazon", authorityCert);
+
+        given().contentType(ContentType.JSON)
+                .body(new IssuerCertRef("amazon", authorityCert.getSerial()))
+                .when()
+                .post("/orange/cert-ref")
+                .then()
+                .statusCode(204)
+                .log().all();
+
+        assertTrue(registry.exists("orange"));
+    }
 
     @Test
     @Tag("createFromRef")
@@ -526,7 +517,7 @@ public class IssuersResourceTest extends BaseRestTest {
     void createFromRef_must_fail_when_certificate_not_found(){
         Certificate authorityCert = context.generator().generate(certificateAuthoritySpec);
         registry.add("amazon", authorityCert);
-        IssuerCertRef certRef = new IssuerCertRef("amazon", authorityCert.getSerial());
+        IssuerCertRef certRef = new IssuerCertRef("amazon", "1689847141252");
 
         given().contentType(ContentType.JSON)
                 .body(certRef)
@@ -541,7 +532,7 @@ public class IssuersResourceTest extends BaseRestTest {
                 .body("violations", hasSize(1))
                 .body("violations[0].field", equalTo("body.serial"))
                 .body("violations[0].type", equalTo("state"))
-                .body("violations[0].message", equalTo("No certificate found with a matching serial: "+authorityCert.getSerial()));
+                .body("violations[0].message", equalTo("No certificate found with a matching serial: "+certRef.serial()));
 
     }
 
