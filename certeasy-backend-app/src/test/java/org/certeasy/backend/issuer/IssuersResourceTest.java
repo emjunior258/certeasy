@@ -113,6 +113,16 @@ public class IssuersResourceTest extends BaseRestTest {
 
     }
 
+    @Test
+    @DisplayName("deleteIssuer() must fail when issuer empty")
+    void deleteIssuer_must_fail_when_issuer_empty(){
+
+        given().delete("/dummy")
+                .then()
+                .statusCode(404)
+                .log().all();
+
+    }
 
     @Test
     @DisplayName("deleteIssuer() must remove existing issuer")
@@ -509,6 +519,84 @@ public class IssuersResourceTest extends BaseRestTest {
                 .log().all();
 
         assertTrue(registry.exists("orange"));
+    }
+
+    @Test
+    @Tag("createFromRef")
+    @DisplayName("createFromRef() must fail when issuerId null or empty")
+    void createFromRef_must_fail_when_issuer_id_null(){
+        Certificate authorityCert = context.generator().generate(certificateAuthoritySpec);
+        registry.add("amazon", authorityCert);
+
+        given().contentType(ContentType.JSON)
+                .body(new IssuerCertRef("", authorityCert.getSerial()))
+                .when()
+                .post("/orange/cert-ref")
+                .then()
+                .statusCode(422)
+                .body("type", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getType()))
+                .body("title", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getTitle()))
+                .body("detail", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getDetail()))
+                .body("status", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getStatus()))
+                .body("violations", hasSize(1))
+                .body("violations[0].field", equalTo("body.issuer_id"))
+                .body("violations[0].type", equalTo("required"))
+                .body("violations[0].message", equalTo("issuer_id must not be be null nor empty"));
+
+        given().contentType(ContentType.JSON)
+                .body(new IssuerCertRef(null, authorityCert.getSerial()))
+                .when()
+                .post("/orange/cert-ref")
+                .then()
+                .statusCode(422)
+                .body("type", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getType()))
+                .body("title", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getTitle()))
+                .body("detail", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getDetail()))
+                .body("status", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getStatus()))
+                .body("violations", hasSize(1))
+                .body("violations[0].field", equalTo("body.issuer_id"))
+                .body("violations[0].type", equalTo("required"))
+                .body("violations[0].message", equalTo("issuer_id must not be be null nor empty"));
+
+    }
+
+    @Test
+    @Tag("createFromRef")
+    @DisplayName("createFromRef() must fail when serial null or empty")
+    void createFromRef_must_fail_when_serial_null(){
+        Certificate authorityCert = context.generator().generate(certificateAuthoritySpec);
+        registry.add("amazon", authorityCert);
+
+        given().contentType(ContentType.JSON)
+                .body(new IssuerCertRef("amazon", ""))
+                .when()
+                .post("/orange/cert-ref")
+                .then()
+                .statusCode(422)
+                .body("type", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getType()))
+                .body("title", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getTitle()))
+                .body("detail", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getDetail()))
+                .body("status", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getStatus()))
+                .body("violations", hasSize(1))
+                .body("violations[0].field", equalTo("body.serial"))
+                .body("violations[0].type", equalTo("required"))
+                .body("violations[0].message", equalTo("serial must not be be null nor empty"));
+
+        given().contentType(ContentType.JSON)
+                .body(new IssuerCertRef("amazon", null))
+                .when()
+                .post("/orange/cert-ref")
+                .then()
+                .statusCode(422)
+                .body("type", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getType()))
+                .body("title", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getTitle()))
+                .body("detail", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getDetail()))
+                .body("status", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getStatus()))
+                .body("violations", hasSize(1))
+                .body("violations[0].field", equalTo("body.serial"))
+                .body("violations[0].type", equalTo("required"))
+                .body("violations[0].message", equalTo("serial must not be be null nor empty"));
+
     }
 
     @Test
