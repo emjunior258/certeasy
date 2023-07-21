@@ -71,6 +71,17 @@ public class DirectoryIssuerRegistryTest extends DirectoryBaseTest {
 
     }
 
+    @Test
+    @DisplayName("add() must throw when arguments not valid")
+    void add_must_throw_when_arguments_not_valid(){
+        Certificate certificate = context.generator().generate(certSpec);
+        IssuerRegistry registry = createRegistry();
+
+        assertThrows(IllegalArgumentException.class, () -> registry.add("", certificate), "name MUST not be null nor empty");
+        assertThrows(IllegalArgumentException.class, () -> registry.add(null, certificate), "name MUST not be null nor empty");
+        assertThrows(IllegalArgumentException.class, () -> registry.add("example", null), "certificate MUST not be null");
+//        assertThrows(IllegalArgumentException.class, () -> registry.add("example", certificate),"dir MUST not be null and MUST point to an existing directory");
+    }
 
     @Test
     @DisplayName("add() must store issuer and certificate in directory")
@@ -88,6 +99,15 @@ public class DirectoryIssuerRegistryTest extends DirectoryBaseTest {
         assertTrue(Files.exists(keyPem));
         Path certPem = certDirectory.resolve("key.pem");
         assertTrue(Files.exists(certPem));
+
+    }
+
+    @Test
+    @DisplayName("exists() must throw when issuer id empty or null")
+    void exists_must_throw_when_issuer_id_empty_or_null() throws IOException {
+        IssuerRegistry registry = createRegistry();
+        assertThrows(IllegalArgumentException.class, () -> registry.exists(""), "name MUST not be null");
+        assertThrows(IllegalArgumentException.class, () -> registry.exists(null), "name MUST not be null");
 
     }
 
@@ -112,6 +132,15 @@ public class DirectoryIssuerRegistryTest extends DirectoryBaseTest {
 
     }
 
+    @Test
+    @DisplayName("getById() must throw when issuer id is null or empty")
+    void getById_must_throw_when_issuer_id_null_or_empty() throws IOException {
+        IssuerRegistry registry = createRegistry();
+        assertThrows(IllegalArgumentException.class, () -> registry.getById(""), "name MUST not be null");
+        assertThrows(IllegalArgumentException.class, () -> registry.getById(null), "name MUST not be null");
+
+    }
+
 
     @Test
     @DisplayName("getById() must check if subdirectory exists and is well-formed")
@@ -132,6 +161,13 @@ public class DirectoryIssuerRegistryTest extends DirectoryBaseTest {
         assertFalse(registry.getById("second").isPresent());
         assertFalse(registry.getById("third").isPresent());
 
+    }
+
+    @Test
+    @DisplayName("delete() must throw when issuer id null")
+    void delete_must_throw_when_issuer_id_null() {
+        IssuerRegistry registry = createRegistry();
+        assertThrows(IllegalArgumentException.class, () -> registry.delete(null), "issuerId MUST not be null");
     }
 
     @Test
