@@ -256,24 +256,3 @@ jobs:
           run: pip install -r certeasy_api_tests/requirements.txt
         - name: Run tests
           run: pytest certeasy_api_tests/src/tests
-  
-  build-console-app:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./certeasy-console-app
-    steps:
-      - uses: actions/checkout@v3
-      - name: Git checkout
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-      - run: npm ci
-      - run: npm run build
-      - name: Publish build
-        uses: actions/upload-artifact@v3
-        with:
-          name: certeasy-console-dist
-          path: |
-            certeasy-console-app/dist
-
