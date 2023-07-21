@@ -48,11 +48,15 @@ You must have `Java17 JDK` and `Docker` installed in order to build locally.
 All you need to do is to execute the `./build-local.sh` script. The script will produce a docker image tagged as `certeasy:local`.
 
 ### Run locally
-Once you run the local build you can execute the certeasy headless using `docker run` as follows:
+Once you run the local build you can execute certeasy using `docker run` as follows:
 ```bash
-docker run -p 8080:8080 certeasy:local
+docker run -d -p 8080:8080 -p 8081:80 certeasy:local
 ```
-You can access the API under `http://localhost:8080/api/`.
+You can then access the interfaces using the following links :
+* API - `http://localhost:8080/api/` 
+* Console - `http://localhost:8081/`
+
+
 
 ## Help wanted
 Checkout the [Issues page](https://github.com/emjunior258/certeasy/issues) for a detailed list.
