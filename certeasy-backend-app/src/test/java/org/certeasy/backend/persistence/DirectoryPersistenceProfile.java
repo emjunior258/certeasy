@@ -17,11 +17,9 @@ public class DirectoryPersistenceProfile implements QuarkusTestProfile {
     static {
         Path path = DirectoryBaseTest.DATA_DIRECTORY; //Path.of("target","test");
         if (Files.notExists(path)) {
-            Set<PosixFilePermission> permissions = PosixFilePermissions.fromString("rwxr--r--");
-            FileAttribute<Set<PosixFilePermission>> fileAttributes = PosixFilePermissions.asFileAttribute(permissions);
             try {
                 System.out.println("Creating directory {"+ path.toAbsolutePath() + "}");
-                Files.createDirectories(path, fileAttributes);
+                Files.createDirectories(path);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -30,7 +28,7 @@ public class DirectoryPersistenceProfile implements QuarkusTestProfile {
 
     @Override
     public Map<String, String> getConfigOverrides(){
-        return Map.ofEntries(Map.entry(CertConstants.DATA_DIRECTORY_CONFIG, "target/test"));
+        return Map.ofEntries(Map.entry(CertConstants.DATA_DIRECTORY_CONFIG, DirectoryBaseTest.DATA_DIRECTORY.toString()));
     }
 
 }

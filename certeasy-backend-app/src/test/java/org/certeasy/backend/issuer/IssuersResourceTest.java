@@ -31,6 +31,7 @@ import org.junit.jupiter.api.Test;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -41,7 +42,7 @@ import java.util.Set;
 @QuarkusTest
 @TestProfile(MemoryPersistenceProfile.class)
 @TestHTTPEndpoint(IssuersResource.class)
-public class IssuersResourceTest extends BaseRestTest {
+class IssuersResourceTest extends BaseRestTest {
 
     @Inject
     IssuerRegistry registry;
@@ -119,7 +120,20 @@ public class IssuersResourceTest extends BaseRestTest {
 
         given().delete("/dummy")
                 .then()
-                .statusCode(404)
+                .statusCode(404);
+        given().delete("/DUMMY")
+                .then()
+                .statusCode(422)
+                .body("violations[0].message", containsString("issuerId does not match regular expression"));
+
+        given().delete(" ")
+                .then()
+                .statusCode(405)
+                .log().all();
+
+        given().delete()
+                .then()
+                .statusCode(405)
                 .log().all();
 
     }
