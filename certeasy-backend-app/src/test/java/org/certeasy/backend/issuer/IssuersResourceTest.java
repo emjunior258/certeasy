@@ -31,7 +31,6 @@ import org.junit.jupiter.api.Test;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -169,11 +168,54 @@ class IssuersResourceTest extends BaseRestTest {
         given().contentType(ContentType.JSON)
                 .body(pem)
                 .when()
-                    .post("/ipsum/cert-pem")
+                .post("/ipsum/cert-pem")
                 .then()
                 .statusCode(204);
 
         assertTrue(registry.exists("ipsum"));
+
+    }
+
+
+    @Test
+    @Tag("createFromPem")
+    @DisplayName("createFromPem() must fail when cert or key file null or empty")
+    void createFromPem_must_fail_when_cert_or_key_null_or_empty() {
+        given().contentType(ContentType.JSON)
+                .body(new CertPEM("", ""))
+                .when()
+                    .post("/ipsum/cert-pem")
+                .then()
+                .statusCode(422)
+                .body(containsString("cert_file must not be be null nor empty"))
+                .body(containsString("key_file must not be be null nor empty"));
+
+        given().contentType(ContentType.JSON)
+                .body(new CertPEM(null, ""))
+                .when()
+                .post("/ipsum/cert-pem")
+                .then()
+                .statusCode(422)
+                .body(containsString("cert_file must not be be null nor empty"))
+                .body(containsString("key_file must not be be null nor empty"));
+
+        given().contentType(ContentType.JSON)
+                .body(new CertPEM("", null))
+                .when()
+                .post("/ipsum/cert-pem")
+                .then()
+                .statusCode(422)
+                .body(containsString("cert_file must not be be null nor empty"))
+                .body(containsString("key_file must not be be null nor empty"));
+
+        given().contentType(ContentType.JSON)
+                .body(new CertPEM(null, null))
+                .when()
+                .post("/ipsum/cert-pem")
+                .then()
+                .statusCode(422)
+                .body(containsString("cert_file must not be be null nor empty"))
+                .body(containsString("key_file must not be be null nor empty"));
 
     }
 
@@ -286,7 +328,7 @@ class IssuersResourceTest extends BaseRestTest {
     @Test
     @Tag("createFromSpec")
     @DisplayName("createFromSpec() must create issuer successfully")
-    void createFromSpec_must_create_issuer_successfully() throws IOException {
+    void createFromSpec_must_create_issuer_successfully(){
 
         SubCaSpec spec = new SubCaSpec();
         spec.setName("apple-ca");
@@ -363,6 +405,36 @@ class IssuersResourceTest extends BaseRestTest {
                 .body("violations[0].field", equalTo("body.validity"))
                 .body("violations[0].type", equalTo("required"))
                 .body("violations[0].message", equalTo("validity is required"));
+
+    }
+
+    @Test
+    @Tag("createFromSpec")
+    @DisplayName("createFromSpec() must fail when key strength is null")
+    void createFromSpec_must_fail_when_key_strength_is_null() {
+
+        SubCaSpec spec = new SubCaSpec();
+        spec.setName("Google");
+        spec.setValidity(new CertValidity("2023-01-01", "2099-12-31"));
+        spec.setKeyStrength(null);
+        spec.setPathLength(3);
+        spec.setGeographicAddressInfo(new GeographicAddressInfo("US", "California", "Mountain View", "1600 Amphitheatre Parkway"));
+
+        assertFalse(registry.exists("google"));
+        given().contentType(ContentType.JSON)
+                .body(spec)
+                .when()
+                .post("/google/cert-spec")
+                .then()
+                .statusCode(422)
+                .body("type", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getType()))
+                .body("title", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getTitle()))
+                .body("detail", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getDetail()))
+                .body("status", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getStatus()))
+                .body("violations", hasSize(1))
+                .body("violations[0].field", equalTo("body.key_strength"))
+                .body("violations[0].type", equalTo("required"))
+                .body("violations[0].message", equalTo("key_strength is required"));
 
     }
 
@@ -469,6 +541,26 @@ class IssuersResourceTest extends BaseRestTest {
                 .body("violations[0].field", equalTo("body.name"))
                 .body("violations[0].type", equalTo("required"))
                 .body("violations[0].message", equalTo("name is required"));
+
+        String longName = """
+            ......................................................................................
+            ......................................................................................
+        """;
+        spec.setName(longName);
+        given().contentType(ContentType.JSON)
+                .body(spec)
+                .when()
+                .post("/nameless/cert-spec")
+                .then()
+                .statusCode(422)
+                .body("type", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getType()))
+                .body("title", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getTitle()))
+                .body("detail", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getDetail()))
+                .body("status", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getStatus()))
+                .body("violations", hasSize(1))
+                .body("violations[0].field", equalTo("body.name"))
+                .body("violations[0].type", equalTo("length"))
+                .body("violations[0].message", equalTo("name length should not exceed 128 characters"));
 
     }
 
