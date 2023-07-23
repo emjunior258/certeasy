@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 
 public abstract class BaseResource {
 
-    final String ID_REGEX = "^[a-z0-9]+(-[a-z0-9]{0,50})*$";
+    final String ID_REGEX = "^[a-z0-9]+(-[a-z0-9]+){0,20}$";
     final Pattern ID_PATTERN = Pattern.compile(ID_REGEX);
 
     @Inject
