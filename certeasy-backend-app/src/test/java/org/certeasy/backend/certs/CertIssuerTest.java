@@ -121,6 +121,29 @@ public class CertIssuerTest {
     }
 
     @Test
+    @DisplayName("issueCert() must throw exception when certificate spec is null")
+    void issueCert_must_throw_when_certificate_spec_null(){
+        IssuerDatastore datastore = Mockito.spy(new MapIssuerDatastore(context));
+        CertIssuer issuer = new CertIssuer(ISSUER_NAME, datastore, context);
+        assertThrows(IllegalArgumentException.class, () -> issuer.issueCert(null), "spec MUST not be null");
+        Mockito.verify(datastore, Mockito.times(1)).getIssuerCertSerial();
+    }
+
+    @Test
+    @DisplayName("issueCert() must throw exception when certificate spec is not ca")
+    void issueCert_must_throw_when_certificate_spec_is_not_ca(){
+
+        Certificate certificate = context.generator().generate(johnDoeCertSpec, context.generator().generate(certificateAuthoritySpec));
+        IssuerDatastore datastore = Mockito.spy(new MapIssuerDatastore(context));
+        CertIssuer issuer = new CertIssuer(ISSUER_NAME, datastore, context, certificate);
+        datastore.putIssuerCertSerial(certificate.getSerial());
+        datastore.put(certificate);
+
+        assertThrows(IllegalStateException.class, () -> issuer.issueCert(johnDoeCertSpec), "issuer certificate is not CA");
+//        Mockito.verify(datastore, Mockito.times(1)).getIssuerCertSerial();
+    }
+
+    @Test
     @DisplayName("issueCert() must fail when issuer does not have a certificate")
     void issueCert_must_fail_when_issuer_does_not_have_certificate(){
         IssuerDatastore datastore = Mockito.spy(new MapIssuerDatastore(context));

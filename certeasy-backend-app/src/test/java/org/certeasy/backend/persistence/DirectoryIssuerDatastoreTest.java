@@ -13,6 +13,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import javax.inject.Inject;
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -23,10 +24,40 @@ import java.util.Optional;
 
 @QuarkusTest
 @TestProfile(DirectoryPersistenceProfile.class)
-public class DirectoryIssuerDatastoreTest extends DirectoryBaseTest {
+class DirectoryIssuerDatastoreTest extends DirectoryBaseTest {
 
     @Inject
     CertEasyContext context;
+
+    @Test
+    @DisplayName("constructor must throw exception when parameters not valid")
+    void constructor_must_throw_when_parameters_not_valid() throws IOException {
+        String issuerId = "issuer-1";
+        Path issuerDirectory = DATA_DIRECTORY.resolve(issuerId);
+        Files.createDirectories(issuerDirectory);
+        File issuerDirectoryFile = issuerDirectory.toFile();
+
+        File nonExistingIssuerDirectory = DATA_DIRECTORY.resolve("issuer-2").toFile();
+        Path fileIssuer = DATA_DIRECTORY.resolve("issuer-3.txt");
+        Files.createFile(fileIssuer);
+        File fileIssuerFile = fileIssuer.toFile();
+
+        assertThrows(IllegalArgumentException.class, () -> new DirectoryIssuerDatastore(null, context), "dir MUST not be null and MUST point to an existing directory");
+        assertThrows(IllegalArgumentException.class, () -> new DirectoryIssuerDatastore(nonExistingIssuerDirectory, context), "dir MUST not be null and MUST point to an existing directory");
+        assertThrows(IllegalArgumentException.class, () -> new DirectoryIssuerDatastore(fileIssuerFile, context), "dir MUST not be null and MUST point to an existing directory");
+        assertThrows(IllegalArgumentException.class, () -> new DirectoryIssuerDatastore(issuerDirectoryFile, null), "context MUST not be null");
+
+    }
+
+    @Test
+    @DisplayName("put() must throw exception when certificate is null")
+    void put_must_throw_when_certificate_null() throws IOException {
+        String issuerId = "issuer-1";
+        Path issuerDirectory = DATA_DIRECTORY.resolve(issuerId);
+        Files.createDirectories(issuerDirectory);
+        DirectoryIssuerDatastore datastore = new DirectoryIssuerDatastore(issuerDirectory.toFile(), context);
+        assertThrows(IllegalArgumentException.class, () -> datastore.put(null), "certificate MUST not be null");
+    }
 
     @Test
     @DisplayName("put() must write cert.pem and key.pem to cert subdirectory")
@@ -71,6 +102,16 @@ public class DirectoryIssuerDatastoreTest extends DirectoryBaseTest {
     }
 
     @Test
+    @DisplayName("getCert() must throw exception when serial is null or empty")
+    void getCert_must_throw_when_serial_null_or_empty() throws IOException {
+        String issuerId = "issuer-1";
+        Path issuerDirectory = DATA_DIRECTORY.resolve(issuerId);
+        Files.createDirectories(issuerDirectory);
+        DirectoryIssuerDatastore datastore = new DirectoryIssuerDatastore(issuerDirectory.toFile(), context);
+        assertThrows(IllegalArgumentException.class, () -> datastore.getCert(null), "serial MUST not be null nor empty");
+        assertThrows(IllegalArgumentException.class, () -> datastore.getCert(""), "serial MUST not be null nor empty");
+    }
+    @Test
     @DisplayName("getCert() must return DirectoryStoredCert pointing to subdirectory with serial_number")
     void getCert_must_return_DirectoryStoredCert_pointing_to_subdirectory_with_serial_name() throws IOException {
 
@@ -80,6 +121,8 @@ public class DirectoryIssuerDatastoreTest extends DirectoryBaseTest {
         DirectoryIssuerDatastore datastore = new DirectoryIssuerDatastore(issuerDirectory.toFile(), context);
         Certificate certificate = context.generator().generate(certSpec);
         datastore.put(certificate);
+
+        assertTrue(datastore.getCert("1690008842300").isEmpty());
 
         Optional<StoredCert> storedCertOptional = datastore.getCert(certificate.getSerial());
         assertFalse(storedCertOptional.isEmpty());
@@ -92,6 +135,16 @@ public class DirectoryIssuerDatastoreTest extends DirectoryBaseTest {
 
     }
 
+    @Test
+    @DisplayName("deleteCert() must throw exception when serial is null or empty")
+    void deleteCert_must_throw_when_serial_null_or_empty() throws IOException {
+        String issuerId = "issuer-1";
+        Path issuerDirectory = DATA_DIRECTORY.resolve(issuerId);
+        Files.createDirectories(issuerDirectory);
+        DirectoryIssuerDatastore datastore = new DirectoryIssuerDatastore(issuerDirectory.toFile(), context);
+        assertThrows(IllegalArgumentException.class, () -> datastore.deleteCert(null), "serial MUST not be null nor empty");
+        assertThrows(IllegalArgumentException.class, () -> datastore.deleteCert(""), "serial MUST not be null nor empty");
+    }
 
     @Test
     @DisplayName("deleteCert() must delete subdirectory with serial name")
@@ -107,8 +160,20 @@ public class DirectoryIssuerDatastoreTest extends DirectoryBaseTest {
         Path expectedDirectory = issuerDirectory.resolve(certificate.getSerial());
         assertTrue(Files.exists(expectedDirectory));
         datastore.deleteCert(certificate.getSerial());
+        datastore.deleteCert("1690008842347");
         assertFalse(Files.exists(expectedDirectory));
 
+    }
+
+    @Test
+    @DisplayName("putIssuerCertSerial() must throw exception when serial is null or empty")
+    void putIssuerCertSerial_must_throw_when_serial_null_or_empty() throws IOException {
+        String issuerId = "issuer-1";
+        Path issuerDirectory = DATA_DIRECTORY.resolve(issuerId);
+        Files.createDirectories(issuerDirectory);
+        DirectoryIssuerDatastore datastore = new DirectoryIssuerDatastore(issuerDirectory.toFile(), context);
+        assertThrows(IllegalArgumentException.class, () -> datastore.putIssuerCertSerial(null), "serial MUST not be null nor empty");
+        assertThrows(IllegalArgumentException.class, () -> datastore.putIssuerCertSerial(""), "serial MUST not be null nor empty");
     }
 
     @Test
@@ -125,7 +190,6 @@ public class DirectoryIssuerDatastoreTest extends DirectoryBaseTest {
         datastore.putIssuerCertSerial("0123456789");
         assertTrue(Files.exists(issCertSerialFile));
         assertEquals("0123456789", Files.readString(issCertSerialFile, StandardCharsets.UTF_8));
-
     }
 
 
@@ -147,6 +211,18 @@ public class DirectoryIssuerDatastoreTest extends DirectoryBaseTest {
 
     }
 
+    @Test
+    @DisplayName("getIssuerCertSerial() must return empty")
+    void getIssuerCertSerial_must_return_empty() throws IOException {
+        String issuerId = "issuer-6";
+        Path issuerDirectory = DATA_DIRECTORY.resolve(issuerId);
+        Files.createDirectories(issuerDirectory);
+
+        DirectoryIssuerDatastore datastore = new DirectoryIssuerDatastore(issuerDirectory.toFile(), context);
+        Optional<String> issCertserialOptional = datastore.getIssuerCertSerial();
+        assertTrue(issCertserialOptional.isEmpty());
+
+    }
 
 
     @Test
@@ -163,11 +239,17 @@ public class DirectoryIssuerDatastoreTest extends DirectoryBaseTest {
         Certificate certificate = context.generator().generate(certSpec);
         datastore.put(certificate);
 
+        DirectoryIssuerDatastore datastore1 = new DirectoryIssuerDatastore(issuerDirectory.toFile(), context);
         Path emptyDirectory = issuerDirectory.resolve("0000000010");
-        Files.createDirectory(emptyDirectory);
 
         datastore.purge();
         assertFalse(Files.exists(issuerDirectory));
+
+        datastore1.purge();
+        assertFalse(Files.exists(emptyDirectory));
+
+
+
 
     }
 

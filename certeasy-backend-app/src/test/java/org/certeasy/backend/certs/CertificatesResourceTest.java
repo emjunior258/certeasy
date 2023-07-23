@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @QuarkusTest
 @TestProfile(MemoryPersistenceProfile.class)
-public class CertificatesResourceTest extends BaseRestTest {
+class CertificatesResourceTest extends BaseRestTest {
 
     @Inject
     IssuerRegistry registry;
@@ -113,6 +113,20 @@ public class CertificatesResourceTest extends BaseRestTest {
 
     }
 
+    @Test
+    void must_issue_tls_cert(){
+
+        Certificate authorityCert = context.generator().generate(certificateAuthoritySpec);
+        CertIssuer certIssuer = registry.add("example", authorityCert);
+
+        given().contentType(MediaType.APPLICATION_JSON)
+                .body("")
+                .post("/api/issuers/example/certificates/tls-server")
+                .then()
+                .statusCode(500).log().all();
+
+    }
+
 
     @Test
     void must_fail_to_issue_sub_ca_cert_for_unknown_issuer(){
@@ -162,6 +176,20 @@ public class CertificatesResourceTest extends BaseRestTest {
 
     @Test
     void must_fail_to_issue_sub_ca_cert_with_invalid_spec(){
+
+    }
+
+    @Test
+    void must_obtain_info_of_existing_cert_successfully(){
+
+        Certificate authorityCert = context.generator().generate(certificateAuthoritySpec);
+        CertIssuer certIssuer = registry.add("example", authorityCert);
+        Certificate personCertificate = certIssuer.issueCert(personalCertificateSpec);
+
+        given().get("/api/issuers/example/certificates/"+personCertificate.getSerial())
+                .then()
+                .contentType(MediaType.APPLICATION_JSON)
+                .statusCode(200).log().all();
 
     }
 

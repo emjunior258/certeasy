@@ -84,11 +84,17 @@ public class BouncyCastleCertGenerator implements CertificateGenerator {
             if(spec.getSubject().hasAlternativeNames())
                 builder.addExtension(Extension.subjectAlternativeName, false, toGeneralNames(spec.getSubject().getAlternativeNames()));
             builder.addExtension(Extension.keyUsage, true, makeKeyUsage(spec));
-            if(spec.getExtendedKeyUsages().isPresent()){
+
+            spec.getExtendedKeyUsages().ifPresent(extendedKeyUsages -> {
                 ExtendedKeyUsages extendedKeyUsageDef = spec.getExtendedKeyUsages().get();
                 boolean critical  = ExtendedKeyUsageEffect.ENFORCE == extendedKeyUsageDef.effect();
-                builder.addExtension(Extension.extendedKeyUsage, critical,  makeExtendedKeyUsage(spec));
-            }
+                try {
+                    builder.addExtension(Extension.extendedKeyUsage, critical,  makeExtendedKeyUsage(spec));
+                } catch (CertIOException ex) {
+                    throw new CertificateGeneratorException("error adding Extended Key Usage extension to certificate", ex);
+                }
+            });
+
             X509CertificateHolder holder = builder.build(contentSigner);
             DistinguishedName issuerDN = DistinguishedName.builder()
                     .parse(issuerName.toString())
@@ -139,13 +145,13 @@ public class BouncyCastleCertGenerator implements CertificateGenerator {
             throw new CertificateGeneratorException("RSA key pairs generator not found", ex);
         }
     }
-
     private ExtendedKeyUsage makeExtendedKeyUsage(CertificateSpec spec){
         Set<KeyPurposeId> keyPurposeIdSet = new HashSet<>();
-        ExtendedKeyUsages extendedKeyUsages = spec.getExtendedKeyUsages().get();
-        for(org.certeasy.ExtendedKeyUsage item: extendedKeyUsages.usages()){
-            keyPurposeIdSet.add(toKeyPurpose(item));
-        }
+        spec.getExtendedKeyUsages().ifPresent(extendedKeyUsages -> {
+            for(org.certeasy.ExtendedKeyUsage item: extendedKeyUsages.usages()){
+                keyPurposeIdSet.add(toKeyPurpose(item));
+            }
+        });
         KeyPurposeId[] keyPurposeIdsArray = new KeyPurposeId[keyPurposeIdSet.size()];
         keyPurposeIdSet.toArray(keyPurposeIdsArray);
         return new ExtendedKeyUsage(keyPurposeIdsArray);
