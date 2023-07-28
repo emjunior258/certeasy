@@ -4,9 +4,7 @@ import org.certeasy.CertEasyContext;
 import org.certeasy.Certificate;
 import org.certeasy.backend.CertConstants;
 import org.certeasy.backend.issuer.CertIssuer;
-import org.certeasy.backend.persistence.IssuerDatastore;
-import org.certeasy.backend.persistence.IssuerRegistry;
-import org.certeasy.backend.persistence.IssuerRegistryException;
+import org.certeasy.backend.persistence.*;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
@@ -56,7 +54,7 @@ public class DirectoryIssuerRegistry implements IssuerRegistry {
             return;
         for(File issuerDirectory : files){
             IssuerDatastore datastore = new DirectoryIssuerDatastore(issuerDirectory,context);
-            CertIssuer issuer = new CertIssuer(issuerDirectory.getName(),datastore,context);
+            CertIssuer issuer = new CertIssuer(this, datastore,context);
             if(!issuer.hasCertificate()){
                 LOGGER.warn(String.format("Skipping directory: %s", issuerDirectory.getAbsolutePath()));
                 continue;
@@ -68,11 +66,12 @@ public class DirectoryIssuerRegistry implements IssuerRegistry {
     }
 
     @Override
-    public CertIssuer add(String issuerId, Certificate certificate) throws IssuerRegistryException {
-        if(issuerId ==null || issuerId.isEmpty())
-            throw new IllegalArgumentException("name MUST not be null nor empty");
+    public CertIssuer add(Certificate certificate) throws IssuerRegistryException {
         if(certificate==null)
             throw new IllegalArgumentException("certificate MUST not be null");
+        String issuerId = certificate.getDistinguishedName().digest();
+        if(this.cache.containsKey(issuerId))
+            throw new IssuerDuplicationException(certificate.getDistinguishedName());
         LOGGER.info("Adding issuerId: " + issuerId);
         File issuerDirectory = new File(dataDirectory, issuerId);
         LOGGER.info("Creating issuerId data directory: " + issuerDirectory.getAbsolutePath());
@@ -83,7 +82,7 @@ public class DirectoryIssuerRegistry implements IssuerRegistry {
                     ex);
         }
         IssuerDatastore datastore = new DirectoryIssuerDatastore(issuerDirectory, context);
-        CertIssuer issuer = new CertIssuer(issuerId, datastore, context, certificate);
+        CertIssuer issuer = new CertIssuer(this, datastore, context, certificate);
         cache.put(issuerId, issuer);
         LOGGER.info("Issuer added successfully: " + issuerId);
         return issuer;

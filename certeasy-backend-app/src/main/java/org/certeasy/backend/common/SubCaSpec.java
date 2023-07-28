@@ -1,5 +1,8 @@
 package org.certeasy.backend.common;
 
+import org.certeasy.DistinguishedName;
+import org.certeasy.RelativeDistinguishedName;
+import org.certeasy.SubjectAttributeType;
 import org.certeasy.backend.common.validation.ValidationPath;
 import org.certeasy.backend.common.validation.Violation;
 import org.certeasy.backend.common.validation.ViolationType;
@@ -16,6 +19,14 @@ public class SubCaSpec extends BaseCaCertSpec {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+
+    public DistinguishedName toDistinguishedName(){
+        return DistinguishedName.builder()
+                .append(new RelativeDistinguishedName(SubjectAttributeType.COMMON_NAME, getName()))
+                .append(getGeographicAddressInfo().toGeographicAddress().toRdns())
+                .build();
     }
 
     @Override

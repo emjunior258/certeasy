@@ -2,13 +2,13 @@ package org.certeasy.backend.certs;
 
 
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.mockito.InjectMock;
 import org.certeasy.*;
 import org.certeasy.backend.issuer.CertIssuer;
-import org.certeasy.backend.persistence.IssuerDatastore;
-import org.certeasy.backend.persistence.MapIssuerDatastore;
+import org.certeasy.backend.persistence.*;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.certeasy.backend.persistence.StoredCert;
 import org.certeasy.certspec.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,6 +33,10 @@ public class CertIssuerTest {
 
     private PersonalCertificateSpec johnDoeCertSpec;
     private CertificateAuthoritySpec subCaCertSpec;
+
+
+    @InjectMock
+    private IssuerRegistry registry;
 
 
     public CertIssuerTest(){
@@ -67,11 +71,10 @@ public class CertIssuerTest {
     @DisplayName("create instance using short constructor")
     void create_instance_using_short_constructor(){
         IssuerDatastore datastore = new MapIssuerDatastore(context);
-        assertThrows(IllegalArgumentException.class, () -> new CertIssuer(null, datastore, context));
-        assertThrows(IllegalArgumentException.class, () -> new CertIssuer("", datastore, context));
-        assertThrows(IllegalArgumentException.class, () -> new CertIssuer("01234567890", null, context));
-        assertThrows(IllegalArgumentException.class, () -> new CertIssuer("01234567890", datastore, null));
-        new CertIssuer(ISSUER_NAME, datastore, context);
+        assertThrows(IllegalArgumentException.class, () -> new CertIssuer( null,  datastore, context));
+        assertThrows(IllegalArgumentException.class, () -> new CertIssuer(registry, null, context));
+        assertThrows(IllegalArgumentException.class, () -> new CertIssuer(registry, datastore, null));
+        new CertIssuer(registry, datastore, context);
     }
 
 
@@ -81,11 +84,10 @@ public class CertIssuerTest {
         Certificate certificate = context.generator().generate(certificateAuthoritySpec);
         IssuerDatastore datastore = new MapIssuerDatastore(context);
         assertThrows(IllegalArgumentException.class, () -> new CertIssuer(null, datastore, context, certificate));
-        assertThrows(IllegalArgumentException.class, () -> new CertIssuer("", datastore, context, certificate));
-        assertThrows(IllegalArgumentException.class, () -> new CertIssuer("01234567890", null, context, certificate));
-        assertThrows(IllegalArgumentException.class, () -> new CertIssuer("01234567890", datastore, null, certificate));
-        assertThrows(IllegalArgumentException.class, () -> new CertIssuer("01234567890", datastore, context, null));
-        new CertIssuer(ISSUER_NAME, datastore, context, certificate);
+        assertThrows(IllegalArgumentException.class, () -> new CertIssuer(registry, null, context, certificate));
+        assertThrows(IllegalArgumentException.class, () -> new CertIssuer(registry, datastore, null, certificate));
+        assertThrows(IllegalArgumentException.class, () -> new CertIssuer(registry, datastore, context, null));
+        new CertIssuer(registry, datastore, context, certificate);
     }
 
     @Test
@@ -93,23 +95,24 @@ public class CertIssuerTest {
     void hasCertificate_must_be_true_if_certificate_passed_on_constructor(){
         Certificate certificate = context.generator().generate(certificateAuthoritySpec);
         IssuerDatastore datastore = new MapIssuerDatastore(context);
-        CertIssuer issuer = new CertIssuer(ISSUER_NAME, datastore, context, certificate);
+        CertIssuer issuer = new CertIssuer(registry, datastore, context, certificate);
         assertTrue(issuer.hasCertificate());
     }
 
     @Test
-    @DisplayName("getId() must return value passed on constructor")
-    void getId_must_return_value_passed_on_constructor(){
-        IssuerDatastore datastore = Mockito.spy(new MapIssuerDatastore(context));
-        CertIssuer issuer = new CertIssuer(ISSUER_NAME, datastore, context);
-        assertEquals(ISSUER_NAME, issuer.getId());
+    @DisplayName("getId() must return subject id")
+    void getId_must_return_subject_id(){
+        Certificate certificate = context.generator().generate(certificateAuthoritySpec);
+        IssuerDatastore datastore = new MapIssuerDatastore(context);
+        CertIssuer issuer = new CertIssuer(registry, datastore, context, certificate);
+        assertEquals(certificate.getDistinguishedName().digest(), issuer.getId());
     }
 
     @Test
     @DisplayName("listCerts() must return whats in the datastore")
     void listCerts_must_return_whats_in_the_datastore(){
         IssuerDatastore datastore = Mockito.spy(new MapIssuerDatastore(context));
-        CertIssuer issuer = new CertIssuer(ISSUER_NAME, datastore, context);
+        CertIssuer issuer = new CertIssuer(registry, datastore, context);
         assertTrue(issuer.listCerts().isEmpty());
 
         Certificate certificate = context.generator().generate(certificateAuthoritySpec);
@@ -124,7 +127,7 @@ public class CertIssuerTest {
     @DisplayName("issueCert() must throw exception when certificate spec is null")
     void issueCert_must_throw_when_certificate_spec_null(){
         IssuerDatastore datastore = Mockito.spy(new MapIssuerDatastore(context));
-        CertIssuer issuer = new CertIssuer(ISSUER_NAME, datastore, context);
+        CertIssuer issuer = new CertIssuer(registry, datastore, context);
         assertThrows(IllegalArgumentException.class, () -> issuer.issueCert(null), "spec MUST not be null");
         Mockito.verify(datastore, Mockito.times(1)).getIssuerCertSerial();
     }
@@ -135,7 +138,7 @@ public class CertIssuerTest {
 
         Certificate certificate = context.generator().generate(johnDoeCertSpec, context.generator().generate(certificateAuthoritySpec));
         IssuerDatastore datastore = Mockito.spy(new MapIssuerDatastore(context));
-        CertIssuer issuer = new CertIssuer(ISSUER_NAME, datastore, context, certificate);
+        CertIssuer issuer = new CertIssuer(registry, datastore, context, certificate);
         datastore.putIssuerCertSerial(certificate.getSerial());
         datastore.put(certificate);
 
@@ -147,7 +150,7 @@ public class CertIssuerTest {
     @DisplayName("issueCert() must fail when issuer does not have a certificate")
     void issueCert_must_fail_when_issuer_does_not_have_certificate(){
         IssuerDatastore datastore = Mockito.spy(new MapIssuerDatastore(context));
-        CertIssuer issuer = new CertIssuer(ISSUER_NAME, datastore, context);
+        CertIssuer issuer = new CertIssuer(registry, datastore, context);
         assertThrows(IllegalStateException.class, () -> issuer.issueCert(certificateAuthoritySpec));
         Mockito.verify(datastore, Mockito.times(1)).getIssuerCertSerial();
     }
@@ -160,7 +163,7 @@ public class CertIssuerTest {
         datastore.putIssuerCertSerial(certificate.getSerial());
         datastore.put(certificate);
 
-        CertIssuer issuer = new CertIssuer(ISSUER_NAME, datastore, context);
+        CertIssuer issuer = new CertIssuer(registry, datastore, context);
         Certificate personalCert = issuer.issueCert(johnDoeCertSpec);
         Mockito.verify(datastore, Mockito.times(1)).put(Mockito.eq(personalCert));
     }
@@ -175,7 +178,7 @@ public class CertIssuerTest {
         datastore.putIssuerCertSerial(issuerCert.getSerial());
         datastore.put(issuerCert);
 
-        CertIssuer issuer = new CertIssuer(ISSUER_NAME, datastore, context);
+        CertIssuer issuer = new CertIssuer(registry, datastore, context);
         issuer.issueCert(johnDoeCertSpec);
         issuer.issueCert(johnDoeCertSpec);
 
@@ -196,7 +199,7 @@ public class CertIssuerTest {
         datastore.putIssuerCertSerial(issuerCert.getSerial());
         datastore.put(issuerCert);
 
-        CertIssuer issuer = new CertIssuer(ISSUER_NAME, datastore, context);
+        CertIssuer issuer = new CertIssuer(registry, datastore, context);
         Certificate johnDoeCert = issuer.issueCert(johnDoeCertSpec);
         issuer.issueCert(subCaCertSpec);
 
@@ -222,7 +225,7 @@ public class CertIssuerTest {
 
         IssuerDatastore datastore = Mockito.spy(new MapIssuerDatastore(context));
 
-        CertIssuer issuer = new CertIssuer(ISSUER_NAME, datastore, context);
+        CertIssuer issuer = new CertIssuer(registry, datastore, context);
         Optional<StoredCert> storedCertOptional = issuer.getIssuedCert("0123456789");
         assertTrue(storedCertOptional.isEmpty());
         Mockito.verify(datastore, Mockito.times(1)).getCert(Mockito.eq("0123456789"));
@@ -237,7 +240,7 @@ public class CertIssuerTest {
         IssuerDatastore datastore = Mockito.spy(new MapIssuerDatastore(context));
         datastore.putIssuerCertSerial("0123456789");
 
-        CertIssuer issuer = new CertIssuer(ISSUER_NAME, datastore, context);
+        CertIssuer issuer = new CertIssuer(registry, datastore, context);
         assertTrue(issuer.hasCertificate());
         Mockito.verify(datastore, Mockito.times(1)).getIssuerCertSerial();
 
@@ -248,7 +251,7 @@ public class CertIssuerTest {
     void hasCertificate_must_be_false_if_datastore_does_not_have_issuerCertSerial(){
 
         IssuerDatastore datastore = Mockito.spy(new MapIssuerDatastore(context));
-        CertIssuer issuer = new CertIssuer(ISSUER_NAME, datastore, context);
+        CertIssuer issuer = new CertIssuer(registry, datastore, context);
         assertFalse(issuer.hasCertificate());
         Mockito.verify(datastore, Mockito.times(1)).getIssuerCertSerial();
 
@@ -264,7 +267,7 @@ public class CertIssuerTest {
         datastore.putIssuerCertSerial(issuerCert.getSerial());
         datastore.put(issuerCert);
 
-        CertIssuer issuer = new CertIssuer(ISSUER_NAME, datastore, context);
+        CertIssuer issuer = new CertIssuer(registry, datastore, context);
         issuer.disable();
         assertTrue(issuer.isDisabled());
         assertThrows(IllegalStateException.class,() -> issuer.issueCert(johnDoeCertSpec));

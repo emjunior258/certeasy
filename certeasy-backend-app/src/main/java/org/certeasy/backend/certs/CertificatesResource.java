@@ -67,7 +67,7 @@ public class CertificatesResource extends BaseResource {
                     KeyStrength.valueOf(spec.getKeyStrength()),
                     spec.getValidity().toDateRange());
             Certificate certificate = issuer.issueCert(subAuthoritySpec);
-            return Response.ok(new IssuedCert(certificate.getSerial()))
+            return Response.ok(new CreatedSubCa(certificate.getDistinguishedName().digest(), certificate.getSerial()))
                     .build();
         });
     }

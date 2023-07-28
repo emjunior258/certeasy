@@ -30,9 +30,11 @@ public class MapIssuerRegistry implements IssuerRegistry {
     }
 
     @Override
-    public CertIssuer add(String issuerId, Certificate certificate) throws IssuerRegistryException {
-        CertIssuer issuer = new CertIssuer(issuerId, new MapIssuerDatastore(context), context, certificate);
-        this.issuerMap.put(issuerId, issuer);
+    public CertIssuer add(Certificate certificate) throws IssuerRegistryException {
+        CertIssuer issuer = new CertIssuer(this, new MapIssuerDatastore(context), context, certificate);
+        if(issuerMap.containsKey(issuer.getId()))
+            throw new IssuerDuplicationException(certificate.getDistinguishedName());
+        this.issuerMap.put(issuer.getId(), issuer);
         return issuer;
     }
 

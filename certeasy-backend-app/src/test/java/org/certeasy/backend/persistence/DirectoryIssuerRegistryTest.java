@@ -77,9 +77,7 @@ public class DirectoryIssuerRegistryTest extends DirectoryBaseTest {
         Certificate certificate = context.generator().generate(certSpec);
         IssuerRegistry registry = createRegistry();
 
-        assertThrows(IllegalArgumentException.class, () -> registry.add("", certificate), "name MUST not be null nor empty");
-        assertThrows(IllegalArgumentException.class, () -> registry.add(null, certificate), "name MUST not be null nor empty");
-        assertThrows(IllegalArgumentException.class, () -> registry.add("example", null), "certificate MUST not be null");
+        assertThrows(IllegalArgumentException.class, () -> registry.add(null), "certificate MUST not be null");
 //        assertThrows(IllegalArgumentException.class, () -> registry.add("example", certificate),"dir MUST not be null and MUST point to an existing directory");
     }
 
@@ -87,11 +85,11 @@ public class DirectoryIssuerRegistryTest extends DirectoryBaseTest {
     @DisplayName("add() must store issuer and certificate in directory")
     void add_must_store_issuer_and_certificate_in_directory(){
 
-        Path issuerDirectory = DATA_DIRECTORY.resolve("example");
-        assertFalse(Files.exists(issuerDirectory));
         Certificate certificate = context.generator().generate(certSpec);
+        Path issuerDirectory = DATA_DIRECTORY.resolve(certificate.getDistinguishedName().digest());
+        assertFalse(Files.exists(issuerDirectory));
         IssuerRegistry registry = createRegistry();
-        registry.add("example", certificate);
+        registry.add(certificate);
         assertTrue(Files.exists(issuerDirectory));
         Path certDirectory = issuerDirectory.resolve(certificate.getSerial());
         assertTrue(Files.exists(certDirectory));
