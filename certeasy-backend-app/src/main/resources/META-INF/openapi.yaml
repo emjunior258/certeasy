@@ -263,7 +263,7 @@ paths:
 
       responses:
         200:
-          $ref: '#/components/responses/SuccessfullyIssuedCert'
+          $ref: '#/components/responses/SuccessfullyCreatedSubCa'
         400:
           $ref: '#/components/responses/BadRequest'
         422:
@@ -991,7 +991,7 @@ components:
         - serial
 
 
-    SubCaCreated:
+    CreatedSubCa:
       type: object
       description: Represents a created sub-ca
       properties:
@@ -1263,6 +1263,13 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/IssuedCert'
+
+    SuccessfullyCreatedSubCa:
+      description: Certificate issued successfully
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreatedSubCa'
 
 
     ServerError:  # Can be referenced as '#/components/responses/ServerError'
