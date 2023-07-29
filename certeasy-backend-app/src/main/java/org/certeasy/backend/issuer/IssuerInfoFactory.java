@@ -24,13 +24,13 @@ public final class IssuerInfoFactory {
         String distinguishedName = certificate.getDistinguishedName().toString();
 
         DistinguishedName issuerName = certificate.getIssuerName();
-        String parentId = null;
+        IssuerParent parent = null;
         if(!issuerName.equals(certificate.getDistinguishedName()))
-            parentId = issuerName.digest();
+            parent = new IssuerParent(issuerName.digest(), issuerName.getCommonName());
         int totalChildren  = registry.countChildrenOf(issuer);
         return new IssuerInfo(id, certificate.getDistinguishedName().getCommonName(),  serial, issuerType,
                 distinguishedName, certificate.getBasicConstraints()
-                .pathLength(), parentId, totalChildren);
+                .pathLength(), parent, totalChildren);
 
     }
 

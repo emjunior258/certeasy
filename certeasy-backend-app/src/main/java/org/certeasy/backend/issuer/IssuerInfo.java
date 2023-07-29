@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-@JsonPropertyOrder({"id", "name", "type", "serial", "dn", "path_length", "parent_id", "children_count"})
+@JsonPropertyOrder({"id", "name", "type", "serial", "dn", "path_length", "parent", "children_count"})
 public record IssuerInfo(
                          @JsonProperty("id")
                          String id,
@@ -24,8 +24,8 @@ public record IssuerInfo(
                          @JsonProperty("path_length")
                          int pathLength,
 
-                         @JsonProperty("parent_id")
-                         String parentId,
+                         @JsonProperty("parent")
+                         IssuerParent parent,
 
                          @JsonProperty("children_count")
                          int totalChildren) {
