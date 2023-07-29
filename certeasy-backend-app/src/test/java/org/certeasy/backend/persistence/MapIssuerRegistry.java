@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @Alternative
 @ApplicationScoped
-public class MapIssuerRegistry implements IssuerRegistry {
+public class MapIssuerRegistry extends AbstractIssuerRegistry implements IssuerRegistry {
 
     private Map<String, CertIssuer> issuerMap = new HashMap<>();
 
@@ -51,6 +51,7 @@ public class MapIssuerRegistry implements IssuerRegistry {
     @Override
     public void delete(CertIssuer issuer) throws IssuerRegistryException {
         this.issuerMap.remove(issuer.getId());
+        super.delete(issuer);
     }
 
     public void clear(){

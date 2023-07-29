@@ -18,6 +18,7 @@ import org.jboss.logging.Logger;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -30,20 +31,38 @@ public class IssuersResource extends BaseResource {
     private static final Logger LOGGER = Logger.getLogger(IssuersResource.class);
 
     @GET
-    public Response listIssuers(){
+    public Response listIssuers(@QueryParam("type") String type){
+        IssuerType issuerType = null;
+        if(type!=null && !type.isEmpty()){
+            try {
+                issuerType = IssuerType.valueOf(type);
+            }catch (IllegalArgumentException ex){
+                ConstraintViolationProblem problem = new ConstraintViolationProblem(new Violation("query.type", ViolationType.ENUM, null, "type MUST be one of: "+ Arrays.toString(IssuerType.values())));
+                return Response.status(422).entity(problem).build();
+            }
+        }
         Collection<CertIssuer> issuers =this.registry().list();
-        Set<IssuerInfo> issuerInfoSet = issuers.stream().filter(CertIssuer::hasCertificate).map(item -> {
-            Certificate certificate = item.getCertificate().get();
-            String id = item.getId();
-            String serial = certificate.getSerial();
-            IssuerType issuerType = certificate.isSelfSignedCA() ? IssuerType.ROOT : IssuerType.SUB_CA;
-            String distinguishedName = certificate.getDistinguishedName().toString();
-            return new IssuerInfo(id, serial, issuerType,
-                    distinguishedName, certificate.getBasicConstraints()
-                    .pathLength());
-        }).collect(Collectors.toSet());
+        Set<IssuerInfo> issuerInfoSet = issuers.stream().filter(CertIssuer::hasCertificate).map(item -> IssuerInfoFactory.create(item, registry())).collect(Collectors.toSet());
+        if(issuerType != null){
+            IssuerType finalIssuerType = issuerType;
+            Set<IssuerInfo> filteredSet = issuerInfoSet.stream()
+                    .filter(it -> it.type() == finalIssuerType)
+                    .collect(Collectors.toSet());
+            return Response.ok().entity(filteredSet).build();
+        }
         return Response.ok()
                 .entity(issuerInfoSet).build();
+    }
+
+    @GET
+    @Path("/{issuerId}/children")
+    public Response getChildren(@PathParam("issuerId") String issuerId){
+        return this.checkIssuerExistsThen(issuerId, (issuer) -> {
+            Set<CertIssuer> children = registry().getChildrenOf(issuer);
+            Set<IssuerInfo> issuerInfoSet = children.stream().map(child -> IssuerInfoFactory.create(child,
+                    registry())).collect(Collectors.toSet());
+            return Response.ok(issuerInfoSet).build();
+        });
     }
 
     @DELETE

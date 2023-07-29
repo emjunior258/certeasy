@@ -16,11 +16,12 @@ import java.util.*;
 
 
 @ApplicationScoped
-public class DirectoryIssuerRegistry implements IssuerRegistry {
+public class DirectoryIssuerRegistry extends AbstractIssuerRegistry implements IssuerRegistry {
 
     private final File dataDirectory;
     private final CertEasyContext context;
     private final Map<String, CertIssuer> cache = new HashMap<>();
+
     private boolean scanned = false;
     private static final Logger LOGGER = Logger.getLogger(DirectoryIssuerRegistry.class);
 
@@ -61,9 +62,13 @@ public class DirectoryIssuerRegistry implements IssuerRegistry {
             }
             LOGGER.info("Found issuerId: " + issuerDirectory.getName());
             cache.put(issuerDirectory.getName(), issuer);
+            this.updateHierarchy(issuer);
         }
         this.scanned = true;
+        this.discoverHierarchy();
     }
+
+
 
     @Override
     public CertIssuer add(Certificate certificate) throws IssuerRegistryException {
@@ -84,6 +89,7 @@ public class DirectoryIssuerRegistry implements IssuerRegistry {
         IssuerDatastore datastore = new DirectoryIssuerDatastore(issuerDirectory, context);
         CertIssuer issuer = new CertIssuer(this, datastore, context, certificate);
         cache.put(issuerId, issuer);
+        this.updateHierarchy(issuer);
         LOGGER.info("Issuer added successfully: " + issuerId);
         return issuer;
     }
@@ -111,6 +117,8 @@ public class DirectoryIssuerRegistry implements IssuerRegistry {
         if(!issuer.isDisabled())
             issuer.disable();
         this.cache.remove(issuer.getId());
+        super.delete(issuer);
     }
+
 
 }

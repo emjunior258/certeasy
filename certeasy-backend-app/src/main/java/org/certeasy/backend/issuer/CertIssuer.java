@@ -7,8 +7,7 @@ import org.certeasy.backend.persistence.StoredCert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.Optional;
+import java.util.*;
 
 
 /**
@@ -22,6 +21,7 @@ public class CertIssuer {
     private IssuerDatastore store;
     private Certificate certificate;
     private CertEasyContext context;
+
     private static final Logger LOGGER
             = LoggerFactory.getLogger(CertIssuer.class);
 

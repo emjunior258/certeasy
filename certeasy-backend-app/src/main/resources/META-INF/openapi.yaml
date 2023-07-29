@@ -34,6 +34,17 @@ paths:
       description: Get List of Issuers available
       tags:
         - Issuers
+      parameters:
+        - name: type
+          description: Filter the type of issuers to be listed
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - ROOT
+              - SUB_CA
+
       responses:
         200:
           description: Issuers List retrieved successfully
@@ -44,6 +55,34 @@ paths:
                 items:
                   $ref: "#/components/schemas/IssuerInfo"
                 minItems: 0
+        500:
+          $ref: "#/components/responses/ServerError"
+
+  /issuers/{issuerId}/children:
+    get:
+      summary: List children Issuers
+      operationId: getIssuerChildren
+      description: Get List of issuers that are children of the referenced issuer
+      tags:
+        - Issuers
+      parameters:
+        - $ref: "#/components/parameters/IssuerId"
+      responses:
+        200:
+          description: Issuers List retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/IssuerInfo"
+                minItems: 0
+        400:
+          $ref: '#/components/responses/BadRequest'
+        404:
+          $ref: '#/components/responses/IssuerNotFound'
+        422:
+          $ref: '#/components/responses/ListIssuerConstraintViolation'
         500:
           $ref: "#/components/responses/ServerError"
 
@@ -678,8 +717,8 @@ components:
       properties:
         id:
           type: string
-          description: The unique identifier of the issuerId
-          example: myca
+          description: The unique identifier of the issuer
+          example: 5d03898a7577009e8ab06062e84d5da20f2e172f
         serial:
           type: string
           description: The unique serial number of the certificate
@@ -699,12 +738,23 @@ components:
           description: The maximum depth of CAs that may exist below this CA. This limit is enforced when issuing a sub-ca certificate.
           default: 0
           minimum: 0
+        parent_id:
+          type: string
+          description: The unique identifier of the parent issuer. Only present on issuers of SUB_CA type.
+          example: 7a0ebcf787242db56662ccd1824bf1c20adc3e31
+        children_count:
+          type: integer
+          description: Total count of children issuers
+          default: 0
+          minimum: 0
       required:
         - id
         - serial
         - type
         - dn
         - path_length
+        - parent_id
+        - children_count
 
     CertPem:
       type: object
@@ -1257,6 +1307,25 @@ components:
                     type: format
                     message: cert_file is not valid PEM encoded certificate
     
+    ListIssuerConstraintViolation:
+      description: Constraint violation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          examples:
+            invalid-body:
+              value:
+                type: /problems/constraint-violation
+                title: Constraint Violation
+                detail: The request contains one or more constraint violations
+                status: 422
+                violations:
+                  - field: query.type
+                    type: enum
+                    message: "type MUST be one of: [ROOT, SUB_CA]"
+
+
     SuccessfullyIssuedCert:
       description: Certificate issued successfully
       content:
