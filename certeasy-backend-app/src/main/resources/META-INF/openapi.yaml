@@ -1163,7 +1163,7 @@ components:
       name: issuerId
       in: path
       required: true
-      description: The unique identifier of the certificate issuerId
+      description: The unique identifier of the issuer
       schema:
         example: f2a8d9e0c7b4193f5e0867dcb2f
 
