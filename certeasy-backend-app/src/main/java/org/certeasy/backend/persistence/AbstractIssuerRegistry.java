@@ -40,8 +40,8 @@ public abstract class AbstractIssuerRegistry implements IssuerRegistry {
         if(!certificate.isSelfSignedCA()){
             String parentId = certificate.getIssuerName().digest();
             getChildrenSet(parentId).ifPresent(siblings -> {
-                LOGGER.debug(String.format("Mapping {%s} as parent of {%s}",
-                        certificate.getIssuerName(), certificate.getDistinguishedName()));
+                LOGGER.debug(String.format("Mapping %s as parent of %s",
+                        certificate.getIssuerName().getCommonName(), certificate.getDistinguishedName().getCommonName()));
                 siblings.add(issuer);
             });
         }
