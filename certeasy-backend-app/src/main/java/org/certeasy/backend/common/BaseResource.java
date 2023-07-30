@@ -41,21 +41,6 @@ public abstract class BaseResource {
         return this.context;
     }
 
-    public Response checkIssuerNotExistsThen(String issuerId, Supplier<Response> operation){
-        Optional<Response> optionalResponse = this.checkIssuerId(issuerId);
-        if(optionalResponse.isPresent())
-            return optionalResponse.get();
-        if(registry.exists(issuerId)){
-            LOGGER.warn("Issuer id taken: " +  issuerId);
-            return Response.status(409).entity(new Problem("/problems/issuerId/id-taken",
-                                    "Issuer ID Taken", 409,
-                                    "There is already an issuerId with the provided ID: " + issuerId))
-                    .type(MediaType.APPLICATION_JSON_TYPE)
-                    .build();
-        }
-        return operation.get();
-    }
-
     public Response checkIssuerExistsThen(String issuerId, IssuerOperation operation){
         Optional<Response> optionalResponse = this.checkIssuerId(issuerId);
         if(optionalResponse.isPresent())

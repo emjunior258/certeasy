@@ -76,11 +76,12 @@ class CertificatesResourceTest extends BaseRestTest {
     void list_must_return_all_certs_issued_plus_the_ca(){
 
         Certificate authorityCert = context.generator().generate(certificateAuthoritySpec);
-        CertIssuer certIssuer = registry.add("example", authorityCert);
+        CertIssuer certIssuer = registry.add(authorityCert);
         Certificate personCertificate = certIssuer.issueCert(personalCertificateSpec);
 
-        IssuedCertInfo[] certInfos = given().get("/api/issuers/example/certificates")
-                .as(IssuedCertInfo[].class);
+        IssuedCertInfo[] certInfos = given()
+                .get(String.format("/api/issuers/%s/certificates",
+                        certIssuer.getId())).as(IssuedCertInfo[].class);
 
         Arrays.sort(certInfos, Collections.reverseOrder());
         assertEquals(2, certInfos.length);
@@ -117,11 +118,11 @@ class CertificatesResourceTest extends BaseRestTest {
     void must_issue_tls_cert(){
 
         Certificate authorityCert = context.generator().generate(certificateAuthoritySpec);
-        CertIssuer certIssuer = registry.add("example", authorityCert);
+        CertIssuer certIssuer = registry.add(authorityCert);
 
         given().contentType(MediaType.APPLICATION_JSON)
                 .body("")
-                .post("/api/issuers/example/certificates/tls-server")
+                .post(String.format("/api/issuers/%s/certificates/tls-server", certIssuer.getId()))
                 .then()
                 .statusCode(500).log().all();
 
@@ -153,8 +154,7 @@ class CertificatesResourceTest extends BaseRestTest {
     void must_succeed_issuing_sub_ca_cert_with_valid_spec(){
 
         Certificate authorityCert = context.generator().generate(certificateAuthoritySpec);
-        registry.add("example", authorityCert);
-
+        CertIssuer issuer = registry.add(authorityCert);
 
         SubCaSpec spec = new SubCaSpec();
         spec.setName("intermediate");
@@ -167,7 +167,7 @@ class CertificatesResourceTest extends BaseRestTest {
         given()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(spec)
-                .post("/api/issuers/example/certificates/sub-ca")
+                .post(String.format("/api/issuers/%s/certificates/sub-ca", issuer.getId()))
                 .then()
                 .contentType(MediaType.APPLICATION_JSON)
                 .statusCode(200);
@@ -183,10 +183,10 @@ class CertificatesResourceTest extends BaseRestTest {
     void must_obtain_info_of_existing_cert_successfully(){
 
         Certificate authorityCert = context.generator().generate(certificateAuthoritySpec);
-        CertIssuer certIssuer = registry.add("example", authorityCert);
+        CertIssuer certIssuer = registry.add(authorityCert);
         Certificate personCertificate = certIssuer.issueCert(personalCertificateSpec);
 
-        given().get("/api/issuers/example/certificates/"+personCertificate.getSerial())
+        given().get( String.format("/api/issuers/%s/certificates/%s", certIssuer.getId(), personCertificate.getSerial()))
                 .then()
                 .contentType(MediaType.APPLICATION_JSON)
                 .statusCode(200).log().all();
@@ -198,9 +198,9 @@ class CertificatesResourceTest extends BaseRestTest {
     void must_respond_with_not_found_when_deleting_unknown_cert(){
 
         Certificate authorityCert = context.generator().generate(certificateAuthoritySpec);
-        registry.add("example", authorityCert);
+        CertIssuer certIssuer = registry.add(authorityCert);
 
-        given().delete("/api/issuers/example/certificates/1010101")
+        given().delete(String.format("/api/issuers/%s/certificates/1010101", certIssuer.getId()))
                 .then()
                 .body("type",equalTo("/problems/certificate/not-found"))
                 .body("title",equalTo("Certificate not found"))
@@ -215,9 +215,9 @@ class CertificatesResourceTest extends BaseRestTest {
     void must_fail_to_delete_ca_certificate(){
 
         Certificate authorityCert = context.generator().generate(certificateAuthoritySpec);
-        registry.add("example", authorityCert);
+        CertIssuer certIssuer = registry.add(authorityCert);
 
-        given().delete("/api/issuers/example/certificates/"+authorityCert.getSerial())
+        given().delete( String.format("/api/issuers/%s/certificates/%s",certIssuer.getId(),  authorityCert.getSerial()))
                 .then()
                 .body("type",equalTo("/problems/certificate/read-only"))
                 .body("title",equalTo("Certificate Read-only"))
@@ -227,16 +227,15 @@ class CertificatesResourceTest extends BaseRestTest {
 
     }
 
-
     @Test
     void must_delete_non_ca_certificate_successfully(){
 
         Certificate authorityCert = context.generator().generate(certificateAuthoritySpec);
-        CertIssuer certIssuer = registry.add("example", authorityCert);
+        CertIssuer certIssuer = registry.add(authorityCert);
         Certificate personCertificate = certIssuer.issueCert(personalCertificateSpec);
 
         assertEquals(2, certIssuer.listCerts().size());
-        given().delete("/api/issuers/example/certificates/"+personCertificate.getSerial())
+        given().delete(String.format( "/api/issuers/%s/certificates/%s", certIssuer.getId(), personCertificate.getSerial()))
                 .then()
                 .statusCode(204);
         assertEquals(1, certIssuer.listCerts().size());
@@ -247,10 +246,10 @@ class CertificatesResourceTest extends BaseRestTest {
     void must_obtain_pem_of_existing_cert_successfully(){
 
         Certificate authorityCert = context.generator().generate(certificateAuthoritySpec);
-        CertIssuer certIssuer = registry.add("example", authorityCert);
+        CertIssuer certIssuer = registry.add(authorityCert);
         Certificate personCertificate = certIssuer.issueCert(personalCertificateSpec);
 
-        given().get("/api/issuers/example/certificates/"+personCertificate.getSerial()+"/pem")
+        given().get(String.format("/api/issuers/%s/certificates/%s/pem", certIssuer.getId(), personCertificate.getSerial()))
                 .then()
                 .body("cert_file", notNullValue())
                 .body("key_file", notNullValue())
@@ -263,10 +262,10 @@ class CertificatesResourceTest extends BaseRestTest {
     void must_obtain_der_of_existing_cert_successfully(){
 
         Certificate authorityCert = context.generator().generate(certificateAuthoritySpec);
-        CertIssuer certIssuer = registry.add("example", authorityCert);
+        CertIssuer certIssuer = registry.add(authorityCert);
         Certificate personCertificate = certIssuer.issueCert(personalCertificateSpec);
 
-        given().get("/api/issuers/example/certificates/"+personCertificate.getSerial()+"/der")
+        given().get( String.format("/api/issuers/%s/certificates/%s/der",certIssuer.getId(), personCertificate.getSerial()))
                 .then()
                 .contentType(MediaType.TEXT_PLAIN)
                 .statusCode(200);
