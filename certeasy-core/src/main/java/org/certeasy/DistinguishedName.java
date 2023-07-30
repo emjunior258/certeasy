@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  *
  * @param relativeDistinguishedNames
  */
-public record DistinguishedName(Set<RelativeDistinguishedName> relativeDistinguishedNames) {
+public record DistinguishedName(Set<RelativeDistinguishedName> relativeDistinguishedNames) implements Comparable<DistinguishedName> {
 
     public DistinguishedName(Set<RelativeDistinguishedName> relativeDistinguishedNames){
         if(relativeDistinguishedNames==null || relativeDistinguishedNames.isEmpty())
@@ -93,6 +93,11 @@ public record DistinguishedName(Set<RelativeDistinguishedName> relativeDistingui
 
     public static Builder builder(){
         return new Builder();
+    }
+
+    @Override
+    public int compareTo(DistinguishedName distinguishedName) {
+        return this.digest().compareTo(distinguishedName.digest());
     }
 
     public static final class Builder {

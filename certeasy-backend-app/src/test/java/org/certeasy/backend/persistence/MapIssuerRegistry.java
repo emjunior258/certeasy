@@ -35,6 +35,7 @@ public class MapIssuerRegistry extends AbstractIssuerRegistry implements IssuerR
         if(issuerMap.containsKey(issuer.getId()))
             throw new IssuerDuplicationException(certificate.getDistinguishedName());
         this.issuerMap.put(issuer.getId(), issuer);
+        this.updateHierarchy(issuer);
         return issuer;
     }
 
