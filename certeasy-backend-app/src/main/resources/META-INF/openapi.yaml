@@ -641,6 +641,23 @@ components:
         - serial
         - ca
 
+    OrganizationInfo:
+      type: object
+      description: Represents an organization to which certificate is bound
+      properties:
+        organization_name:
+            type: string
+            description: The name of the organization to which the certificate is issued
+            minLength: 1
+            example: Apple Inc
+        organization_unit:
+            type: string
+            description: The name of the exact department/unit within the organization
+            minLength: 1
+            example: Software Engineering Department
+      required:
+        - organization_name
+
     BasicConstraints:
       type: object
       description: The Basic constraints extension
@@ -1013,6 +1030,10 @@ components:
               description: The name of the Sub Certificate Authority
               example: my-subca
         - $ref: "#/components/schemas/BaseCertificateRequestWithAddress"
+        - type: object
+          properties:
+            organization:
+              $ref: "#/components/schemas/OrganizationInfo"
         - required:
             - validity
             - key_strength
@@ -1033,6 +1054,10 @@ components:
                 description: A domain name
                 example: example.com
               minItems: 1
+            organization:
+              type: string
+              description: The name of the organization that owns the server to be secured with TLS.
+              example: Apple Inc
           required:
             - domains
             - validity

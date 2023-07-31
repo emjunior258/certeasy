@@ -11,6 +11,8 @@ public class ServerSpec extends BaseCertSpec {
 
     private Set<String> domains;
 
+    private String organization;
+
     public Set<String> getDomains() {
         return domains;
     }
@@ -19,11 +21,21 @@ public class ServerSpec extends BaseCertSpec {
         this.domains = domains;
     }
 
+    public String getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(String organization) {
+        this.organization = organization;
+    }
+
     @Override
     public Set<Violation> validate(ValidationPath path) {
         Set<Violation> violationSet = super.validate(path);
         if(domains==null || domains.isEmpty())
             violationSet.add(new Violation(path, "domains", ViolationType.REQUIRED, "must specify at least one domain"));
+        if(organization !=null && organization.isBlank() || organization.trim().length() < 1)
+            violationSet.add(new Violation(path, "organization", ViolationType.LENGTH, "must have at least a single character"));
         return violationSet;
     }
 

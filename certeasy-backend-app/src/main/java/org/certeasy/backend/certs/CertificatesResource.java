@@ -1,21 +1,26 @@
 package org.certeasy.backend.certs;
 
 
-import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.certeasy.Certificate;
 import org.certeasy.KeyStrength;
 import org.certeasy.backend.common.BaseResource;
 import org.certeasy.backend.common.CertPEM;
+import org.certeasy.backend.common.OrganizationInfo;
 import org.certeasy.backend.common.SubCaSpec;
 import org.certeasy.backend.common.cert.CertificateConverter;
 import org.certeasy.backend.common.cert.NotFoundProblem;
+import org.certeasy.backend.common.problem.ConstraintViolationProblem;
 import org.certeasy.backend.common.problem.Problem;
 import org.certeasy.backend.common.problem.ProblemResponse;
+import org.certeasy.backend.common.validation.ValidationPath;
+import org.certeasy.backend.common.validation.Violation;
 import org.certeasy.backend.issuer.CertIssuer;
 import org.certeasy.backend.issuer.ReadOnlyCertificateException;
 import org.certeasy.backend.persistence.StoredCert;
 import org.certeasy.certspec.CertificateAuthoritySpec;
 import org.certeasy.certspec.CertificateAuthoritySubject;
+import org.certeasy.certspec.TLSServerCertificateSpec;
+import org.certeasy.certspec.TLSServerSubject;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -49,20 +54,45 @@ public class CertificatesResource extends BaseResource {
     @POST
     @Path("/tls-server")
     public Response issueTLSServerCertificate(@PathParam("issuerId") String issuerId, ServerSpec spec){
+        Set<Violation> violationSet = spec.validate(ValidationPath.of("body"));
+        if(!violationSet.isEmpty())
+            return Response.status(422).entity(new ConstraintViolationProblem(violationSet))
+                    .build();
         return this.checkIssuerExistsThen(issuerId, (issuer) -> {
-            //TODO: Implement
-            throw new UnsupportedOperationException();
+            TLSServerSubject subject = new TLSServerSubject(
+                    spec.getDomains(),
+                    spec.getGeographicAddressInfo().
+                            toGeographicAddress(),
+                    spec.getOrganization());
+            TLSServerCertificateSpec tlsServerCertificateSpec = new TLSServerCertificateSpec(subject,
+                    KeyStrength.valueOf(spec.getKeyStrength()),
+                    spec.getValidity().toDateRange());
+            Certificate certificate = issuer.issueCert(tlsServerCertificateSpec);
+            return Response.ok(new CreatedSubCa(certificate.getDistinguishedName().digest(), certificate.getSerial()))
+                    .build();
+
         });
     }
 
     @POST
     @Path("/sub-ca")
     public Response issueSubCaCertificate(@PathParam("issuerId") String issuerId, SubCaSpec spec){
+        Set<Violation> violationSet = spec.validate(ValidationPath.of("body"));
+        if(!violationSet.isEmpty())
+            return Response.status(422).entity(new ConstraintViolationProblem(violationSet))
+                    .build();
         return this.checkIssuerExistsThen(issuerId, issuer -> {
+            String organizationName = null;
+            String organizationUnit = null;
+            OrganizationInfo organizationInfo = spec.getOrganizationInfo();
+            if(organizationInfo!= null) {
+                organizationName = organizationInfo.organizationName();
+                organizationUnit = organizationInfo.organizationUnit();
+            }
             CertificateAuthoritySubject subCaSubject = new CertificateAuthoritySubject(
                     spec.getName(),
                     spec.getGeographicAddressInfo().
-                            toGeographicAddress());
+                            toGeographicAddress(), organizationName, organizationUnit);
             CertificateAuthoritySpec subAuthoritySpec = new CertificateAuthoritySpec(subCaSubject, spec.getPathLength(),
                     KeyStrength.valueOf(spec.getKeyStrength()),
                     spec.getValidity().toDateRange());

@@ -20,11 +20,20 @@ public abstract class BaseCaCertSpec extends BaseCertSpec {
         this.pathLength = pathLength;
     }
 
+    @JsonProperty("organization")
+    private OrganizationInfo organizationInfo;
+
+    public OrganizationInfo getOrganizationInfo() {
+        return organizationInfo;
+    }
+
     @Override
     public Set<Violation> validate(ValidationPath path) {
         Set<Violation> violationSet = super.validate(path);
         if(pathLength<-1)
             violationSet.add(new Violation(path, "path_length", ViolationType.RANGE, "path_length should be >= -1"));
+         if(organizationInfo != null)
+             violationSet.addAll(organizationInfo.validate(path));
         return violationSet;
     }
 
