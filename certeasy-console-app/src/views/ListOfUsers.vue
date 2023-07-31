@@ -1,33 +1,8 @@
 <template>
-  <header class="bg-primary px-16 py-4 text-white">
-    <div class="flex justify-between">
-      <img
-        src="~../assets/logo.svg"
-        alt="Certeasy"
-        class="h-9"
-      />
-      <nav class="flex items-center">
-        <ul class="flex items-center gap-4 font-light text-sm">
-          <li>
-            <img
-              src="../assets/icons/api.svg"
-              alt="api"
-              class="inline"
-            />
-            Open API
-          </li>
-          <li>
-            <img
-              src="../assets/icons/cog.svg"
-              alt="api"
-              class="inline"
-            />
-            Settings
-          </li>
-        </ul>
-      </nav>
-    </div>
-  </header>
+  <NavbarComponent
+    :logo="logo"
+    :navLinks="navLinks"
+  />
   <section>
     <div class="flex justify-between px-16 mt-12 mb-3">
       <div class="font-light text-lg">
@@ -182,10 +157,27 @@
   </footer>
 </template>
 
-<script>
+<script setup>
 // @ is an alias to /src
-
-export default {
-  name: "HomeView",
+import NavbarComponent from "@/components/NavbarComponent.vue";
+const logo = {
+  imgSrc: require("@/assets/logo.svg"),
+  alt: "Certeasy",
 };
+const navLinks = [
+  {
+    id: 0,
+    icon: require("@/assets/icons/api.svg"),
+    altIcon: "API",
+    text: "Open Api",
+    linkHref: "#",
+  },
+  {
+    id: 0,
+    icon: require("@/assets/icons/cog.svg"),
+    altIcon: "settings",
+    text: "Settings",
+    linkHref: "#",
+  },
+];
 </script>
