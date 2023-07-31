@@ -17,7 +17,7 @@ defineProps(["logo", "navLinks"]);
             v-for="navLink in navLinks"
             :key="navLink.id"
           >
-            <a href="">
+            <a :href="navLink.linkHref">
               <img
                 :src="navLink.icon"
                 :alt="navLink.altIcon"
