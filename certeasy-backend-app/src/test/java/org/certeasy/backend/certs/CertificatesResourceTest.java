@@ -135,6 +135,8 @@ class CertificatesResourceTest extends BaseRestTest {
         SubCaSpec spec = new SubCaSpec();
         spec.setName("dumb");
         spec.setKeyStrength(KeyStrength.MEDIUM.name());
+        spec.setGeographicAddressInfo(new GeographicAddressInfo("MZ", "Maputo",
+                "Kampfumo", "123 BCC Devel"));
         spec.setPathLength(-1);
         spec.setValidity(new CertValidity(new DateRange(LocalDate.of(2099, Month.DECEMBER,
                 31))));
@@ -142,7 +144,7 @@ class CertificatesResourceTest extends BaseRestTest {
         given()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(spec)
-                .post("/api/issuers/dumb/certificates/sub-ca")
+                .post("/api/issuers/010234567000010/certificates/sub-ca")
                 .then()
                 .contentType(MediaType.APPLICATION_JSON)
                 .statusCode(404);

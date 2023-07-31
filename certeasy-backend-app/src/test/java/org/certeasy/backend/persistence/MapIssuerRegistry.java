@@ -57,6 +57,7 @@ public class MapIssuerRegistry extends AbstractIssuerRegistry implements IssuerR
 
     public void clear(){
         this.issuerMap.clear();
+        this.emptyChildrenMap();
     }
 
 }
