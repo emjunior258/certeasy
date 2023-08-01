@@ -7,7 +7,8 @@ module.exports = {
       colors: {
         primary: "#03258C",
         "primary-0.6": "rgba(3, 37, 140, 0.6)",
-        "blue-light": "#EBEEF6",
+        "primary-0.4": "rgba(3, 37, 140, 0.4)",
+        "primary-0.08": "rgba(3, 37, 140, 0.08)",
         red: "#FF0000",
         "red-0.6": "rgba(255, 0, 0, 0.6)",
         "red-light": "#FFEBEB",
