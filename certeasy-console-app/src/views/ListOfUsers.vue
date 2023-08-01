@@ -4,68 +4,21 @@
     :navLinks="navLinks"
   />
   <section>
-    <div class="flex justify-between px-16 mt-12 mb-3">
-      <div class="font-light text-lg">
-        <button
-          class="rounded py-1 px-4 bg-primary text-white"
-          type="button"
-        >
-          All (16)</button
-        ><button
-          class="rounded py-1 px-4"
-          type="button"
-        >
-          <img
-            src="../assets/icons/storage.svg"
-            alt="api"
-            class="inline"
-          />
-          Root (9)</button
-        ><button
-          class="rounded py-1 px-4"
-          type="button"
-        >
-          <img
-            src="../assets/icons/sub-storage.svg"
-            alt="api"
-            class="inline"
-          />
-          Sub (7)</button
-        ><button
-          class="rounded"
-          type="button"
-        >
-          <img
-            src="../assets/icons/tree.svg"
-            alt="tree"
-            class="inline"
-          />
-          Tree
-        </button>
+    <div class="flex justify-between px-16 mt-12 mb-6 items-end">
+      <div class="font-light text-lg margin-trim">
+        <IconButton
+          v-for="filterButton in filterButtons"
+          :key="filterButton.id"
+          :buttonProps="filterButton"
+          class="mr-6"
+        />
       </div>
       <div class="flex gap-11 font-medium text-lg">
-        <button
-          class="rounded py-3 px-6 bg-primary text-white"
-          type="button"
-        >
-          New Root CA
-          <img
-            src="../assets/icons/add-file.svg"
-            alt="add"
-            class="inline ml-2"
-          />
-        </button>
-        <button
-          class="rounded py-3 px-6 border border-primary text-primary"
-          type="button"
-        >
-          Import CA
-          <img
-            src="../assets/icons/import-file.svg"
-            alt="import"
-            class="inline ml-2"
-          />
-        </button>
+        <ActionButton
+          v-for="actionButton in actionButtons"
+          :key="actionButton.id"
+          :buttonProps="actionButton"
+        />
       </div>
     </div>
     <ul class="px-16">
@@ -160,6 +113,9 @@
 <script setup>
 // @ is an alias to /src
 import NavbarComponent from "@/components/NavbarComponent.vue";
+import IconButton from "@/components/buttons/IconButton.vue";
+import ActionButton from "@/components/buttons/ActionButton.vue";
+
 const logo = {
   imgSrc: require("@/assets/logo.svg"),
   alt: "Certeasy",
@@ -180,4 +136,52 @@ const navLinks = [
     linkHref: "#",
   },
 ];
+
+const filterButtons = [
+  {
+    id: 0,
+    text: "All",
+    amount: 16,
+    active: true,
+  },
+  {
+    id: 1,
+    icon: require("@/assets/icons/storage.svg"),
+    text: "Root",
+    amount: 9,
+  },
+  {
+    id: 2,
+    icon: require("@/assets/icons/sub-storage.svg"),
+    text: "Sub",
+    amount: 16,
+    active: false,
+  },
+  {
+    id: 3,
+    icon: require("@/assets/icons/tree.svg"),
+    text: "Tree",
+    amount: 16,
+    active: false,
+  },
+];
+const actionButtons = [
+  {
+    id: 0,
+    icon: require("@/assets/icons/add-file.svg"),
+    text: "New Root CA",
+  },
+  {
+    id: 1,
+    icon: require("@/assets/icons/import-file.svg"),
+    text: "Import CA",
+    outlined: true,
+  },
+];
 </script>
+
+<style>
+.margin-trim > :last-child {
+  margin-right: 0;
+}
+</style>
