@@ -1,5 +1,5 @@
 {
-  "name": "test",
+  "name": "test-invalid-path-length",
   "key_strength": "LOW",
   "path_length": -10,
   "validity": {

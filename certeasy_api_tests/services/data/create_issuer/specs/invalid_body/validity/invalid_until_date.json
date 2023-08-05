@@ -1,5 +1,5 @@
 {
-  "name": "test",
+  "name": "test-invalid-until-date",
   "key_strength": "LOW",
   "path_length": -1,
   "validity": {
