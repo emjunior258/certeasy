@@ -2,12 +2,12 @@ package org.certeasy.backend.issuer;
 
 import org.certeasy.*;
 import org.certeasy.backend.persistence.IssuerDatastore;
+import org.certeasy.backend.persistence.IssuerRegistry;
 import org.certeasy.backend.persistence.StoredCert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.Optional;
+import java.util.*;
 
 
 /**
@@ -15,11 +15,13 @@ import java.util.Optional;
  */
 public class CertIssuer {
 
-
     private String id;
+    private IssuerRegistry registry;
+
     private IssuerDatastore store;
     private Certificate certificate;
     private CertEasyContext context;
+
     private static final Logger LOGGER
             = LoggerFactory.getLogger(CertIssuer.class);
 
@@ -27,33 +29,34 @@ public class CertIssuer {
 
     private boolean disabled = false;
 
-    public CertIssuer(String id, IssuerDatastore store, CertEasyContext context){
-        if(id==null || id.isEmpty())
-            throw new IllegalArgumentException("id MUST not be null nor empty");
+    public CertIssuer(IssuerRegistry registry, IssuerDatastore store, CertEasyContext context){
+        if(registry==null)
+            throw new IllegalArgumentException("registry MUST not be null");
         if(store==null)
             throw new IllegalArgumentException("store MUST not be null");
         if(context==null)
             throw new IllegalArgumentException("context MUST not be null");
-        this.id = id;
+        this.registry = registry;
         this.store = store;
         this.context = context;
         this.readSerial();
     }
 
-    public CertIssuer(String id, IssuerDatastore store, CertEasyContext context, Certificate certificate){
-        if(id ==null || id.isEmpty())
-            throw new IllegalArgumentException("id MUST not be null nor empty");
+    public CertIssuer(IssuerRegistry registry, IssuerDatastore store, CertEasyContext context, Certificate certificate){
+        if(registry==null)
+            throw new IllegalArgumentException("registry MUST not be null");
         if(store==null)
             throw new IllegalArgumentException("store MUST not be null");
         if(context==null)
             throw new IllegalArgumentException("context MUST not be null");
         if(certificate==null)
             throw new IllegalArgumentException("certificate MUST not be null");
-        this.id = id;
+        this.registry = registry;
         this.store = store;
         this.context = context;
         this.certificate = certificate;
         this.setCertificate(certificate);
+        this.figureIdentity();
 
     }
 
@@ -62,12 +65,15 @@ public class CertIssuer {
     }
 
     private void setCertificate(Certificate certificate){
-        if(certificate==null)
-            throw new IllegalArgumentException("certificate MUST not be null");
         this.store.put(certificate);
         this.certificate = certificate;
         this.serial = certificate.getSerial();
         this.writeSerial();
+    }
+
+    private void figureIdentity(){
+        this.id = certificate.
+                getDistinguishedName().digest();
     }
 
     public boolean isDisabled() {
@@ -91,10 +97,13 @@ public class CertIssuer {
     }
 
     private void loadCertIfNotYet() {
-        if(certificate!=null || !hasCertificate())
+        if(certificate!=null)
             return;
         Optional<StoredCert> storedCert = store.getCert(serial);
-        storedCert.ifPresent(cert -> this.certificate = cert.getCertificate());
+        storedCert.ifPresent(cert -> {
+            this.certificate = cert.getCertificate();
+            this.figureIdentity();
+        });
     }
 
     private void writeSerial(){
@@ -126,6 +135,10 @@ public class CertIssuer {
         Certificate issuedCert = context.generator().generate(spec, certificate);
         LOGGER.info("Issued certificate with serial: {}", issuedCert.getSerial());
         this.store.put(issuedCert);
+        if(spec.getBasicConstraints().ca()) {
+            LOGGER.info("Creating issuer for issued certificate: "+certificate.getSerial());
+            this.registry.add(issuedCert);
+        }
         return issuedCert;
     }
 

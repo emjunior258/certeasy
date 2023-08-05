@@ -1,6 +1,7 @@
 package org.certeasy.backend.certs;
 
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.certeasy.Certificate;
 import org.certeasy.KeyStrength;
 import org.certeasy.backend.common.BaseResource;
@@ -21,6 +22,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Comparator;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.Optional;
@@ -65,7 +67,7 @@ public class CertificatesResource extends BaseResource {
                     KeyStrength.valueOf(spec.getKeyStrength()),
                     spec.getValidity().toDateRange());
             Certificate certificate = issuer.issueCert(subAuthoritySpec);
-            return Response.ok(new IssuedCert(certificate.getSerial()))
+            return Response.ok(new CreatedSubCa(certificate.getDistinguishedName().digest(), certificate.getSerial()))
                     .build();
         });
     }

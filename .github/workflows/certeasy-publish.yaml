@@ -12,6 +12,7 @@ on:
       - 'certeasy-bouncycastle/**'
       - 'certeasy-backend-app/**'
       - 'certeasy_api_tests/**'
+      - 'certeasy-console-app/**'
       - '.github/workflows/certeasy-publish.yaml'
     branches:
       - main
@@ -255,5 +256,3 @@ jobs:
           run: pip install -r certeasy_api_tests/requirements.txt
         - name: Run tests
           run: pytest certeasy_api_tests/src/tests
-
-

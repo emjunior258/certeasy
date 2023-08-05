@@ -4,9 +4,7 @@ import org.certeasy.CertEasyContext;
 import org.certeasy.Certificate;
 import org.certeasy.backend.CertConstants;
 import org.certeasy.backend.issuer.CertIssuer;
-import org.certeasy.backend.persistence.IssuerDatastore;
-import org.certeasy.backend.persistence.IssuerRegistry;
-import org.certeasy.backend.persistence.IssuerRegistryException;
+import org.certeasy.backend.persistence.*;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
@@ -18,17 +16,20 @@ import java.util.*;
 
 
 @ApplicationScoped
-public class DirectoryIssuerRegistry implements IssuerRegistry {
+public class DirectoryIssuerRegistry extends AbstractIssuerRegistry implements IssuerRegistry {
 
-    private File dataDirectory;
-    private CertEasyContext context;
-    private Map<String, CertIssuer> cache = new HashMap<>();
+    private final File dataDirectory;
+    private final CertEasyContext context;
+    private final Map<String, CertIssuer> cache = new HashMap<>();
+
     private boolean scanned = false;
     private static final Logger LOGGER = Logger.getLogger(DirectoryIssuerRegistry.class);
 
     public DirectoryIssuerRegistry(@ConfigProperty(name = CertConstants.DATA_DIRECTORY_CONFIG) String dataDirectory, CertEasyContext context){
         if(dataDirectory==null || dataDirectory.isEmpty())
             throw new IllegalArgumentException("dataDirectory path cannot be null or empty");
+        if(context==null)
+            throw new IllegalArgumentException("context must not be null");
         this.dataDirectory = new File(dataDirectory);
         if(!this.dataDirectory.exists() || !this.dataDirectory.isDirectory())
             throw new IllegalArgumentException("dataDirectory path must point to existing directory");
@@ -54,23 +55,28 @@ public class DirectoryIssuerRegistry implements IssuerRegistry {
             return;
         for(File issuerDirectory : files){
             IssuerDatastore datastore = new DirectoryIssuerDatastore(issuerDirectory,context);
-            CertIssuer issuer = new CertIssuer(issuerDirectory.getName(),datastore,context);
+            CertIssuer issuer = new CertIssuer(this, datastore,context);
             if(!issuer.hasCertificate()){
                 LOGGER.warn(String.format("Skipping directory: %s", issuerDirectory.getAbsolutePath()));
                 continue;
             }
             LOGGER.info("Found issuerId: " + issuerDirectory.getName());
             cache.put(issuerDirectory.getName(), issuer);
+            this.updateHierarchy(issuer);
         }
         this.scanned = true;
+        this.discoverHierarchy();
     }
 
+
+
     @Override
-    public CertIssuer add(String issuerId, Certificate certificate) throws IssuerRegistryException {
-        if(issuerId ==null || issuerId.isEmpty())
-            throw new IllegalArgumentException("name MUST not be null nor empty");
+    public CertIssuer add(Certificate certificate) throws IssuerRegistryException {
         if(certificate==null)
             throw new IllegalArgumentException("certificate MUST not be null");
+        String issuerId = certificate.getDistinguishedName().digest();
+        if(this.cache.containsKey(issuerId))
+            throw new IssuerDuplicationException(certificate.getDistinguishedName());
         LOGGER.info("Adding issuerId: " + issuerId);
         File issuerDirectory = new File(dataDirectory, issuerId);
         LOGGER.info("Creating issuerId data directory: " + issuerDirectory.getAbsolutePath());
@@ -81,18 +87,19 @@ public class DirectoryIssuerRegistry implements IssuerRegistry {
                     ex);
         }
         IssuerDatastore datastore = new DirectoryIssuerDatastore(issuerDirectory, context);
-        CertIssuer issuer = new CertIssuer(issuerId, datastore, context, certificate);
+        CertIssuer issuer = new CertIssuer(this, datastore, context, certificate);
         cache.put(issuerId, issuer);
+        this.updateHierarchy(issuer);
         LOGGER.info("Issuer added successfully: " + issuerId);
         return issuer;
     }
 
     @Override
-    public boolean exists(String name) throws IssuerRegistryException {
-        if(name==null || name.isEmpty())
+    public boolean exists(String issuerId) throws IssuerRegistryException {
+        if(issuerId ==null || issuerId.isEmpty())
             throw new IllegalArgumentException("name MUST not be null");
         this.scanIfNotYet();
-        return(cache.containsKey(name));
+        return(cache.containsKey(issuerId));
     }
 
     @Override
@@ -110,6 +117,8 @@ public class DirectoryIssuerRegistry implements IssuerRegistry {
         if(!issuer.isDisabled())
             issuer.disable();
         this.cache.remove(issuer.getId());
+        super.delete(issuer);
     }
+
 
 }

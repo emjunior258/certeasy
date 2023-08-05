@@ -4,6 +4,7 @@ import org.apache.commons.io.FileUtils;
 import org.certeasy.CertEasyContext;
 import org.certeasy.CertEasyException;
 import org.certeasy.Certificate;
+import org.certeasy.PEMCoderException;
 import org.certeasy.backend.CertConstants;
 import org.certeasy.backend.persistence.IssuerDatastore;
 import org.certeasy.backend.persistence.IssuerDatastoreException;
@@ -14,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.*;
 
 public class DirectoryIssuerDatastore implements IssuerDatastore {
@@ -151,10 +151,11 @@ public class DirectoryIssuerDatastore implements IssuerDatastore {
                 Certificate certificate = storedCert.getCertificate();
                 LOGGER.info("Loaded certificate with serial {}", certificate.getSerial());
                 cache.put(certificate.getSerial(), storedCert);
-            } catch (IllegalArgumentException | IssuerDatastoreException ex) {
+            } catch (IllegalArgumentException | IssuerDatastoreException | PEMCoderException ex) {
                 LOGGER.warn("Failed to Load certificate from directory {}", file.getName(), ex);
             }
         });
+        directoryScanned = true;
         LOGGER.info("Directory scan complete");
     }
 
