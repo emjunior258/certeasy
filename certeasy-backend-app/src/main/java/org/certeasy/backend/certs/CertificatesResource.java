@@ -27,7 +27,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import java.util.Comparator;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.Optional;
@@ -68,7 +67,7 @@ public class CertificatesResource extends BaseResource {
                     KeyStrength.valueOf(spec.getKeyStrength()),
                     spec.getValidity().toDateRange());
             Certificate certificate = issuer.issueCert(tlsServerCertificateSpec);
-            return Response.ok(new CreatedSubCa(certificate.getDistinguishedName().digest(), certificate.getSerial()))
+            return Response.ok(new IssuedCert(certificate.getSerial()))
                     .build();
 
         });

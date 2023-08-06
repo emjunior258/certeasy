@@ -1,21 +1,19 @@
 package org.certeasy.backend.certs;
 
-import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
+import io.restassured.RestAssured;
 import org.certeasy.*;
 import org.certeasy.backend.BaseRestTest;
-import org.certeasy.backend.common.CertPEM;
 import org.certeasy.backend.common.SubCaSpec;
 import org.certeasy.backend.common.cert.CertValidity;
 import org.certeasy.backend.common.cert.GeographicAddressInfo;
 import org.certeasy.backend.issuer.CertIssuer;
-import org.certeasy.backend.issuer.IssuersResource;
 import org.certeasy.backend.persistence.IssuerRegistry;
 import org.certeasy.backend.persistence.MapIssuerRegistry;
 import org.certeasy.backend.persistence.MemoryPersistenceProfile;
 import org.certeasy.certspec.*;
-import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -115,7 +113,7 @@ class CertificatesResourceTest extends BaseRestTest {
     }
 
     @Test
-    void must_issue_tls_cert(){
+    void must_fail_to_issue_tls_cert_with_empty_spec(){
 
         Certificate authorityCert = context.generator().generate(certificateAuthoritySpec);
         CertIssuer certIssuer = registry.add(authorityCert);
@@ -125,6 +123,34 @@ class CertificatesResourceTest extends BaseRestTest {
                 .post(String.format("/api/issuers/%s/certificates/tls-server", certIssuer.getId()))
                 .then()
                 .statusCode(500).log().all();
+
+    }
+
+    @Test
+    void must_succeed_issuing_tls_cert_with_valid_spec(){
+
+        Certificate authorityCert = context.generator().generate(certificateAuthoritySpec);
+        CertIssuer certIssuer = registry.add(authorityCert);
+
+        ServerSpec spec = new ServerSpec();
+        spec.setDomains(Set.of("www.certeasy.org", "certeasy.org"));
+        spec.setKeyStrength(KeyStrength.HIGH.name());
+        spec.setGeographicAddressInfo(new GeographicAddressInfo("ZA",
+                "Nelspruit",
+                "Mpumalanga",
+                "Third Base Urban. Fashion. UG73"));
+        spec.setValidity(new CertValidity(new DateRange(LocalDate.of(3010,
+                Month.DECEMBER, 31))));
+        spec.setOrganization("Certeasy Inc");
+
+
+        given().contentType(MediaType.APPLICATION_JSON)
+                .body(spec)
+                .post(String.format("/api/issuers/%s/certificates/tls-server", certIssuer.getId()))
+                .then()
+                .statusCode(200)
+                .body("serial", notNullValue())
+                .log().all();
 
     }
 
