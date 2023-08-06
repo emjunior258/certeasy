@@ -34,7 +34,7 @@ public class ServerSpec extends BaseCertSpec {
         Set<Violation> violationSet = super.validate(path);
         if(domains==null || domains.isEmpty())
             violationSet.add(new Violation(path, "domains", ViolationType.REQUIRED, "must specify at least one domain"));
-        if(organization !=null && organization.isBlank() || organization.trim().length() < 1)
+        if(organization !=null && ( organization.isBlank() || organization.trim().length() < 1) )
             violationSet.add(new Violation(path, "organization", ViolationType.LENGTH, "must have at least a single character"));
         return violationSet;
     }
