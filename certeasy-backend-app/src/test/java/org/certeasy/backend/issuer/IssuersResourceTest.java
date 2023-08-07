@@ -50,6 +50,7 @@ class IssuersResourceTest extends BaseRestTest {
     CertEasyContext context;
 
     private CertificateAuthoritySpec certificateAuthoritySpec;
+    private CertificateAuthoritySpec subCertificateAuthoritySpec;
     private PersonalCertificateSpec personalCertificateSpec;
 
     public IssuersResourceTest(){
@@ -57,12 +58,7 @@ class IssuersResourceTest extends BaseRestTest {
                 "Nelspruit",
                 "Mpumalanga",
                 "Third Base Urban. Fashion. UG73");
-        CertificateAuthoritySubject certificateAuthoritySubject = new CertificateAuthoritySubject("Root",
-                geographicAddress);
-        certificateAuthoritySpec = new CertificateAuthoritySpec(certificateAuthoritySubject, 10,
-                KeyStrength.HIGH,
-                new DateRange(LocalDate.of(2099, Month.DECEMBER,
-                        31)));
+        certificateAuthoritySpec = makeCertificateAuthoritySpec("Root", geographicAddress);
 
         PersonalIdentitySubject personalIdentitySubject = new PersonalIdentitySubject(new PersonName("John", "Traveller"),
                 geographicAddress,
@@ -74,6 +70,15 @@ class IssuersResourceTest extends BaseRestTest {
                 new DateRange(LocalDate.of(2099, Month.DECEMBER,
                         31)));
 
+    }
+
+    private static CertificateAuthoritySpec makeCertificateAuthoritySpec(String name, GeographicAddress geographicAddress){
+        CertificateAuthoritySubject certificateAuthoritySubject = new CertificateAuthoritySubject(name,
+                geographicAddress);
+        return new CertificateAuthoritySpec(certificateAuthoritySubject, 10,
+                KeyStrength.HIGH,
+                new DateRange(LocalDate.of(2099, Month.DECEMBER,
+                        31)));
     }
 
     @BeforeEach
@@ -95,8 +100,8 @@ class IssuersResourceTest extends BaseRestTest {
     }
 
     @Test
-    @DisplayName("listIssuers() must return existing issuer")
-    void listIssuers_must_return_existing_issuer(){
+    @DisplayName("listIssuers() must return all existing issuer")
+    void listIssuers_must_return_all_existing_issuer(){
 
         Certificate authorityCert = context.generator().generate(certificateAuthoritySpec);
         CertIssuer issuer = registry.add(authorityCert);
@@ -563,5 +568,99 @@ class IssuersResourceTest extends BaseRestTest {
                 .body("violations[0].type", equalTo("length"))
                 .body("violations[0].message", equalTo("name length should not exceed 128 characters"));
 
+    }
+
+
+    @Tag("listIssuers")
+    @Test
+    @DisplayName("listIssuers must return only the ROOT issuers")
+    void listIssuers_must_return_only_the_ROOT_issuers(){
+        Certificate rootCert = context.generator().generate(certificateAuthoritySpec);
+        registry.add(rootCert);
+        Certificate anotherRootCert = context.generator().generate(makeCertificateAuthoritySpec("Root-2",
+                new GeographicAddress("MZ", "Maputo", "Kampfumo", "Av. Maguiguane, Predio 416, 3o Andar, FLT 301")
+        ));
+        CertIssuer anotherRootIssuer = registry.add(anotherRootCert);
+        anotherRootIssuer.issueCert(makeCertificateAuthoritySpec("Sub", new GeographicAddress("MZ", "Maputo", "Kampfumo", "Av. 24 de Julho, Rua 2.016 Nr. 3001")));
+
+        IssuerInfo[] certs = given().when()
+                .queryParam("type", IssuerType.ROOT.name())
+                .get()
+                .as(IssuerInfo[].class);
+
+        assertEquals(2, certs.length);
+    }
+
+    @Tag("listIssuers")
+    @Test
+    @DisplayName("listIssuers must return only the SUB_CA issuers")
+    void listIssuers_must_return_only_the_SUB_CA_issuers(){
+
+        Certificate rootCert = context.generator().generate(certificateAuthoritySpec);
+        CertIssuer certIssuer = registry.add(rootCert);
+        GeographicAddress address =  new GeographicAddress("MZ", "Maputo", "Kampfumo", "Av. 24 de Julho, Rua 2.016 Nr. 3001");
+        certIssuer.issueCert(makeCertificateAuthoritySpec("Sub", address));
+        certIssuer.issueCert(makeCertificateAuthoritySpec("Sub-1", address));
+        certIssuer.issueCert(makeCertificateAuthoritySpec("Sub-2", address));
+
+        IssuerInfo[] certs = given().when()
+                .queryParam("type", IssuerType.SUB_CA.name())
+                .get()
+                .as(IssuerInfo[].class);
+
+        assertEquals(3, certs.length);
+
+        IssuerInfo sample = certs[0];
+        assertNotNull(sample.id());
+        assertFalse(sample.id().isEmpty());
+        assertNotNull(sample.name());
+        assertFalse(sample.name().isEmpty());
+        assertEquals(10, sample.pathLength());
+        assertNotNull(sample.parent());
+        IssuerParent parent = sample.parent();
+        assertEquals(certIssuer.getId(), parent.id());
+        assertEquals("Root", parent.name());
+
+    }
+
+    @Tag("getChildren")
+    @Test
+    @DisplayName("getChildren must return only the children of selected issuer")
+    void getChildren_must_return_only_the_children_issuers(){
+
+        Certificate rootCert = context.generator().generate(certificateAuthoritySpec);
+        CertIssuer certIssuer = registry.add(rootCert);
+        GeographicAddress address =  new GeographicAddress("MZ", "Maputo", "Kampfumo", "Av. 24 de Julho, Rua 2.016 Nr. 3001");
+        certIssuer.issueCert(makeCertificateAuthoritySpec("Sub", address));
+        certIssuer.issueCert(makeCertificateAuthoritySpec("Sub-2", address));
+        certIssuer.issueCert(makeCertificateAuthoritySpec("Sub-3", address));
+        certIssuer.issueCert(makeCertificateAuthoritySpec("Sub-4", address));
+
+        Certificate anotherRoot = context.generator().generate(makeCertificateAuthoritySpec("Root-2", address));
+        registry.add(anotherRoot);
+
+        IssuerInfo[] certs = given().when()
+                .get(String.format("/%s/children", rootCert.getDistinguishedName().digest()))
+                .as(IssuerInfo[].class);
+
+        assertEquals(4, certs.length);
+    }
+
+    @Tag("listIssuers")
+    @Test
+    @DisplayName("listIssuers must fail when invalid type is provided")
+    void listIssuers_must_fail_when_invalid_type_is_provided(){
+        given().when()
+                .queryParam("type", "Garbage")
+                .get().then()
+                .statusCode(422)
+                .body("type", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getType()))
+                .body("title", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getTitle()))
+                .body("detail", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getDetail()))
+                .body("status", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getStatus()))
+                .body("violations", hasSize(1))
+                .body("violations[0].field", equalTo("query.type"))
+                .body("violations[0].type", equalTo("enum"))
+                .body("violations[0].message", equalTo("type MUST be one of: [ROOT, SUB_CA]"));
     }
 }

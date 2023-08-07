@@ -40,7 +40,7 @@ class DateRangeTest {
     @DisplayName("constructor must assume start date is today when not provided")
     void constructorMustAssumeStartDateIsTodayWhenNotProvided() {
         LocalDate today = LocalDate.now();
-        DateRange range = new DateRange(LocalDate.of(2023, Month.SEPTEMBER, 28));
+        DateRange range = new DateRange(LocalDate.of(3023, Month.SEPTEMBER, 28));
         LocalDate start = range.start();
         assertEquals(today, start);
     }
