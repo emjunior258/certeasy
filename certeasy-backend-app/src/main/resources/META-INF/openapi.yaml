@@ -859,7 +859,7 @@ components:
       description: Request body to create new issuerId using existing certificate
       properties:
         pem:
-          $ref: "#/components/schemas/IssuerCertPem"
+          $ref: "#/components/schemas/CertPem"
       required:
         - pem
 
