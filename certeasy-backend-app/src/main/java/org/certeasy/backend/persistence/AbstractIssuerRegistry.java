@@ -82,4 +82,9 @@ public abstract class AbstractIssuerRegistry implements IssuerRegistry {
     }
 
 
+    protected void emptyChildrenMap() {
+        this.childrenMap.clear();
+    }
+
+
 }

@@ -177,7 +177,7 @@ public class Certificate implements Comparable<Certificate> {
     }
 
     public boolean isSelfSignedCA(){
-        return this.issuerName.equals(distinguishedName) && this.basicConstraints.ca();
+        return this.issuerName.digest().equals(distinguishedName.digest()) && this.basicConstraints.ca();
     }
 
     public boolean isCA(){
@@ -186,7 +186,7 @@ public class Certificate implements Comparable<Certificate> {
 
     @Override
     public int compareTo(Certificate certificate) {
-        return this.getDistinguishedName().getCommonName().compareTo(certificate.getDistinguishedName().
-                getCommonName());
+        return this.distinguishedName.digest().compareTo(certificate.getDistinguishedName().
+                digest());
     }
 }
