@@ -743,13 +743,13 @@ components:
           example: 12345678910
         type:
           type: string
-          description: The type of issuerId
+          description: The type of issuer
           enum:
             - ROOT
             - SUB_CA
         dn:
           type: string
-          description: The Distinguished name of the issuerId certificate
+          description: The Distinguished name of the issuer certificate
           example: cn=John Doe, ou=People, dc=sun.com
         path_length:
           type: integer
@@ -800,11 +800,11 @@ components:
 
     IssuerCertRef:
       type: object
-      description: References a Sub-CA certificate issued by an existing issuerId.
+      description: References a Sub-CA certificate issued by an existing issuer.
       properties:
         issuer_id:
           type: string
-          description: The ID of the issuerId of the Sub-CA certificate to be used
+          description: The ID of the issuer of the Sub-CA certificate to be used
         serial:
           type: string
           description: The serial of the Sub-CA certificate to be used
@@ -847,7 +847,7 @@ components:
         - validity
 
     NewIssuerBody:
-      description: Request body regarding new issuerId to be created
+      description: Request body regarding new issuer to be created
       oneOf:
         - $ref: "#/components/schemas/IssuerCertPemBody"
         - $ref: "#/components/schemas/IssuerCertSpecBody"
@@ -856,16 +856,16 @@ components:
 
     IssuerCertPemBody:
       type: object
-      description: Request body to create new issuerId using existing certificate
+      description: Request body to create new issuer using existing certificate
       properties:
         pem:
-          $ref: "#/components/schemas/IssuerCertPem"
+          $ref: "#/components/schemas/CertPem"
       required:
         - pem
 
     IssuerCertSpecBody:
       type: object
-      description: Request body to create new issuerId certificate from a specification
+      description: Request body to create new issuer certificate from a specification
       properties:
         spec:
           $ref: "#/components/schemas/IssuerCertSpec"
@@ -874,7 +874,7 @@ components:
 
     IssuerCertRefBody:
       type: object
-      description: Request body to create new issuerId from a Sub-CA certificate issued by an existing issuerId.
+      description: Request body to create new issuer from a Sub-CA certificate issued by an existing issuer.
       properties:
         ref:
           $ref: "#/components/schemas/IssuerCertRef"
