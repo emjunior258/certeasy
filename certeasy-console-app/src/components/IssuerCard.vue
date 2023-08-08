@@ -7,14 +7,14 @@ defineProps(["issuer"]);
     <div class="flex justify-between">
       <div class="flex gap-6">
         <img
-          :src="issuer.avatar"
+          src="https://placehold.co/52x52"
           :alt="issuer.altText"
           class="h-13 w-13 border border-primary-0.4 rounded"
         />
         <div class="flex flex-col justify-between items-start">
           <h3 class="text-xl font-medium">{{ issuer.name }}</h3>
           <span class="rounded-full py-0.5 px-2.5 bg-purple font-light text-xs"
-            >root</span
+            >{{ issuer.type }}</span
           >
         </div>
       </div>
