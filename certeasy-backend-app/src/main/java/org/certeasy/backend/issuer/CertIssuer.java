@@ -1,6 +1,7 @@
 package org.certeasy.backend.issuer;
 
 import org.certeasy.*;
+import org.certeasy.backend.certs.IssuedCertType;
 import org.certeasy.backend.persistence.IssuerDatastore;
 import org.certeasy.backend.persistence.IssuerRegistry;
 import org.certeasy.backend.persistence.StoredCert;
@@ -8,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -116,6 +118,13 @@ public class CertIssuer {
 
     public Collection<StoredCert> listCerts() {
         return store.listStored();
+    }
+
+    public Collection<StoredCert> listCerts(IssuedCertType type) {
+        if(type==null)
+            return store.listStored();
+        return store.listStored().stream().filter(item -> item.getCertType() == type)
+                .collect(Collectors.toSet());
     }
 
     public Optional<StoredCert> getIssuedCert(String serial){

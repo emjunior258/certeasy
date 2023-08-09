@@ -1,6 +1,7 @@
 package org.certeasy.backend.persistence;
 
 import org.certeasy.Certificate;
+import org.certeasy.backend.certs.IssuedCertType;
 import org.certeasy.backend.issuer.CertIssuer;
 
 import java.util.Collection;

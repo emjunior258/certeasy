@@ -2,7 +2,6 @@ package org.certeasy.backend.certs;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
-import io.restassured.RestAssured;
 import org.certeasy.*;
 import org.certeasy.backend.BaseRestTest;
 import org.certeasy.backend.common.SubCaSpec;
@@ -13,7 +12,6 @@ import org.certeasy.backend.persistence.IssuerRegistry;
 import org.certeasy.backend.persistence.MapIssuerRegistry;
 import org.certeasy.backend.persistence.MemoryPersistenceProfile;
 import org.certeasy.certspec.*;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -77,22 +75,22 @@ class CertificatesResourceTest extends BaseRestTest {
         CertIssuer certIssuer = registry.add(authorityCert);
         Certificate personCertificate = certIssuer.issueCert(personalCertificateSpec);
 
-        IssuedCertInfo[] certInfos = given()
+        CertificateSummaryInfo[] certInfos = given()
                 .get(String.format("/api/issuers/%s/certificates",
-                        certIssuer.getId())).as(IssuedCertInfo[].class);
+                        certIssuer.getId())).as(CertificateSummaryInfo[].class);
 
         Arrays.sort(certInfos, Collections.reverseOrder());
         assertEquals(2, certInfos.length);
 
-        IssuedCertInfo cert0 = certInfos[0];
+        CertificateSummaryInfo cert0 = certInfos[0];
         assertEquals("Root", cert0.name());
         assertEquals(authorityCert.getSerial(), cert0.serial());
-        assertTrue(cert0.ca());
+        assertEquals(IssuedCertType.CA, cert0.type());
 
-        IssuedCertInfo cert1 = certInfos[1];
+        CertificateSummaryInfo cert1 = certInfos[1];
         assertEquals("John Doe", cert1.name());
         assertEquals(personCertificate.getSerial(), cert1.serial());
-        assertFalse(cert1.ca());
+        assertEquals(IssuedCertType.PERSONAL, cert1.type());
 
     }
 
