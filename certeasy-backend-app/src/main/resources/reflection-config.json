@@ -1,0 +1,22 @@
+[
+  {
+    "name": "java.util.Set",
+    "allPublicConstructors" : true,
+    "allPublicMethods" : true
+  },
+  {
+    "name": "java.util.HashSet",
+    "allPublicConstructors" : true,
+    "allPublicMethods" : true
+  },
+  {
+    "name" : "org.bouncycastle.jcajce.provider.asymmetric.rsa.KeyFactorySpi",
+    "allPublicConstructors" : true,
+    "allPublicMethods" : true
+  },
+  {
+    "name" : "org.bouncycastle.jcajce.provider.asymmetric.RSA$Mappings",
+    "allPublicConstructors" : true,
+    "allPublicMethods" : true
+  }
+]

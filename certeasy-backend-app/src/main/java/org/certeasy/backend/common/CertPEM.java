@@ -1,6 +1,7 @@
 package org.certeasy.backend.common;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.certeasy.backend.common.validation.Validable;
 import org.certeasy.backend.common.validation.ValidationPath;
 import org.certeasy.backend.common.validation.Violation;
@@ -9,6 +10,7 @@ import org.certeasy.backend.common.validation.ViolationType;
 import java.util.HashSet;
 import java.util.Set;
 
+@RegisterForReflection
 public record CertPEM(
         @JsonProperty("cert_file")
         String certFile,
