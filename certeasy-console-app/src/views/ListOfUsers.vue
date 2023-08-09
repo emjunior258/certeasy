@@ -31,10 +31,9 @@ import NavbarComponent from "@/components/NavbarComponent.vue";
 import IconTextButton from "@/components/buttons/IconTextButton.vue";
 import ActionButton from "@/components/buttons/ActionButton.vue";
 import IssuerCard from "@/components/IssuerCard.vue";
-import axios from 'axios'
-import { BaseUrl } from '@/config/config'
+import api from '@/config/config'
 export default {
-  components:{
+  components: {
     NavbarComponent,
     IconTextButton,
     ActionButton,
@@ -42,11 +41,11 @@ export default {
   },
   data() {
     return {
-      logo : {
+      logo: {
         imgSrc: require("@/assets/logo.svg"),
         alt: "Certeasy",
       },
-      navLinks : [
+      navLinks: [
         {
           id: 0,
           icon: require("@/assets/icons/api.svg"),
@@ -63,7 +62,7 @@ export default {
         },
       ],
 
-      filterButtons : [
+      filterButtons: [
         {
           id: 0,
           text: "All",
@@ -105,16 +104,16 @@ export default {
         },
       ],
 
-      issuersList : [
+      issuersList: [
       ],
     }
   },
-  created(){
+  created() {
     this.getAllIssuers()
   },
-  methods:{
-    getAllIssuers(){
-      axios.get(`${BaseUrl.url}/issuers`).then(res => {
+  methods: {
+    getAllIssuers() {
+      api.get(`/issuers`).then(res => {
         this.issuersList = res.data
       })
     }
