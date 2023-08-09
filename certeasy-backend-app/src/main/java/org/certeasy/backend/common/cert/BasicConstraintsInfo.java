@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.certeasy.BasicConstraints;
 
 public record BasicConstraintsInfo(
+
+
+        @JsonProperty(required = true)
         boolean ca,
         @JsonProperty("path_length")
         int pathLength) {

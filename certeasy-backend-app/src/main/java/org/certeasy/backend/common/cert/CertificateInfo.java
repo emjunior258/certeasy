@@ -1,11 +1,13 @@
 package org.certeasy.backend.common.cert;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.certeasy.ExtendedKeyUsages;
 import org.certeasy.KeyUsage;
 
 import java.util.Set;
 
+@RegisterForReflection
 public record CertificateInfo (
 
         String name,
