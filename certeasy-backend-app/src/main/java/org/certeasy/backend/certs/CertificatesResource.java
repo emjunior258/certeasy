@@ -7,13 +7,13 @@ import org.certeasy.backend.common.BaseResource;
 import org.certeasy.backend.common.CertPEM;
 import org.certeasy.backend.common.OrganizationInfo;
 import org.certeasy.backend.common.SubCaSpec;
-import org.certeasy.backend.common.cert.CertificateConverter;
 import org.certeasy.backend.common.cert.NotFoundProblem;
 import org.certeasy.backend.common.problem.ConstraintViolationProblem;
 import org.certeasy.backend.common.problem.Problem;
 import org.certeasy.backend.common.problem.ProblemResponse;
 import org.certeasy.backend.common.validation.ValidationPath;
 import org.certeasy.backend.common.validation.Violation;
+import org.certeasy.backend.common.validation.ViolationType;
 import org.certeasy.backend.issuer.CertIssuer;
 import org.certeasy.backend.issuer.ReadOnlyCertificateException;
 import org.certeasy.backend.persistence.StoredCert;
@@ -26,6 +26,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -37,15 +38,24 @@ import java.util.Optional;
 public class CertificatesResource extends BaseResource {
 
     @GET
-    public Response list(@PathParam("issuerId") String issuerId){
+    public Response list(@PathParam("issuerId") String issuerId, @QueryParam("type") String type){
+        IssuedCertType issuedCertType = null;
+        if(type !=null && !type.isEmpty()){
+           try {
+               issuedCertType = IssuedCertType.valueOf(type);
+           }catch (IllegalArgumentException ex){
+               return Response.status(422).entity(new ConstraintViolationProblem(
+                       new Violation("query.type", ViolationType.ENUM, "type MUST be one of: " + Arrays.toString(IssuedCertType.values()))))
+                       .build();
+           }
+        }
+        IssuedCertType finalIssuedCertType = issuedCertType;
         return this.checkIssuerExistsThen(issuerId, issuer -> {
-            Set<IssuedCertInfo> issuedCertInfoSet =  issuer.listCerts().stream().map(storedCert -> {
+            Set<CertificateSummaryInfo> certificateSummaryInfoSet =  issuer.listCerts(finalIssuedCertType).stream().map(storedCert -> {
                 Certificate cert = storedCert.getCertificate();
-                return new IssuedCertInfo(cert.getDistinguishedName().getCommonName(),
-                        cert.getSerial(),
-                        cert.getBasicConstraints().ca());
+                return CertificateConverter.toSummaryInfo(cert);
             }).collect(Collectors.toSet());
-            return Response.ok(issuedCertInfoSet)
+            return Response.ok(certificateSummaryInfoSet)
                     .build();
         });
     }
@@ -105,7 +115,7 @@ public class CertificatesResource extends BaseResource {
     @Path("/{serial}")
     public Response getCertInfo(@PathParam("issuerId") String issuerId, @PathParam("serial") String serial){
         return this.checkIssuerExistsThen(issuerId, issuer -> checkCertExistsThen(issuer, serial, cert -> Response.ok(
-                CertificateConverter.convert(cert.getCertificate()))
+                CertificateConverter.toDetailsInfo(cert.getCertificate()))
                 .build()));
     }
 

@@ -5,6 +5,7 @@ import org.apache.commons.io.IOUtils;
 import org.certeasy.CertEasyContext;
 import org.certeasy.Certificate;
 import org.certeasy.PEMCoder;
+import org.certeasy.backend.persistence.AbstractStoredCert;
 import org.certeasy.backend.persistence.IssuerDatastoreException;
 import org.certeasy.backend.persistence.StoredCert;
 import org.slf4j.Logger;
@@ -16,7 +17,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
-public class DirectoryStoredCert implements StoredCert {
+public class DirectoryStoredCert extends AbstractStoredCert implements StoredCert {
     private Certificate certificate;
     private File directory;
     private File certFile;

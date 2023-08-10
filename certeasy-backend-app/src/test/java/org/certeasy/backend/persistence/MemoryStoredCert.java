@@ -2,8 +2,7 @@ package org.certeasy.backend.persistence;
 
 import org.certeasy.Certificate;
 
-public class MemoryStoredCert implements StoredCert {
-
+public class MemoryStoredCert extends AbstractStoredCert implements StoredCert {
 
     private Certificate certificate;
     private String certPem;
