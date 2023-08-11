@@ -400,6 +400,17 @@ paths:
         - Certificates
       parameters:
         - $ref: "#/components/parameters/IssuerId"
+        - name: type
+          in: query
+          schema:
+            type: string
+            description: The type of certificates to be selected
+            enum:
+              - CA
+              - TLS_SERVER
+              - PERSONAL
+              - EMPLOYEE
+              - CUSTOM
       responses:
         200:
           description: Certificates List Retrieved Successfully
@@ -633,13 +644,19 @@ components:
           type: string
           description: The serial number of the issued Certificate
           example: d9028c1c-6778-403a-b888-c72d7de5aeb3
-        ca:
-          type: boolean
-          description: Whether it is a certificate authority or not
+        type:
+          type: string
+          enum:
+            - CA
+            - TLS_SERVER
+            - PERSONAL
+            - EMPLOYEE
+            - CUSTOM
+          description: The type of certificate
       required:
         - name
         - serial
-        - ca
+        - type
 
     OrganizationInfo:
       type: object
@@ -1016,9 +1033,13 @@ components:
                 department:
                   type: string
                   description: The name of the department to which the employee belongs
+                job_title:
+                  type: string
+                  description: The job title of the employee
+
               required:
                 - name
-                - department
+                - job_title
 
     SubCACertificateRequest:
       allOf:

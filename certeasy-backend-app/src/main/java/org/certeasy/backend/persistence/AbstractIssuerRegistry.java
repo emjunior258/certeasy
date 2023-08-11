@@ -1,6 +1,7 @@
 package org.certeasy.backend.persistence;
 
 import org.certeasy.Certificate;
+import org.certeasy.backend.certs.IssuedCertType;
 import org.certeasy.backend.issuer.CertIssuer;
 import org.jboss.logging.Logger;
 
@@ -85,6 +86,5 @@ public abstract class AbstractIssuerRegistry implements IssuerRegistry {
     protected void emptyChildrenMap() {
         this.childrenMap.clear();
     }
-
 
 }
