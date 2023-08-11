@@ -8,5 +8,6 @@ def test_should_create_a_new_issuer_from_spec():
     # Make a request to the API
     response = requests.post(url=f'{BASE_URL}/issuers/cert-spec', json=VALID_BODY)
     assert response.status_code == 200
+    assert "hi" in response.url
 
 
