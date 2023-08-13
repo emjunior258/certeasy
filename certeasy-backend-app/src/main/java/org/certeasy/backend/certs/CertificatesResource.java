@@ -69,6 +69,7 @@ public class CertificatesResource extends BaseResource {
                     .build();
         return this.checkIssuerExistsThen(issuerId, (issuer) -> {
             TLSServerSubject subject = new TLSServerSubject(
+                    spec.getName(),
                     spec.getDomains(),
                     spec.getGeographicAddressInfo().
                             toGeographicAddress(),

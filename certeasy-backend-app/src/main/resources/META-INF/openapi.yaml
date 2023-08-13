@@ -1067,9 +1067,13 @@ components:
         - type: object
           description: A Request to generate a Certificate to identify a TLS Server
           properties:
+            name:
+              type: string
+              description: A name for the certificate. Value be set as common-name (CN) on resulting certificate.
+              example: my-server
             domains:
               type: array
-              description: The domains that are associated to the server. All listed domains will be added to the certificate as DNS Subject Alternative Names and The first domain in the array will be used as common-name.
+              description: The domains that are associated to the server. All listed domains will be added to the certificate as DNS Subject Alternative Names.
               items:
                 type: string
                 description: A domain name
@@ -1080,6 +1084,7 @@ components:
               description: The name of the organization that owns the server to be secured with TLS.
               example: Apple Inc
           required:
+            - name
             - domains
             - validity
             - key_strength

@@ -131,6 +131,7 @@ class CertificatesResourceTest extends BaseRestTest {
         CertIssuer certIssuer = registry.add(authorityCert);
 
         ServerSpec spec = new ServerSpec();
+        spec.setName("certeasy.org");
         spec.setDomains(Set.of("www.certeasy.org", "certeasy.org"));
         spec.setKeyStrength(KeyStrength.HIGH.name());
         spec.setGeographicAddressInfo(new GeographicAddressInfo("ZA",
@@ -140,6 +141,34 @@ class CertificatesResourceTest extends BaseRestTest {
         spec.setValidity(new CertValidity(new DateRange(LocalDate.of(3010,
                 Month.DECEMBER, 31))));
         spec.setOrganization("Certeasy Inc");
+
+
+        given().contentType(MediaType.APPLICATION_JSON)
+                .body(spec)
+                .post(String.format("/api/issuers/%s/certificates/tls-server", certIssuer.getId()))
+                .then()
+                .statusCode(200)
+                .body("serial", notNullValue())
+                .log().all();
+
+    }
+
+    @Test
+    void must_succeed_issuing_tls_cert_with_spec_without_organization(){
+
+        Certificate authorityCert = context.generator().generate(certificateAuthoritySpec);
+        CertIssuer certIssuer = registry.add(authorityCert);
+
+        ServerSpec spec = new ServerSpec();
+        spec.setName("example.org");
+        spec.setDomains(Set.of("www.example.org", "example.org"));
+        spec.setKeyStrength(KeyStrength.HIGH.name());
+        spec.setGeographicAddressInfo(new GeographicAddressInfo("ZA",
+                "Nelspruit",
+                "Mpumalanga",
+                "Third Base Urban. Fashion. UG73"));
+        spec.setValidity(new CertValidity(new DateRange(LocalDate.of(3010,
+                Month.DECEMBER, 31))));
 
 
         given().contentType(MediaType.APPLICATION_JSON)

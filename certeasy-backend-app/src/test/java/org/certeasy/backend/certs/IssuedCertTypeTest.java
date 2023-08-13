@@ -62,6 +62,7 @@ public class IssuedCertTypeTest {
     void certificate_must_be_matched_as_tls_server(){
 
         TLSServerSubject tlsServerSubject = new TLSServerSubject(
+                "example.com",
                 Set.of("example.com", "www.example.com"), address, "Example Inc"
         );
 
