@@ -152,6 +152,61 @@ class CertificatesResourceTest extends BaseRestTest {
 
     }
 
+    @Test
+    void must_succeed_issuing_tls_cert_with_spec_without_organization(){
+
+        Certificate authorityCert = context.generator().generate(certificateAuthoritySpec);
+        CertIssuer certIssuer = registry.add(authorityCert);
+
+        ServerSpec spec = new ServerSpec();
+        spec.setName("example.org");
+        spec.setDomains(Set.of("www.example.org", "example.org"));
+        spec.setKeyStrength(KeyStrength.HIGH.name());
+        spec.setGeographicAddressInfo(new GeographicAddressInfo("ZA",
+                "Nelspruit",
+                "Mpumalanga",
+                "Third Base Urban. Fashion. UG73"));
+        spec.setValidity(new CertValidity(new DateRange(LocalDate.of(3010,
+                Month.DECEMBER, 31))));
+
+
+        given().contentType(MediaType.APPLICATION_JSON)
+                .body(spec)
+                .post(String.format("/api/issuers/%s/certificates/tls-server", certIssuer.getId()))
+                .then()
+                .statusCode(200)
+                .body("serial", notNullValue())
+                .log().all();
+
+    }
+
+    @Test
+    void must_succeed_issuing_basic_personal_cert(){
+
+        Certificate authorityCert = context.generator().generate(certificateAuthoritySpec);
+        CertIssuer certIssuer = registry.add(authorityCert);
+
+        PersonalCertSpec spec = new PersonalCertSpec();
+        spec.setFirstName("John");
+        spec.setSurname("Doe");
+        spec.setKeyStrength(KeyStrength.HIGH.name());
+        spec.setGeographicAddressInfo(new GeographicAddressInfo("ZA",
+                "Nelspruit",
+                "Mpumalanga",
+                "Third Base Urban. Fashion. UG73"));
+        spec.setValidity(new CertValidity(new DateRange(LocalDate.of(3010,
+                Month.DECEMBER, 31))));
+
+
+        given().contentType(MediaType.APPLICATION_JSON)
+                .body(spec)
+                .post(String.format("/api/issuers/%s/certificates/personal", certIssuer.getId()))
+                .then()
+                .statusCode(200)
+                .body("serial", notNullValue())
+                .log().all();
+
+    }
 
     @Test
     void must_fail_to_issue_sub_ca_cert_for_unknown_issuer(){

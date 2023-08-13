@@ -1015,7 +1015,6 @@ components:
             - location
             - first_name
             - surname
-            - telephone
 
 
     EmployeeCertificateRequest:
