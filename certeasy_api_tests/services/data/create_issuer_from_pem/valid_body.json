@@ -1,4 +1,0 @@
-{
-  "cert_file": "certeasy_api_tests/services/data/create_issuer_from_pem/cert.pem",
-  "key_file": "certeasy_api_tests/services/data/create_issuer_from_pem/key.pem"
-}
