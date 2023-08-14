@@ -14,6 +14,10 @@ public class ConstraintViolationProblem extends Problem {
 
     private Set<Violation> violations;
 
+    public ConstraintViolationProblem(){
+
+    }
+
     public ConstraintViolationProblem(Violation violation){
         this(Set.of(violation));
     }

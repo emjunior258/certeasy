@@ -17,10 +17,7 @@ import org.certeasy.backend.common.validation.ViolationType;
 import org.certeasy.backend.issuer.CertIssuer;
 import org.certeasy.backend.issuer.ReadOnlyCertificateException;
 import org.certeasy.backend.persistence.StoredCert;
-import org.certeasy.certspec.CertificateAuthoritySpec;
-import org.certeasy.certspec.CertificateAuthoritySubject;
-import org.certeasy.certspec.TLSServerCertificateSpec;
-import org.certeasy.certspec.TLSServerSubject;
+import org.certeasy.certspec.*;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -81,6 +78,60 @@ public class CertificatesResource extends BaseResource {
             return Response.ok(new IssuedCert(certificate.getSerial()))
                     .build();
 
+        });
+    }
+
+    @POST
+    @Path("/personal")
+    public Response issuePersonalCertificate(@PathParam("issuerId") String issuerId, PersonalCertSpec spec){
+        Set<Violation> violationSet = spec.validate(ValidationPath.of("body"));
+        if(!violationSet.isEmpty())
+            return Response.status(422).entity(new ConstraintViolationProblem(violationSet))
+                    .build();
+        return this.checkIssuerExistsThen(issuerId, (issuer) -> {
+            PersonalIdentitySubject subject = new PersonalIdentitySubject(
+                    new PersonName(spec.getFirstName(), spec.getSurname()),
+                    spec.getGeographicAddressInfo().
+                            toGeographicAddress(),
+                    spec.getTelephone(),
+                    spec.getEmailAddresses(),
+                    spec.getUsernames());
+            PersonalCertificateSpec personalCertificateSpec = new PersonalCertificateSpec(subject,
+                    KeyStrength.valueOf(spec.getKeyStrength()),
+                    spec.getValidity().toDateRange());
+            Certificate certificate = issuer.issueCert(personalCertificateSpec);
+            return Response.ok(new IssuedCert(certificate.getSerial()))
+                    .build();
+        });
+    }
+
+    @POST
+    @Path("/employee")
+    public Response issueEmployeeCertificate(@PathParam("issuerId") String issuerId, EmployeeCertSpec spec){
+        Set<Violation> violationSet = spec.validate(ValidationPath.of("body"));
+        if(!violationSet.isEmpty())
+            return Response.status(422).entity(new ConstraintViolationProblem(violationSet))
+                    .build();
+        return this.checkIssuerExistsThen(issuerId, (issuer) -> {
+            EmploymentInfo organizationInfo = spec.getEmployment();
+            OrganizationBinding binding = new OrganizationBinding(
+                    organizationInfo.getOrganizationName(),
+                    organizationInfo.getDepartment(),
+                    organizationInfo.getJobTitle());
+            EmployeeIdentitySubject subject = new EmployeeIdentitySubject(
+                    new PersonName(spec.getFirstName(), spec.getSurname()),
+                    spec.getGeographicAddressInfo().
+                            toGeographicAddress(),
+                    spec.getTelephone(),
+                    organizationInfo.getEmailAddress(),
+                    organizationInfo.getUsername(),
+                    binding);
+            EmployeeCertificateSpec personalCertificateSpec = new EmployeeCertificateSpec(subject,
+                    KeyStrength.valueOf(spec.getKeyStrength()),
+                    spec.getValidity().toDateRange());
+            Certificate certificate = issuer.issueCert(personalCertificateSpec);
+            return Response.ok(new IssuedCert(certificate.getSerial()))
+                    .build();
         });
     }
 

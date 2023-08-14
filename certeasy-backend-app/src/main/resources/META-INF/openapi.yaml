@@ -1015,7 +1015,6 @@ components:
             - location
             - first_name
             - surname
-            - telephone
 
 
     EmployeeCertificateRequest:
@@ -1024,18 +1023,40 @@ components:
         - type: object
           description: A Request to generate a certificate to identify an individual as an employee.
           properties:
-            company:
+            first_name:
+              type: string
+              description: The person's first name
+              example: Yaka
+            surname:
+              type: string
+              description: The person's surname
+              example: Matavele
+            telephone:
+              type: string
+              description: The person's telephone number
+
+            employment:
               type: object
               properties:
-                name:
+                organization_name:
                   type: string
-                  description: The name of the company to which the person is employed
+                  description: The name of the organization of employment
+                  maxLength: 255
                 department:
                   type: string
                   description: The name of the department to which the employee belongs
                 job_title:
                   type: string
                   description: The job title of the employee
+                  maxLength: 255
+                email_address:
+                  type: array
+                  description: The corporate email address of the employee, assigned by the company.
+                  maxLength: 255
+                username:
+                  type: array
+                  description: The username assigned to the employee by the company
+                  maxLength: 255
 
               required:
                 - name

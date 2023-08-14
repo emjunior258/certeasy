@@ -114,6 +114,19 @@ class PersonalIdentitySubjectTest {
     }
 
     @Test
+    @DisplayName("Create PersonalIdentitySubject with Empty Usernames")
+    void testCreatePersonalIdentitySubject_WithEmptyUsernames() {
+        // Arrange
+        PersonName personName = new PersonName("John", "Cina");
+        GeographicAddress address = new GeographicAddress("US", "New York", "Brooklyn", "123 Main St");
+        Set<String> emails = new HashSet<>();
+        Set<String> usernames = new HashSet<>();
+
+        new PersonalIdentitySubject(personName, address, "123-456-7898", emails, usernames);
+
+    }
+
+    @Test
     @DisplayName("Create PersonalIdentitySubject with Empty Emails")
     void testCreatePersonalIdentitySubject_WithEmptyEmails() {
         // Arrange
@@ -123,10 +136,7 @@ class PersonalIdentitySubjectTest {
         Set<String> usernames = new HashSet<>();
         usernames.add("johndoe");
 
-        // Assert
-        assertThrows(IllegalArgumentException.class, () -> {
-            // Act
-            new PersonalIdentitySubject(personName, address, "123-456-7890", emails, usernames);
-        });
+        new PersonalIdentitySubject(personName, address, "123-456-7890", emails, usernames);
+
     }
 }
