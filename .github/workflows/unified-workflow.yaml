@@ -343,7 +343,6 @@ jobs:
       contents: read
       packages: write
       checks: write
-    needs: ["build-core"]
     steps:
       - uses: actions/checkout@v3
         name: Git checkout
