@@ -309,6 +309,7 @@ jobs:
   release-core:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
+    needs: [ "publish-develop-image" ]
     defaults:
       run:
         working-directory: ./certeasy-core
@@ -331,9 +332,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_CORE_TOKEN }}
 
-release-bouncycastle:
+  release-bouncycastle:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
+    needs: [ "publish-develop-image", "release-core" ]
     defaults:
       run:
         working-directory: ./certeasy-bouncycastle
@@ -356,13 +358,13 @@ release-bouncycastle:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-release-image:
+  release-image:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     permissions:
       contents: read
       packages: write
-    needs: [ "build-binary", "run-api-tests" ]
+    needs: [ "build-binary", "run-api-tests", "release-core", "release-bouncycastle" ]
     outputs:
       image_tag: ${{ steps.meta.outputs.tags }}
     steps:
