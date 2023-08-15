@@ -187,7 +187,7 @@ jobs:
           path: certeasy-backend-app/target/surefire-reports/TEST-*.xml
           reporter: java-junit
 
-      - name: Build binary
+      - name: Build native-image
         run: |
           ./mvnw package -Pnative -Dquarkus.native.container-build=true -DskipTests
       - name: Upload certeasy-binary
@@ -271,6 +271,7 @@ jobs:
 
   publish-develop-image:
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
     permissions:
       contents: read
       packages: write
