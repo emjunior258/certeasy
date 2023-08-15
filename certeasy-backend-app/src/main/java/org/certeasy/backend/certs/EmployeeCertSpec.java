@@ -5,25 +5,23 @@ import org.certeasy.backend.common.BaseCertSpec;
 import org.certeasy.backend.common.validation.ValidationPath;
 import org.certeasy.backend.common.validation.Validator;
 import org.certeasy.backend.common.validation.Violation;
-import org.certeasy.backend.common.validation.ViolationType;
 
 import java.util.Set;
 
 public class EmployeeCertSpec extends BaseCertSpec {
 
-    @JsonProperty("first_name")
-    private String firstName;
+    private String name;
     private String surname;
     private String telephone;
 
     private EmploymentInfo employment;
 
-    public String getFirstName() {
-        return firstName;
+    public String getName() {
+        return name;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getSurname() {
@@ -57,11 +55,11 @@ public class EmployeeCertSpec extends BaseCertSpec {
         validator.object("employment", employment)
                 .notNull()
                 .cascade();
-        validator.string("first_name", firstName)
+        validator.string("name", name)
                 .notNull()
                 .lengthGreaterThan(0)
                 .lengthLessThan(255);
-        validator.string("surname", firstName)
+        validator.string("surname", surname)
                 .notNull()
                 .lengthGreaterThan(0)
                 .lengthLessThan(255);

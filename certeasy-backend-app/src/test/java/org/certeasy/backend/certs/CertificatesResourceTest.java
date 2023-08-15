@@ -192,7 +192,7 @@ class CertificatesResourceTest extends BaseRestTest {
         CertIssuer certIssuer = registry.add(authorityCert);
 
         PersonalCertSpec spec = new PersonalCertSpec();
-        spec.setFirstName("John");
+        spec.setName("John");
         spec.setSurname("Doe");
         spec.setKeyStrength(KeyStrength.HIGH.name());
         spec.setGeographicAddressInfo(new GeographicAddressInfo("ZA",
@@ -226,7 +226,7 @@ class CertificatesResourceTest extends BaseRestTest {
         employmentInfo.setEmailAddress("john.doe@example.com");
 
         EmployeeCertSpec spec = new EmployeeCertSpec();
-        spec.setFirstName("John");
+        spec.setName("John");
         spec.setSurname("Doe");
         spec.setEmployment(employmentInfo);
         spec.setTelephone("+258841010800");
@@ -291,7 +291,7 @@ class CertificatesResourceTest extends BaseRestTest {
         employmentInfo.setEmailAddress("john.doe@example.com");
 
         EmployeeCertSpec spec = new EmployeeCertSpec();
-        spec.setFirstName("John");
+        spec.setName("John");
         spec.setSurname("Doe");
         spec.setEmployment(employmentInfo);
         spec.setTelephone("+258841010800");
@@ -352,7 +352,7 @@ class CertificatesResourceTest extends BaseRestTest {
         EmploymentInfo employmentInfo = new EmploymentInfo();
 
         EmployeeCertSpec spec = new EmployeeCertSpec();
-        spec.setFirstName("John");
+        spec.setName("John");
         spec.setSurname("Doe");
         spec.setEmployment(employmentInfo);
         spec.setTelephone("+258841010800");
@@ -393,7 +393,7 @@ class CertificatesResourceTest extends BaseRestTest {
         employmentInfo.setUsername("");
 
         EmployeeCertSpec spec = new EmployeeCertSpec();
-        spec.setFirstName("John");
+        spec.setName("John");
         spec.setSurname("Doe");
         spec.setEmployment(employmentInfo);
         spec.setTelephone("+258841010800");
@@ -437,7 +437,7 @@ class CertificatesResourceTest extends BaseRestTest {
         employmentInfo.setJobTitle("Chief Executive Dummy");
 
         EmployeeCertSpec spec = new EmployeeCertSpec();
-        spec.setFirstName("John");
+        spec.setName("John");
         spec.setSurname("Doe");
         spec.setEmployment(employmentInfo);
         spec.setTelephone("+258841010800");
@@ -487,7 +487,7 @@ class CertificatesResourceTest extends BaseRestTest {
         CertIssuer certIssuer = registry.add(authorityCert);
 
         PersonalCertSpec spec = new PersonalCertSpec();
-        spec.setFirstName("John");
+        spec.setName("John");
         spec.setSurname("Doe");
         spec.setEmailAddresses(Set.of("john.doe@gmail.com", "johndoe@example.com"));
         spec.setUsernames(Set.of("john.doe", "johndoe"));
@@ -545,7 +545,7 @@ class CertificatesResourceTest extends BaseRestTest {
         CertIssuer certIssuer = registry.add(authorityCert);
 
         PersonalCertSpec spec = new PersonalCertSpec();
-        spec.setFirstName("John");
+        spec.setName("John");
         spec.setSurname("Doe");
         spec.setEmailAddresses(Set.of("john.doe@gmail.com", "johndoe@example.com"));
         spec.setKeyStrength(KeyStrength.HIGH.name());
@@ -594,7 +594,7 @@ class CertificatesResourceTest extends BaseRestTest {
         CertIssuer certIssuer = registry.add(authorityCert);
 
         PersonalCertSpec spec = new PersonalCertSpec();
-        spec.setFirstName("John");
+        spec.setName("John");
         spec.setSurname("Doe");
         spec.setUsernames(Set.of("john.doe", "johndoe123"));
         spec.setKeyStrength(KeyStrength.HIGH.name());
@@ -643,7 +643,7 @@ class CertificatesResourceTest extends BaseRestTest {
         CertIssuer certIssuer = registry.add(authorityCert);
 
         PersonalCertSpec spec = new PersonalCertSpec();
-        spec.setFirstName("John");
+        spec.setName("John");
         spec.setSurname("Doe");
         spec.setTelephone("+258840101023");
         spec.setKeyStrength(KeyStrength.HIGH.name());

@@ -90,7 +90,7 @@ public class CertificatesResource extends BaseResource {
                     .build();
         return this.checkIssuerExistsThen(issuerId, (issuer) -> {
             PersonalIdentitySubject subject = new PersonalIdentitySubject(
-                    new PersonName(spec.getFirstName(), spec.getSurname()),
+                    new PersonName(spec.getName(), spec.getSurname()),
                     spec.getGeographicAddressInfo().
                             toGeographicAddress(),
                     spec.getTelephone(),
@@ -119,7 +119,7 @@ public class CertificatesResource extends BaseResource {
                     organizationInfo.getDepartment(),
                     organizationInfo.getJobTitle());
             EmployeeIdentitySubject subject = new EmployeeIdentitySubject(
-                    new PersonName(spec.getFirstName(), spec.getSurname()),
+                    new PersonName(spec.getName(), spec.getSurname()),
                     spec.getGeographicAddressInfo().
                             toGeographicAddress(),
                     spec.getTelephone(),

@@ -977,24 +977,30 @@ components:
             - subject_distinguished_name
             - key_usage
 
+    PersonInfo:
+      properties:
+        name:
+          type: string
+          description: The person's given name
+          example: Yaka
+        surname:
+          type: string
+          description: The person's surname
+          example: Matavele
+        telephone:
+          type: string
+          description: The person's telephone number
+      required:
+        - name
+        - surname
 
     PersonalCertificateRequest:
       allOf:
         - $ref: "#/components/schemas/BaseCertificateRequestWithAddress"
+        - $ref: "#/components/schemas/PersonInfo"
         - type: object
           description: A Request to generate a certificate to identify an individual
           properties:
-            first_name:
-              type: string
-              description: The person's first name
-              example: Yaka
-            surname:
-              type: string
-              description: The person's surname
-              example: Matavele
-            telephone:
-              type: string
-              description: The person's telephone number
             email_addresses:
               type: array
               description: The email addresses of the person
@@ -1013,28 +1019,16 @@ components:
             - validity
             - key_strength
             - location
-            - first_name
+            - name
             - surname
 
 
     EmployeeCertificateRequest:
       allOf:
-        - $ref: "#/components/schemas/PersonalCertificateRequest"
+        - $ref: "#/components/schemas/PersonInfo"
         - type: object
           description: A Request to generate a certificate to identify an individual as an employee.
           properties:
-            first_name:
-              type: string
-              description: The person's first name
-              example: Yaka
-            surname:
-              type: string
-              description: The person's surname
-              example: Matavele
-            telephone:
-              type: string
-              description: The person's telephone number
-
             employment:
               type: object
               properties:
@@ -1050,16 +1044,16 @@ components:
                   description: The job title of the employee
                   maxLength: 255
                 email_address:
-                  type: array
+                  type: string
                   description: The corporate email address of the employee, assigned by the company.
                   maxLength: 255
                 username:
-                  type: array
+                  type: string
                   description: The username assigned to the employee by the company
                   maxLength: 255
-
               required:
                 - name
+                - surname
                 - job_title
 
     SubCACertificateRequest:
