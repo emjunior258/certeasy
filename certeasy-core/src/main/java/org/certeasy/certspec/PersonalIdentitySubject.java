@@ -17,21 +17,22 @@ public sealed class PersonalIdentitySubject extends CertificateSubject permits E
             throw new IllegalArgumentException("person commonName MUST not be null");
         if(address==null)
             throw new IllegalArgumentException("address MUST not be null");
-        if(emails==null || emails.isEmpty())
-            throw new IllegalArgumentException("emails set MUST not be null nor empty");
 
         DistinguishedName.Builder builder = DistinguishedName.builder();
         builder.append(personName);
         builder.append(address);
-        builder.append(new RelativeDistinguishedName(SubjectAttributeType.TELEPHONE_NUMBER, telephone));
+        if(telephone != null)
+            builder.append(new RelativeDistinguishedName(SubjectAttributeType.TELEPHONE_NUMBER, telephone));
 
         if(organizationBinding!=null)
             builder.append(organizationBinding);
 
         Set<SubjectAlternativeName> subjectAlternativeNames = new HashSet<>();
-        emails.stream()
-                .map(email -> new SubjectAlternativeName(SubjectAlternativeNameType.EMAIL, email))
-                .forEach(subjectAlternativeNames::add);
+        if(emails!= null && !emails.isEmpty()) {
+            emails.stream()
+                    .map(email -> new SubjectAlternativeName(SubjectAlternativeNameType.EMAIL, email))
+                    .forEach(subjectAlternativeNames::add);
+        }
         if(usernames!=null){
             usernames.stream()
                     .map(name -> new RelativeDistinguishedName(SubjectAttributeType.USER_ID,name))

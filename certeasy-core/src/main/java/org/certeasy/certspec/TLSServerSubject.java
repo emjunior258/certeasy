@@ -7,7 +7,9 @@ import java.util.stream.Collectors;
 
 public final class TLSServerSubject extends CertificateSubject {
 
-    public TLSServerSubject(Set<String> domains, GeographicAddress address, String organizationName){
+    public TLSServerSubject(String name, Set<String> domains, GeographicAddress address, String organizationName){
+        if(name==null || name.isEmpty())
+            throw new IllegalArgumentException("name MUST not be null nor empty");
         if(domains==null || domains.isEmpty())
             throw new IllegalArgumentException("domains MUST not be null nor empty");
         if(address==null)
@@ -16,7 +18,7 @@ public final class TLSServerSubject extends CertificateSubject {
                 .collect(Collectors.toSet());
         DistinguishedName.Builder dnBuilder =  DistinguishedName.builder();
         dnBuilder.append(new RelativeDistinguishedName(SubjectAttributeType.COMMON_NAME,
-                domains.iterator().next()));
+                name));
         if(organizationName!=null && !organizationName.isEmpty())
             dnBuilder.append(new RelativeDistinguishedName(SubjectAttributeType.ORGANIZATION_NAME,
                     organizationName));
