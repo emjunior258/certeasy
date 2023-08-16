@@ -7,6 +7,9 @@ env:
 
 on:
   pull_request:
+    types:
+      - opened
+      - edited
     paths:
       - 'certeasy-core/**'
       - 'certeasy-bouncycastle/**'
