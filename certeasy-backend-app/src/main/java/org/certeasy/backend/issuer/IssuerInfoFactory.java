@@ -22,10 +22,9 @@ public final class IssuerInfoFactory {
         String serial = certificate.getSerial();
         IssuerType issuerType = certificate.isSelfSignedCA() ? IssuerType.ROOT : IssuerType.SUB_CA;
         String distinguishedName = certificate.getDistinguishedName().toString();
-
         DistinguishedName issuerName = certificate.getIssuerName();
         IssuerParent parent = null;
-        if(!issuerName.equals(certificate.getDistinguishedName()))
+        if(issuerType==IssuerType.SUB_CA)
             parent = new IssuerParent(issuerName.digest(), issuerName.getCommonName());
         int totalChildren  = registry.countChildrenOf(issuer);
         return new IssuerInfo(id, certificate.getDistinguishedName().getCommonName(),  serial, issuerType,
