@@ -684,7 +684,7 @@ components:
           description: Whether the certificate is a certificate authority
         path_length:
           type: integer
-          description: The maximum depth of CAs that may exist below this CA. This limit is enforced when issuing a sub-ca certificate.
+          description: The maximum depth of CAs that may exist below this CA. This limit is NOT enforced when issuing a sub-ca certificate.
           default: 0
           minimum: 0
       required:
