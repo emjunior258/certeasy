@@ -1,68 +1,7 @@
-# Certeasy Console App
-The easiest certificate authority for development and experiments
+# Vue 3 + Vite
 
+This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
 
-## Project structure
-- [`src`](#src)
-  - [`assets`](#assets)
-  - [`components`](#components)
-  - [`views`](#views)
-  - [`config`](#config)
-  - [`router`](#router)
-  - [`services`](#services)
-  - [`store`](#store)
-  - [`main.js`](#mainjs)
-- [`tests`](#tests)
+## Recommended IDE Setup
 
-### `src`
-Source 
-
-### `assets`
-Images
-
-### `components`
-Shared components folder.
-
-
-### `config`
-App config files.
-
-
-### `views`
-Page wrapper components(Pages) and Local components.
-
-### `router`
-Router instance and routing declaration.
-- `index` - router initialization.
-
-### `store`
-App store with separate modules.
-
-
-### `main.js`
-Root app initialization file.
-
-
-## Build Setup
-```
-npm install
-```
-
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Run your end-to-end tests
-```
-npm run test:e2e
-```
-
-### Lints and fixes files
-```
-npm run lint
+- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
