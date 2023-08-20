@@ -46,8 +46,7 @@ export default {
           amount: 16,
           active: true,
         },
-        
-      ]
+      ],
 
     }
   },
@@ -63,8 +62,13 @@ export default {
   },
   methods: {
     getAllIssuers() {
-      api.get(`/issuers`).then(res => {
+
+      api.get(`/issuers`)
+      .then(res => {
         this.issuersList = res.data
+      })
+      .catch(error => {
+
       })
     }
   }
