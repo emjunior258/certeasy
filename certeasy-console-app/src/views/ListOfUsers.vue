@@ -1,7 +1,7 @@
 <template>
   <div class="">
     <NavbarComponent />
-    <section>
+    <section class="mb-[104px]">
       <div class="flex justify-between px-16 mt-12 mb-6 items-end">
         <div class="font-light text-lg margin-trim">
           <IconTextButton v-for="filterButton in filterButtons" :key="filterButton.id" :buttonProps="filterButton" />
@@ -17,7 +17,7 @@
         <IssuerCardNoContent/>
       </ul>
     </section>
-    <footer class="px-16 fixed bottom-0 w-full">
+    <footer class="px-16 fixed bottom-0 w-full bg-white">
       <div class="border-t text-right pt-8 pb-11">
         <a href="#"><img src="../assets/icons/github.svg" alt="api" class="inline" />
           Read Documentation</a>
@@ -46,6 +46,7 @@ export default {
           amount: 16,
           active: true,
         },
+        
       ]
 
     }

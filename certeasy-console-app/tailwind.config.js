@@ -21,6 +21,9 @@ module.exports = {
         display: ["Poppins"],
         body: ["Poppins"],
       },
+      fontSize: {
+        28: "28px"
+      }
     },
   },
   plugins: [],
