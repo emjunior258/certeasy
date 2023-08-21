@@ -19,7 +19,7 @@
             class="mr-6"
           />
         </div>
-        <div class="flex gap-11 font-medium text-lg">
+        <div class="flex gap-11">
           <ActionButton
             v-for="actionButton in actionButtons"
             :key="actionButton.id"
