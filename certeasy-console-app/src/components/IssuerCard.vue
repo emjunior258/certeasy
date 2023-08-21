@@ -1,27 +1,16 @@
-<script>
-export default {
-  props: {
-    issuer: {
-      required: true,
-      type: Object,
-    },
-  },
-}
-</script>
 <template>
   <li class="border border-gray-200 rounded shadow px-11 py-6 mb-2">
     <div class="flex justify-between">
       <div class="flex gap-6">
         <img
-          src="../assets/icon.png"
-          width="52"
-          height="52"
+          src="https://placehold.co/52x52"
           :alt="issuer.altText"
-          class="h-13 w-13 border border-primary-0.4 rounded"
+          class="h-[54px] w-[54px] border border-primary-0.4 rounded"
         />
         <div class="flex flex-col justify-between items-start">
           <h3 class="text-xl font-medium">{{ issuer.name }}</h3>
-          <span class="rounded-full py-0.5 px-2.5 bg-purple font-light text-xs"
+          <span
+            class="rounded-full py-0.5 px-2.5 bg-purple font-light text-xs"
             >{{ issuer.type }}</span
           >
         </div>
@@ -43,3 +32,8 @@ export default {
     </div>
   </li>
 </template>
+
+<script setup>
+import { defineProps } from "vue";
+defineProps(["issuer"]);
+</script>
