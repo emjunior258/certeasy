@@ -2,10 +2,12 @@
   <button
     class="rounded py-1 px-4 min-h-[41px]"
     :class="{
-      'bg-primary': buttonProps.active,
-      'text-white': buttonProps.active,
+      'bg-primary': buttonProps.active && !buttonProps.disabled,
+      'text-white': buttonProps.active && !buttonProps.disabled,
+      'text-black-0.6': buttonProps.disabled,
     }"
     type="button"
+    :disabled="buttonProps.disabled"
   >
     <img
       v-if="buttonProps.icon"
