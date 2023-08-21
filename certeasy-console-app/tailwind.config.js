@@ -1,9 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: [
-    "./index.html",
-    "./src/**/*.{vue,js,ts,jsx,tsx}",
-  ],
+  content: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx}"],
   theme: {
     extend: {
       colors: {
@@ -16,6 +13,7 @@ module.exports = {
         "red-light": "#FFEBEB",
         purple: "#D4C6FB",
         "black-0.3": "rgba(0, 0, 0, 0.3)",
+        "black-0.6": "rgba(0, 0, 0, 0.6)",
         "gray-40": "#BCBCBC",
         "gray-30": "#DBDBDB",
         "gray-20": "#E6E6E6",
@@ -27,10 +25,9 @@ module.exports = {
         body: ["Poppins"],
       },
       fontSize: {
-        28: "28px"
-      }
+        28: "28px",
+      },
     },
   },
   plugins: [],
-}
-
+};

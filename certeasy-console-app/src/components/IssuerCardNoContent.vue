@@ -6,13 +6,13 @@
         class="mb-[26px] w-[158px] h-[158px]"
         alt=""
       />
-      <h1 class="text-28 font-bold-400 text-28 text-primary mb-0.5">
+      <h1 class="text-28 font-bold-400 text-primary mb-0.5">
         No certificate issuers created yet!
       </h1>
       <p class="text-gray-500 mb-[26px] text-base">
         You can start by creating your first certificate issuer.
       </p>
-      <ActionButton :buttonProps="actionButton" />
+      <IconActionButton :buttonProps="actionButton" />
     </div>
   </div>
 </template>
@@ -27,8 +27,7 @@
 }
 </style>
 <script setup>
-import ActionButton from "./buttons/ActionButton.vue";
-
+import IconActionButton from "./buttons/IconActionButton.vue";
 const actionButton = {
   icon: "./src/assets/icons/plus.svg",
   text: "New Issuer",
