@@ -20,7 +20,7 @@
           />
         </div>
         <div class="flex gap-11">
-          <ActionButton
+          <IconActionButton
             v-for="actionButton in actionButtons"
             :key="actionButton.id"
             :buttonProps="actionButton"
@@ -65,15 +65,23 @@
 <script setup>
 import NavComponent from "@/components/NavComponent.vue";
 import IconTextButton from "@/components/buttons/IconTextButton.vue";
-import ActionButton from "@/components/buttons/ActionButton.vue";
+import IconActionButton from "@/components/buttons/IconActionButton.vue";
 import IssuerCard from "@/components/IssuerCard.vue";
 import PlaceholderLoading from "@/components/loading/PlaceholderLoading.vue";
 import IssuerCardNoContent from "@/components/IssuerCardNoContent.vue";
 import api from "@/config/config";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 
 const issuersList = ref([]);
 const loading = ref(false);
+const countAll = computed(() => issuersList.value.length);
+const countRoot = computed(
+  () => issuersList.value.filter((item) => item.type == "ROOT").length
+);
+const disabledFilter = countAll === 0;
+
+const countSub = 0;
+const countTree = 0;
 
 const fetchData = async () => {
   loading.value = true;
@@ -118,28 +126,32 @@ const filterButtons = [
   {
     id: 0,
     text: "All",
-    amount: 16,
+    amount: countAll,
     active: true,
+    disabled: disabledFilter,
   },
   {
     id: 1,
     icon: "./src/assets/icons/storage.svg",
     text: "Root",
-    amount: 9,
+    amount: countRoot,
+    disabled: disabledFilter,
   },
   {
     id: 2,
     icon: "./src/assets/icons/sub-storage.svg",
     text: "Sub",
-    amount: 16,
+    amount: countSub,
     active: false,
+    disabled: disabledFilter,
   },
   {
     id: 3,
     icon: "./src/assets/icons/tree.svg",
     text: "Tree",
-    amount: 16,
+    amount: countTree,
     active: false,
+    disabled: disabledFilter,
   },
 ];
 
