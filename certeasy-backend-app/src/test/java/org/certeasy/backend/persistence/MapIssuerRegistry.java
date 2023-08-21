@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @Alternative
 @ApplicationScoped
-public class MapIssuerRegistry implements IssuerRegistry {
+public class MapIssuerRegistry extends AbstractIssuerRegistry implements IssuerRegistry {
 
     private Map<String, CertIssuer> issuerMap = new HashMap<>();
 
@@ -30,9 +30,12 @@ public class MapIssuerRegistry implements IssuerRegistry {
     }
 
     @Override
-    public CertIssuer add(String issuerId, Certificate certificate) throws IssuerRegistryException {
-        CertIssuer issuer = new CertIssuer(issuerId, new MapIssuerDatastore(context), context, certificate);
-        this.issuerMap.put(issuerId, issuer);
+    public CertIssuer add(Certificate certificate) throws IssuerRegistryException {
+        CertIssuer issuer = new CertIssuer(this, new MapIssuerDatastore(context), context, certificate);
+        if(issuerMap.containsKey(issuer.getId()))
+            throw new IssuerDuplicationException(certificate.getDistinguishedName());
+        this.issuerMap.put(issuer.getId(), issuer);
+        this.updateHierarchy(issuer);
         return issuer;
     }
 
@@ -49,10 +52,12 @@ public class MapIssuerRegistry implements IssuerRegistry {
     @Override
     public void delete(CertIssuer issuer) throws IssuerRegistryException {
         this.issuerMap.remove(issuer.getId());
+        super.delete(issuer);
     }
 
     public void clear(){
         this.issuerMap.clear();
+        this.emptyChildrenMap();
     }
 
 }

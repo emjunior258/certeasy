@@ -34,6 +34,17 @@ paths:
       description: Get List of Issuers available
       tags:
         - Issuers
+      parameters:
+        - name: type
+          description: Filter the type of issuers to be listed
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - ROOT
+              - SUB_CA
+
       responses:
         200:
           description: Issuers List retrieved successfully
@@ -44,6 +55,34 @@ paths:
                 items:
                   $ref: "#/components/schemas/IssuerInfo"
                 minItems: 0
+        500:
+          $ref: "#/components/responses/ServerError"
+
+  /issuers/{issuerId}/children:
+    get:
+      summary: List children Issuers
+      operationId: getIssuerChildren
+      description: Get List of issuers that are children of the referenced issuer
+      tags:
+        - Issuers
+      parameters:
+        - $ref: "#/components/parameters/IssuerId"
+      responses:
+        200:
+          description: Issuers List retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/IssuerInfo"
+                minItems: 0
+        400:
+          $ref: '#/components/responses/BadRequest'
+        404:
+          $ref: '#/components/responses/IssuerNotFound'
+        422:
+          $ref: '#/components/responses/ListIssuerConstraintViolation'
         500:
           $ref: "#/components/responses/ServerError"
 
@@ -68,15 +107,13 @@ paths:
         500:
           $ref: "#/components/responses/ServerError"
 
-  /issuers/{issuerId}/cert-spec:
+  /issuers/cert-spec:
     post:
       summary: Create Issuer from spec
       operationId: createIssuerFromSpec
       description: Create a new Issuer from a specification.
       tags:
         - Issuers
-      parameters:
-        - $ref: "#/components/parameters/IssuerId"
       requestBody:
         description: Issuer creation body
         content:
@@ -84,26 +121,24 @@ paths:
             schema:
               $ref: "#/components/schemas/IssuerCertSpec"
       responses:
-        204:
-          description: Issuer created successfully
+        200:
+          $ref: '#/components/responses/IssuerCreatedSuccessfully'
         400:
           $ref: '#/components/responses/BadRequest'
         422:
           $ref: '#/components/responses/IssuerSpecConstraintViolation'
         409:
-          $ref: '#/components/responses/IssuerIDTaken'
+          $ref: '#/components/responses/IssuerDuplication'
         500:
           $ref: "#/components/responses/ServerError"
 
-  /issuers/{issuerId}/cert-pem:
+  /issuers/cert-pem:
     post:
       summary: Create Issuer from PEM
       operationId: createIssuerFromPem
       description: Create a new Issuer from a PEM bundle.
       tags:
         - Issuers
-      parameters:
-        - $ref: "#/components/parameters/IssuerId"
       requestBody:
         description: Issuer creation body
         content:
@@ -111,44 +146,16 @@ paths:
             schema:
               $ref: "#/components/schemas/CertPem"
       responses:
-        204:
-          description: Issuer created successfully
+        200:
+          $ref: '#/components/responses/IssuerCreatedSuccessfully'
         400:
           $ref: '#/components/responses/BadRequest'
         422:
           $ref: '#/components/responses/IssuerPemConstraintViolation'
         409:
-          $ref: '#/components/responses/IssuerIDTaken'
+          $ref: '#/components/responses/IssuerDuplication'
         500:
           $ref: "#/components/responses/ServerError"
-
-  /issuers/{issuerId}/cert-ref:
-    post:
-      summary: Create Issuer from issued certificate
-      operationId: createIssuerFromRef
-      description: Create a new Issuer from a Sub-CA certificate issued by an existing issuerId.
-      tags:
-        - Issuers
-      parameters:
-        - $ref: "#/components/parameters/IssuerId"
-      requestBody:
-        description: Issuer creation body
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/IssuerCertRef"
-      responses:
-        204:
-          description: Issuer created successfully
-        400:
-          $ref: '#/components/responses/BadRequest'
-        422:
-          $ref: '#/components/responses/IssuerCertRefConstraintViolation'
-        409:
-          $ref: '#/components/responses/IssuerIDTaken'
-        500:
-          $ref: "#/components/responses/ServerError"
-
 
   /issuers/{issuerId}/certificates/tls-server:
     post:
@@ -273,7 +280,7 @@ paths:
       summary: Issue Sub Certificate-Authority Certificate
       operationId: issueSubCACert
       description: |
-        Issues a Sub Certificate-Authority Certificate. An RSA Key-pair will be generated and used for the Certificate.
+        Issues a Sub Certificate-Authority Certificate and register as Issuer. An RSA Key-pair will be generated and used for the Certificate.
         The issued certificate will contain the following extensions:
 
           *Basic Constraint (Critical)*
@@ -295,7 +302,7 @@ paths:
 
       responses:
         200:
-          $ref: '#/components/responses/SuccessfullyIssuedCert'
+          $ref: '#/components/responses/SuccessfullyCreatedSubCa'
         400:
           $ref: '#/components/responses/BadRequest'
         422:
@@ -393,6 +400,17 @@ paths:
         - Certificates
       parameters:
         - $ref: "#/components/parameters/IssuerId"
+        - name: type
+          in: query
+          schema:
+            type: string
+            description: The type of certificates to be selected
+            enum:
+              - CA
+              - TLS_SERVER
+              - PERSONAL
+              - EMPLOYEE
+              - CUSTOM
       responses:
         200:
           description: Certificates List Retrieved Successfully
@@ -510,6 +528,14 @@ paths:
 components:
   schemas:
 
+    CreatedIssuer:
+      type: object
+      description: Represents a successfully created issuer
+      properties:
+        issuer_id:
+          type: string
+          description: Unique ID of the issuer
+
     SubjectAlternativeName:
       type: object
       description: A Certificate Subject Alternative name
@@ -618,13 +644,36 @@ components:
           type: string
           description: The serial number of the issued Certificate
           example: d9028c1c-6778-403a-b888-c72d7de5aeb3
-        ca:
-          type: boolean
-          description: Whether it is a certificate authority or not
+        type:
+          type: string
+          enum:
+            - CA
+            - TLS_SERVER
+            - PERSONAL
+            - EMPLOYEE
+            - CUSTOM
+          description: The type of certificate
       required:
         - name
         - serial
-        - ca
+        - type
+
+    OrganizationInfo:
+      type: object
+      description: Represents an organization to which certificate is bound
+      properties:
+        organization_name:
+            type: string
+            description: The name of the organization to which the certificate is issued
+            minLength: 1
+            example: Apple Inc
+        organization_unit:
+            type: string
+            description: The name of the exact department/unit within the organization
+            minLength: 1
+            example: Software Engineering Department
+      required:
+        - organization_name
 
     BasicConstraints:
       type: object
@@ -635,7 +684,7 @@ components:
           description: Whether the certificate is a certificate authority
         path_length:
           type: integer
-          description: The maximum depth of CAs that may exist below this CA. This limit is enforced when issuing a sub-ca certificate.
+          description: The maximum depth of CAs that may exist below this CA. This limit is NOT enforced when issuing a sub-ca certificate.
           default: 0
           minimum: 0
       required:
@@ -699,28 +748,49 @@ components:
 
     IssuerInfo:
       type: object
+      readOnly: true
       properties:
         id:
           type: string
-          description: The unique identifier of the issuerId
-          example: myca
+          description: The unique identifier of the issuer
+          example: 5d03898a7577009e8ab06062e84d5da20f2e172f
         serial:
           type: string
           description: The unique serial number of the certificate
           example: 12345678910
         type:
           type: string
-          description: The type of issuerId
+          description: The type of issuer
           enum:
             - ROOT
             - SUB_CA
         dn:
           type: string
-          description: The Distinguished name of the issuerId certificate
+          description: The Distinguished name of the issuer certificate
           example: cn=John Doe, ou=People, dc=sun.com
         path_length:
           type: integer
-          description: The maximum depth of CAs that may exist below this CA. This limit is enforced when issuing a sub-ca certificate.
+          description: The maximum depth of CAs that may exist below this CA. This limit is not enforced by certeasy.
+          default: 0
+          minimum: 0
+        parent:
+          type: object
+          description: Represents the parent of an issuer. Only present on issuers of SUB_CA type.
+          properties:
+            id:
+              type: string
+              description: The unique identifier of the parent issuer
+              example: 7a0ebcf787242db56662ccd1824bf1c20adc3e31
+            name:
+              type: string
+              description: The name of the parent issuer
+              example: lorem-ipsum
+          required:
+            - id
+            - name
+        children_count:
+          type: integer
+          description: Total count of children issuers
           default: 0
           minimum: 0
       required:
@@ -729,6 +799,7 @@ components:
         - type
         - dn
         - path_length
+        - children_count
 
     CertPem:
       type: object
@@ -746,11 +817,11 @@ components:
 
     IssuerCertRef:
       type: object
-      description: References a Sub-CA certificate issued by an existing issuerId.
+      description: References a Sub-CA certificate issued by an existing issuer.
       properties:
         issuer_id:
           type: string
-          description: The ID of the issuerId of the Sub-CA certificate to be used
+          description: The ID of the issuer of the Sub-CA certificate to be used
         serial:
           type: string
           description: The serial of the Sub-CA certificate to be used
@@ -793,7 +864,7 @@ components:
         - validity
 
     NewIssuerBody:
-      description: Request body regarding new issuerId to be created
+      description: Request body regarding new issuer to be created
       oneOf:
         - $ref: "#/components/schemas/IssuerCertPemBody"
         - $ref: "#/components/schemas/IssuerCertSpecBody"
@@ -802,16 +873,16 @@ components:
 
     IssuerCertPemBody:
       type: object
-      description: Request body to create new issuerId using existing certificate
+      description: Request body to create new issuer using existing certificate
       properties:
         pem:
-          $ref: "#/components/schemas/IssuerCertPem"
+          $ref: "#/components/schemas/CertPem"
       required:
         - pem
 
     IssuerCertSpecBody:
       type: object
-      description: Request body to create new issuerId certificate from a specification
+      description: Request body to create new issuer certificate from a specification
       properties:
         spec:
           $ref: "#/components/schemas/IssuerCertSpec"
@@ -820,7 +891,7 @@ components:
 
     IssuerCertRefBody:
       type: object
-      description: Request body to create new issuerId from a Sub-CA certificate issued by an existing issuerId.
+      description: Request body to create new issuer from a Sub-CA certificate issued by an existing issuer.
       properties:
         ref:
           $ref: "#/components/schemas/IssuerCertRef"
@@ -906,24 +977,30 @@ components:
             - subject_distinguished_name
             - key_usage
 
+    PersonInfo:
+      properties:
+        name:
+          type: string
+          description: The person's given name
+          example: Yaka
+        surname:
+          type: string
+          description: The person's surname
+          example: Matavele
+        telephone:
+          type: string
+          description: The person's telephone number
+      required:
+        - name
+        - surname
 
     PersonalCertificateRequest:
       allOf:
         - $ref: "#/components/schemas/BaseCertificateRequestWithAddress"
+        - $ref: "#/components/schemas/PersonInfo"
         - type: object
           description: A Request to generate a certificate to identify an individual
           properties:
-            first_name:
-              type: string
-              description: The person's first name
-              example: Yaka
-            surname:
-              type: string
-              description: The person's surname
-              example: Matavele
-            telephone:
-              type: string
-              description: The person's telephone number
             email_addresses:
               type: array
               description: The email addresses of the person
@@ -942,29 +1019,42 @@ components:
             - validity
             - key_strength
             - location
-            - first_name
+            - name
             - surname
-            - telephone
 
 
     EmployeeCertificateRequest:
       allOf:
-        - $ref: "#/components/schemas/PersonalCertificateRequest"
+        - $ref: "#/components/schemas/PersonInfo"
         - type: object
           description: A Request to generate a certificate to identify an individual as an employee.
           properties:
-            company:
+            employment:
               type: object
               properties:
-                name:
+                organization_name:
                   type: string
-                  description: The name of the company to which the person is employed
+                  description: The name of the organization of employment
+                  maxLength: 255
                 department:
                   type: string
                   description: The name of the department to which the employee belongs
+                job_title:
+                  type: string
+                  description: The job title of the employee
+                  maxLength: 255
+                email_address:
+                  type: string
+                  description: The corporate email address of the employee, assigned by the company.
+                  maxLength: 255
+                username:
+                  type: string
+                  description: The username assigned to the employee by the company
+                  maxLength: 255
               required:
                 - name
-                - department
+                - surname
+                - job_title
 
     SubCACertificateRequest:
       allOf:
@@ -976,6 +1066,10 @@ components:
               description: The name of the Sub Certificate Authority
               example: my-subca
         - $ref: "#/components/schemas/BaseCertificateRequestWithAddress"
+        - type: object
+          properties:
+            organization:
+              $ref: "#/components/schemas/OrganizationInfo"
         - required:
             - validity
             - key_strength
@@ -988,15 +1082,24 @@ components:
         - type: object
           description: A Request to generate a Certificate to identify a TLS Server
           properties:
+            name:
+              type: string
+              description: A name for the certificate. Value be set as common-name (CN) on resulting certificate.
+              example: my-server
             domains:
               type: array
-              description: The domains that are associated to the server. All listed domains will be added to the certificate as DNS Subject Alternative Names and The first domain in the array will be used as common-name.
+              description: The domains that are associated to the server. All listed domains will be added to the certificate as DNS Subject Alternative Names.
               items:
                 type: string
                 description: A domain name
                 example: example.com
               minItems: 1
+            organization:
+              type: string
+              description: The name of the organization that owns the server to be secured with TLS.
+              example: Apple Inc
           required:
+            - name
             - domains
             - validity
             - key_strength
@@ -1012,6 +1115,23 @@ components:
           description: The issued certificate serial number
           example: 448d28c6-814b-4d5d-863c-fc1a2fc8f355
       required:
+        - serial
+
+
+    CreatedSubCa:
+      type: object
+      description: Represents a created sub-ca
+      properties:
+        id:
+          type: string
+          description: The issuer ID
+          example: 448d28c6814b4d5d863cfc1a2fc8f355
+        serial:
+          type: string
+          description: The sub-ca certificate serial number
+          example: 448d28c6-814b-4d5d-863c-fc1a2fc8f355
+      required:
+        - id
         - serial
 
 
@@ -1120,10 +1240,10 @@ components:
       name: issuerId
       in: path
       required: true
-      description: The unique identifier of the certificate issuerId
+      description: The unique identifier of the issuer
       schema:
-        pattern: ^[a-z]+(-[a-z]+)*$
-        example: lorem-ipsum
+        example: f2a8d9e0c7b4193f5e0867dcb2f
+
 
   responses:
 
@@ -1264,12 +1384,38 @@ components:
                     type: format
                     message: cert_file is not valid PEM encoded certificate
     
+    ListIssuerConstraintViolation:
+      description: Constraint violation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          examples:
+            invalid-body:
+              value:
+                type: /problems/constraint-violation
+                title: Constraint Violation
+                detail: The request contains one or more constraint violations
+                status: 422
+                violations:
+                  - field: query.type
+                    type: enum
+                    message: "type MUST be one of: [ROOT, SUB_CA]"
+
+
     SuccessfullyIssuedCert:
       description: Certificate issued successfully
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/IssuedCert'
+
+    SuccessfullyCreatedSubCa:
+      description: Certificate issued successfully
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreatedSubCa'
 
 
     ServerError:  # Can be referenced as '#/components/responses/ServerError'
@@ -1305,6 +1451,23 @@ components:
               - field: path.name
                 message: Name must not have numeric characters
                 type: format
+    IssuerCreatedSuccessfully:
+      description: Issuer Created successfully
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreatedIssuer'
+    IssuerDuplication:
+      description: Issuer Duplication
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          example:
+            type: /problems/issuer/duplication
+            title: Issuer Duplication
+            detail: There is already an issuer with the provided Distinguished Name
+            status: 409
     IssuerIDTaken:
       description: Issuer ID taken
       content:

@@ -26,7 +26,7 @@ class CertificateSpecTest {
                         .parse("CN=John Wick, C=MZ")
                         .build()
                 , null);
-        CertificateSpec spec = new CertificateSpec(subject, KeyStrength.HIGH, new DateRange(LocalDate.of(2023, Month.AUGUST,1)),new BasicConstraints(10), Set.of(KeyUsage.ENCIPHER_ONLY), null);
+        CertificateSpec spec = new CertificateSpec(subject, KeyStrength.HIGH, new DateRange(LocalDate.of(3023, Month.AUGUST,1)),new BasicConstraints(10), Set.of(KeyUsage.ENCIPHER_ONLY), null);
         assertNotNull(spec);
     }
 
@@ -39,7 +39,7 @@ class CertificateSpecTest {
                         .parse("CN=Armando Guebuza, C=MZ")
                         .build()
                 , null);
-        CertificateSpec spec = new CertificateSpec(subject, KeyStrength.HIGH, new DateRange(LocalDate.of(2023, Month.AUGUST,1)),new BasicConstraints(10), Set.of(KeyUsage.ENCIPHER_ONLY), null);
+        CertificateSpec spec = new CertificateSpec(subject, KeyStrength.HIGH, new DateRange(LocalDate.of(3001, Month.AUGUST,1)),new BasicConstraints(10), Set.of(KeyUsage.ENCIPHER_ONLY), null);
         assertNotNull(spec);
         assertEquals("CN=Armando Guebuza, C=MZ", subject.getDistinguishedName().toString());
     }
@@ -52,7 +52,7 @@ class CertificateSpecTest {
                         .parse("CN=Andrew Tate, C=RO")
                         .build()
                 , null);
-        CertificateSpec spec = new CertificateSpec(subject, KeyStrength.LOW, new DateRange(LocalDate.of(2023, Month.AUGUST,1)),new BasicConstraints(10), Set.of(KeyUsage.ENCIPHER_ONLY), null);
+        CertificateSpec spec = new CertificateSpec(subject, KeyStrength.LOW, new DateRange(LocalDate.of(3023, Month.AUGUST,1)),new BasicConstraints(10), Set.of(KeyUsage.ENCIPHER_ONLY), null);
         assertNotNull(spec);
         assertEquals(KeyStrength.LOW, spec.getKeyStrength());
     }

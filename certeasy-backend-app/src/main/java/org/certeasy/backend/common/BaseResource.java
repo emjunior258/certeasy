@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 
 public abstract class BaseResource {
 
-    final String ID_REGEX = "^[a-z0-9]+(-[a-z0-9]+)*$";
+    final String ID_REGEX = "^[a-z0-9]+(-[a-z0-9]+){0,20}$";
     final Pattern ID_PATTERN = Pattern.compile(ID_REGEX);
 
     @Inject
@@ -39,21 +39,6 @@ public abstract class BaseResource {
 
     protected CertEasyContext context() {
         return this.context;
-    }
-
-    public Response checkIssuerNotExistsThen(String issuerId, Supplier<Response> operation){
-        Optional<Response> optionalResponse = this.checkIssuerId(issuerId);
-        if(optionalResponse.isPresent())
-            return optionalResponse.get();
-        if(registry.exists(issuerId)){
-            LOGGER.warn("Issuer id taken: " +  issuerId);
-            return Response.status(409).entity(new Problem("/problems/issuerId/id-taken",
-                                    "Issuer ID Taken", 409,
-                                    "There is already an issuerId with the provided ID: " + issuerId))
-                    .type(MediaType.APPLICATION_JSON_TYPE)
-                    .build();
-        }
-        return operation.get();
     }
 
     public Response checkIssuerExistsThen(String issuerId, IssuerOperation operation){

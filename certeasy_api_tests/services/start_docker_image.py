@@ -19,7 +19,7 @@ def app_container():
     empty_directory = '/path/to/empty_directory'
     volume_mount = {empty_directory: {'bind': '/work/target', 'mode': 'rw'}}
 
-    # Start the container with volume mounting and port mapping
+    #
     container = client.containers.run(image_name, detach=True, ports={f'{container_port}/tcp': host_port},
                                       volumes=volume_mount)
 

@@ -163,4 +163,18 @@ class DistinguishedNameTest {
     }
 
 
+    @Test
+    @DisplayName("digest() must return SHA-1 hash")
+    void digestMustReturnSHA1Hash(){
+        DistinguishedName dn = DistinguishedName
+                .builder()
+                .append(new RelativeDistinguishedName(SubjectAttributeType.COMMON_NAME, "Tim Cook"))
+                .append(new RelativeDistinguishedName(SubjectAttributeType.GIVEN_NAME, "Tim"))
+                .append(new RelativeDistinguishedName(SubjectAttributeType.SURNAME, "Cook"))
+                .append(new RelativeDistinguishedName(SubjectAttributeType.TITLE, "Mr"))
+                .build();
+        assertEquals("b251a05ff27591302ff3d24df5dfdcc2b71e0e31", dn.digest());
+    }
+
+
 }

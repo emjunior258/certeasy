@@ -63,7 +63,7 @@ public class CertificateDecoder {
 
     DistinguishedName extractIssuer(){
         X500Name issuer = holder.getIssuer();
-        return DistinguishedName.builder().parse(issuer.toString())
+        return DistinguishedName.builder().parse(issuer.toString(), true)
                 .build();
     }
 
@@ -77,26 +77,20 @@ public class CertificateDecoder {
     }
 
     private SubjectAlternativeName toSubjectAltName(GeneralName sanName) {
-        switch (sanName.getTagNo()) {
-            case GeneralName.dNSName:
-                return new SubjectAlternativeName(SubjectAlternativeNameType.DNS,
-                        sanName.getName().toString());
-            case GeneralName.iPAddress:
-                return new SubjectAlternativeName(SubjectAlternativeNameType.IP_ADDRESS,
-                        sanName.getName().toString());
-            case GeneralName.directoryName:
-                return new SubjectAlternativeName(SubjectAlternativeNameType.DIRECTORY_NAME,
-                        sanName.getName().toString());
-            case GeneralName.uniformResourceIdentifier:
-                return new SubjectAlternativeName(SubjectAlternativeNameType.URI,
-                        sanName.getName().toString());
-            case GeneralName.rfc822Name:
-                return new SubjectAlternativeName(SubjectAlternativeNameType.EMAIL,
-                        sanName.getName().toString());
-            default:
-                return new SubjectAlternativeName(SubjectAlternativeNameType.OTHER_NAME,
-                        sanName.getName().toString());
-        }
+        return switch (sanName.getTagNo()) {
+            case GeneralName.dNSName -> new SubjectAlternativeName(SubjectAlternativeNameType.DNS,
+                    sanName.getName().toString());
+            case GeneralName.iPAddress -> new SubjectAlternativeName(SubjectAlternativeNameType.IP_ADDRESS,
+                    sanName.getName().toString());
+            case GeneralName.directoryName -> new SubjectAlternativeName(SubjectAlternativeNameType.DIRECTORY_NAME,
+                    sanName.getName().toString());
+            case GeneralName.uniformResourceIdentifier -> new SubjectAlternativeName(SubjectAlternativeNameType.URI,
+                    sanName.getName().toString());
+            case GeneralName.rfc822Name -> new SubjectAlternativeName(SubjectAlternativeNameType.EMAIL,
+                    sanName.getName().toString());
+            default -> new SubjectAlternativeName(SubjectAlternativeNameType.OTHER_NAME,
+                    sanName.getName().toString());
+        };
     }
 
 

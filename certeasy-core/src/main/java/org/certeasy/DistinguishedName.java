@@ -1,5 +1,7 @@
 package org.certeasy;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -14,7 +16,7 @@ import java.util.stream.Collectors;
  *
  * @param relativeDistinguishedNames
  */
-public record DistinguishedName(Set<RelativeDistinguishedName> relativeDistinguishedNames) {
+public record DistinguishedName(Set<RelativeDistinguishedName> relativeDistinguishedNames) implements Comparable<DistinguishedName> {
 
     public DistinguishedName(Set<RelativeDistinguishedName> relativeDistinguishedNames){
         if(relativeDistinguishedNames==null || relativeDistinguishedNames.isEmpty())
@@ -93,6 +95,11 @@ public record DistinguishedName(Set<RelativeDistinguishedName> relativeDistingui
         return new Builder();
     }
 
+    @Override
+    public int compareTo(DistinguishedName distinguishedName) {
+        return this.digest().compareTo(distinguishedName.digest());
+    }
+
     public static final class Builder {
 
         private Set<RelativeDistinguishedName> distinguishedNameSet = new HashSet<>();
@@ -102,7 +109,7 @@ public record DistinguishedName(Set<RelativeDistinguishedName> relativeDistingui
         }
 
 
-        public Builder parse(String distinguishedName){
+        public Builder parse(String distinguishedName, boolean ignoreUnknownAttributes){
             if(distinguishedName==null || distinguishedName.isEmpty())
                 throw new IllegalArgumentException("distinguishedName MUST not be null");
             String[] rdnArray = distinguishedName.split("(?<!\\\\),+");
@@ -115,10 +122,16 @@ public record DistinguishedName(Set<RelativeDistinguishedName> relativeDistingui
                     String attributeValue = attributeArray[1];
                     this.distinguishedNameSet.add(new RelativeDistinguishedName(attributeType, attributeValue));
                 }catch (IllegalArgumentException ex){
+                    if(ignoreUnknownAttributes)
+                        continue;
                     throw new IllegalSubjectAttributeTypeException(attributeArray[0]);
                 }
             }
             return this;
+        }
+
+        public Builder parse(String distinguishedName){
+            return this.parse(distinguishedName, false);
         }
 
         public Builder append(RelativeDistinguishedName rdn){
@@ -147,7 +160,20 @@ public record DistinguishedName(Set<RelativeDistinguishedName> relativeDistingui
                 throw new IllegalArgumentException("MUST have at least one RDN");
             return new DistinguishedName(distinguishedNameSet);
         }
+    }
 
+    public String digest() {
+        try {
+            byte[] data = toString().getBytes();
+            MessageDigest md = MessageDigest.getInstance("SHA-1");
+            byte[] digest = md.digest(data);
+            StringBuilder sb = new StringBuilder();
+            for (byte b : digest)
+                sb.append(String.format("%02X", b));
+            return sb.toString().toLowerCase();
+        }catch (NoSuchAlgorithmException ex){
+            throw new CertEasyException("missing SHA-1 algorithm", ex);
+        }
     }
 
 }

@@ -9,7 +9,19 @@ import java.util.Set;
 
 public class ServerSpec extends BaseCertSpec {
 
+    private String name;
+
     private Set<String> domains;
+
+    private String organization;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public Set<String> getDomains() {
         return domains;
@@ -19,11 +31,23 @@ public class ServerSpec extends BaseCertSpec {
         this.domains = domains;
     }
 
+    public String getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(String organization) {
+        this.organization = organization;
+    }
+
     @Override
     public Set<Violation> validate(ValidationPath path) {
         Set<Violation> violationSet = super.validate(path);
+        if(name==null || name.isEmpty())
+            violationSet.add(new Violation(path, "name", ViolationType.REQUIRED, "must specify a name for the certificate"));
         if(domains==null || domains.isEmpty())
             violationSet.add(new Violation(path, "domains", ViolationType.REQUIRED, "must specify at least one domain"));
+        if(organization !=null && ( organization.isBlank() || organization.trim().length() < 1) )
+            violationSet.add(new Violation(path, "organization", ViolationType.LENGTH, "must have at least a single character"));
         return violationSet;
     }
 

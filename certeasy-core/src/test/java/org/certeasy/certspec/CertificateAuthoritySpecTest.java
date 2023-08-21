@@ -17,7 +17,7 @@ class CertificateAuthoritySpecTest {
 
     CertificateAuthoritySpecTest(){
         this.validityPeriod = new DateRange(LocalDate.of(2023, Month.JANUARY, 1),
-                LocalDate.of(2023, Month.DECEMBER, 31));
+                LocalDate.of(3023, Month.DECEMBER, 31));
         this.subject = new CertificateAuthoritySubject("lorem-ipsum",
                 new GeographicAddress("MZ", "Maputo", "KaMabukwane",
                         "Av. Fernao Magalhaes")

@@ -1,0 +1,15 @@
+{
+    "name": "name",
+    "key_strength": "key_strength",
+    "path_length": "number",
+    "validity": {
+        "from": "string",
+        "until": "string"
+    },
+    "address": {
+        "country": "string",
+        "state": "string",
+        "locality": "string",
+        "street_address": "string"
+    }
+}

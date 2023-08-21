@@ -15,9 +15,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class DirectoryIssuerDatastore implements IssuerDatastore {
 
@@ -157,6 +155,7 @@ public class DirectoryIssuerDatastore implements IssuerDatastore {
                 LOGGER.warn("Failed to Load certificate from directory {}", file.getName(), ex);
             }
         });
+        directoryScanned = true;
         LOGGER.info("Directory scan complete");
     }
 

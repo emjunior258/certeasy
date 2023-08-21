@@ -21,7 +21,14 @@ public record RelativeDistinguishedName(SubjectAttributeType type, String value,
 
     @Override
     public String toString() {
-        return type.getMnemonic() + "=" + value;
+        return (type.getMnemonic() + "=" + value)
+                .replaceAll("(?<!\\\\),+", "\\\\,")
+                .replaceAll("(?<!\\\\)\\++", "\\\\+")
+                .replaceAll("(?<!\\\\)>+", "\\\\>")
+                .replaceAll("(?<!\\\\)<+", "\\\\<")
+                .replaceAll("(?<!\\\\)\"+", "\\\\\"")
+                .replaceAll("(?<!\\\\)\\+", "\\\\\\")
+                .replaceAll("(?<!\\\\)#+", "\\\\#");
     }
 
     @Override

@@ -2,6 +2,7 @@ package org.certeasy.backend;
 
 public enum ProblemTemplate {
     CONSTRAINT_VIOLATION("/problems/constraint-violation", "Constraint Violation",422, "The request violates one or more constraints"),
+    DUPLICATE_ISSUER("/problems/issuer/duplication", "Issuer Duplication", 409),
     ISSUER_ID_TAKEN("/problems/issuerId/id-taken", "Issuer ID Taken", 409);
 
     private String title;
