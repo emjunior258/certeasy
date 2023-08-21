@@ -12,7 +12,7 @@
     <img
       v-if="buttonProps.icon"
       :src="buttonProps.icon"
-      alt="icon"
+      :alt="buttonProps.iconAlt"
       class="inline"
     />
     <span

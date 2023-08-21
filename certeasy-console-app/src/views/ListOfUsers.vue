@@ -133,6 +133,7 @@ const filterButtons = [
   {
     id: 1,
     icon: "./src/assets/icons/storage.svg",
+    iconAlt: "storage",
     text: "Root",
     amount: countRoot,
     disabled: disabledFilter,
@@ -140,6 +141,7 @@ const filterButtons = [
   {
     id: 2,
     icon: "./src/assets/icons/sub-storage.svg",
+    iconAlt: "sub-storage",
     text: "Sub",
     amount: countSub,
     active: false,
@@ -148,6 +150,7 @@ const filterButtons = [
   {
     id: 3,
     icon: "./src/assets/icons/tree.svg",
+    iconAlt: "tree",
     text: "Tree",
     amount: countTree,
     active: false,
