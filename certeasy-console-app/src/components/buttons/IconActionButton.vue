@@ -14,7 +14,7 @@
     {{ buttonProps.text }}
     <img
       :src="buttonProps.icon"
-      alt="add"
+      :alt="buttonProps.altIcon"
       class="inline ml-2"
     />
   </button>
