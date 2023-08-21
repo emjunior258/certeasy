@@ -114,7 +114,7 @@ const navLinks = [
     linkHref: "#",
   },
   {
-    id: 0,
+    id: 1,
     icon: "./src/assets/icons/cog.svg",
     altIcon: "settings",
     text: "Settings",
