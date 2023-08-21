@@ -1,5 +1,9 @@
 <template>
-  <div class="">
+  <PlaceholderLoading v-if="loading" />
+  <div
+    v-else
+    class=""
+  >
     <NavComponent
       :logo="logo"
       :navLinks="navLinks"
@@ -23,13 +27,17 @@
           />
         </div>
       </div>
-      <ul class="px-16">
+      <ul
+        class="px-16"
+        v-if="issuersList.length > 0"
+      >
         <IssuerCard
           v-for="issuer in issuersList"
           :key="issuer.id"
           :issuer="issuer"
         />
       </ul>
+      <IssuerCardNoContent v-else />
     </section>
     <footer class="px-16 fixed bottom-0 w-full">
       <div class="border-t text-right pt-8 pb-11">
@@ -55,10 +63,12 @@
 </template>
 
 <script setup>
-import NavComponent from "../components/NavComponent.vue";
-import IconTextButton from "../components/buttons/IconTextButton.vue";
-import ActionButton from "../components/buttons/ActionButton.vue";
-import IssuerCard from "../components/IssuerCard.vue";
+import NavComponent from "@/components/NavComponent.vue";
+import IconTextButton from "@/components/buttons/IconTextButton.vue";
+import ActionButton from "@/components/buttons/ActionButton.vue";
+import IssuerCard from "@/components/IssuerCard.vue";
+import PlaceholderLoading from "@/components/loading/PlaceholderLoading.vue";
+import IssuerCardNoContent from "@/components/IssuerCardNoContent.vue";
 import api from "@/config/config";
 import { ref, onMounted } from "vue";
 
