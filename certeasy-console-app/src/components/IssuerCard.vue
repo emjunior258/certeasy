@@ -3,7 +3,7 @@
     <div class="flex justify-between">
       <div class="flex gap-6">
         <img
-          src="https://placehold.co/52x52"
+          src="../assets/avatar-placeholder.svg"
           :alt="issuer.altText"
           class="h-[54px] w-[54px] border border-primary-0.4 rounded"
         />
