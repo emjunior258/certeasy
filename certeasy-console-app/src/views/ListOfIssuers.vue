@@ -35,6 +35,7 @@
           v-for="issuer in issuersList"
           :key="issuer.id"
           :issuer="issuer"
+          data-test="issuer"
         />
       </ul>
       <IssuerCardNoContent v-else />
@@ -73,7 +74,7 @@ import api from "@/config/config";
 import { ref, onMounted, computed } from "vue";
 
 const issuersList = ref([]);
-const loading = ref(false);
+const loading = ref(true);
 const countAll = computed(() => issuersList.value.length);
 const countRoot = computed(
   () => issuersList.value.filter((item) => item.type == "ROOT").length
