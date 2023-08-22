@@ -7,9 +7,10 @@
     <NavComponent
       :logo="logo"
       :navLinks="navLinks"
+      class="sticky top-0 left-0"
     />
 
-    <section>
+    <section class="mb-[112px]">
       <div class="flex justify-between px-16 mt-12 mb-6 items-end">
         <div class="font-light text-lg margin-trim">
           <IconTextButton
@@ -40,7 +41,7 @@
       </ul>
       <IssuerCardNoContent v-else />
     </section>
-    <footer class="px-16 fixed bottom-0 w-full">
+    <footer class="px-16 fixed bottom-0 w-full bg-white">
       <div class="border-t text-right pt-8 pb-11">
         <a href="#"
           ><img
