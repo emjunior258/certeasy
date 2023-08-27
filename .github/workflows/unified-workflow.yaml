@@ -272,10 +272,9 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install -r certeasy_api_tests/requirements.txt
-      - name: Run tests
+      - name: Run tests & Upload report artifact
         run: pytest certeasy_api_tests/src/tests --junitxml=report.xml
-      - name: Upload report artifact
         uses: actions/upload-artifact@v2
         with:
-            name: test-report
-            path: report.xml
+          name: test-report
+          path: report.xml

@@ -46,5 +46,4 @@ def generate_expired_certs_with_ca():
         "cert_file": cert_pem.decode('utf-8'),
         "key_file": private_key_pem.decode('utf-8')
     }
-    print(cert_and_key_schema)
     return cert_and_key_schema
