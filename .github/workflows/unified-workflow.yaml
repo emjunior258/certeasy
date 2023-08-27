@@ -243,6 +243,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+      checks: write
     needs: ["build-image"]
     env:
       DOCKER_IMAGE_NAME: ${{ needs.build-image.outputs.image_tag }}
@@ -276,18 +277,12 @@ jobs:
         continue-on-error: true
       - name: Package Test Reports
         uses: actions/upload-artifact@v3
-        if: success() || failure()
         with:
           name: target
           path: |
             certeasy_api_tests/target
-      - name: list dir
-        run: ls -la
-      - name: list api_tests
-        run: ls -la certeasy_api_tests/target
       - name: Report test results
         uses: dorny/test-reporter@v1.6.0
-        if: success() || failure()
         with:
           name: Integration Test Results
           path: certeasy_api_tests/target/report.xml
