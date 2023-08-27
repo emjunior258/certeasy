@@ -73,6 +73,14 @@ import PlaceholderLoading from "@/components/loading/PlaceholderLoading.vue";
 import IssuerCardNoContent from "@/components/IssuerCardNoContent.vue";
 import api from "@/config/config";
 import { ref, onMounted, computed } from "vue";
+import imgSrc from "@/assets/logo.svg";
+import apiIcon from "@/assets/icons/api.svg";
+import cogIcon from "@/assets/icons/cog.svg";
+import storageIcon from "@/assets/icons/storage.svg";
+import subStorageIcon from "@/assets/icons/sub-storage.svg";
+import treeIcon from "@/assets/icons/tree.svg";
+import addFileIcon from "@/assets/icons/add-file.svg";
+import importFileIcon from "@/assets/icons/import-file.svg";
 
 const issuersList = ref([]);
 const loading = ref(true);
@@ -103,21 +111,21 @@ onMounted(() => {
 });
 
 const logo = {
-  imgSrc: "./src/assets/logo.svg",
+  imgSrc: imgSrc,
   alt: "Certeasy",
 };
 
 const navLinks = [
   {
     id: 0,
-    icon: "./src/assets/icons/api.svg",
+    icon: apiIcon,
     altIcon: "API",
     text: "Open Api",
     linkHref: "#",
   },
   {
     id: 1,
-    icon: "./src/assets/icons/cog.svg",
+    icon: cogIcon,
     altIcon: "settings",
     text: "Settings",
     linkHref: "#",
@@ -134,7 +142,7 @@ const filterButtons = [
   },
   {
     id: 1,
-    icon: "./src/assets/icons/storage.svg",
+    icon: storageIcon,
     iconAlt: "storage",
     text: "Root",
     amount: countRoot,
@@ -142,7 +150,7 @@ const filterButtons = [
   },
   {
     id: 2,
-    icon: "./src/assets/icons/sub-storage.svg",
+    icon: subStorageIcon,
     iconAlt: "sub-storage",
     text: "Sub",
     amount: countSub,
@@ -151,7 +159,7 @@ const filterButtons = [
   },
   {
     id: 3,
-    icon: "./src/assets/icons/tree.svg",
+    icon: treeIcon,
     iconAlt: "tree",
     text: "Tree",
     amount: countTree,
@@ -163,12 +171,12 @@ const filterButtons = [
 const actionButtons = [
   {
     id: 0,
-    icon: "./src/assets/icons/add-file.svg",
+    icon: addFileIcon,
     text: "New Root CA",
   },
   {
     id: 1,
-    icon: "./src/assets/icons/import-file.svg",
+    icon: importFileIcon,
     text: "Import CA",
     outlined: true,
   },
