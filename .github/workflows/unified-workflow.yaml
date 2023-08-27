@@ -275,6 +275,7 @@ jobs:
         run: pytest certeasy_api_tests/src/tests --junitxml=certeasy_api_tests/target/report.xml
       - name: Package Test Reports
         uses: actions/upload-artifact@v3
+        if: success() || failure()
         with:
           name: target
           path: |
