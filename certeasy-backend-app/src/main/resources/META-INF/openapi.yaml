@@ -684,7 +684,7 @@ components:
           description: Whether the certificate is a certificate authority
         path_length:
           type: integer
-          description: The maximum depth of CAs that may exist below this CA. This limit is enforced when issuing a sub-ca certificate.
+          description: The maximum depth of CAs that may exist below this CA. This limit is NOT enforced when issuing a sub-ca certificate.
           default: 0
           minimum: 0
       required:
@@ -977,24 +977,30 @@ components:
             - subject_distinguished_name
             - key_usage
 
+    PersonInfo:
+      properties:
+        name:
+          type: string
+          description: The person's given name
+          example: Yaka
+        surname:
+          type: string
+          description: The person's surname
+          example: Matavele
+        telephone:
+          type: string
+          description: The person's telephone number
+      required:
+        - name
+        - surname
 
     PersonalCertificateRequest:
       allOf:
         - $ref: "#/components/schemas/BaseCertificateRequestWithAddress"
+        - $ref: "#/components/schemas/PersonInfo"
         - type: object
           description: A Request to generate a certificate to identify an individual
           properties:
-            first_name:
-              type: string
-              description: The person's first name
-              example: Yaka
-            surname:
-              type: string
-              description: The person's surname
-              example: Matavele
-            telephone:
-              type: string
-              description: The person's telephone number
             email_addresses:
               type: array
               description: The email addresses of the person
@@ -1013,32 +1019,41 @@ components:
             - validity
             - key_strength
             - location
-            - first_name
+            - name
             - surname
-            - telephone
 
 
     EmployeeCertificateRequest:
       allOf:
-        - $ref: "#/components/schemas/PersonalCertificateRequest"
+        - $ref: "#/components/schemas/PersonInfo"
         - type: object
           description: A Request to generate a certificate to identify an individual as an employee.
           properties:
-            company:
+            employment:
               type: object
               properties:
-                name:
+                organization_name:
                   type: string
-                  description: The name of the company to which the person is employed
+                  description: The name of the organization of employment
+                  maxLength: 255
                 department:
                   type: string
                   description: The name of the department to which the employee belongs
                 job_title:
                   type: string
                   description: The job title of the employee
-
+                  maxLength: 255
+                email_address:
+                  type: string
+                  description: The corporate email address of the employee, assigned by the company.
+                  maxLength: 255
+                username:
+                  type: string
+                  description: The username assigned to the employee by the company
+                  maxLength: 255
               required:
                 - name
+                - surname
                 - job_title
 
     SubCACertificateRequest:
@@ -1067,9 +1082,13 @@ components:
         - type: object
           description: A Request to generate a Certificate to identify a TLS Server
           properties:
+            name:
+              type: string
+              description: A name for the certificate. Value be set as common-name (CN) on resulting certificate.
+              example: my-server
             domains:
               type: array
-              description: The domains that are associated to the server. All listed domains will be added to the certificate as DNS Subject Alternative Names and The first domain in the array will be used as common-name.
+              description: The domains that are associated to the server. All listed domains will be added to the certificate as DNS Subject Alternative Names.
               items:
                 type: string
                 description: A domain name
@@ -1080,6 +1099,7 @@ components:
               description: The name of the organization that owns the server to be secured with TLS.
               example: Apple Inc
           required:
+            - name
             - domains
             - validity
             - key_strength
