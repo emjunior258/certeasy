@@ -268,9 +268,24 @@ jobs:
         with:
           python-version: 3.9
       - name: Install dependencies
-        run: pip install -r certeasy_api_tests/requirements.txt
+        run: |
+          pip install --upgrade pip
+          pip install -r certeasy_api_tests/requirements.txt
       - name: Run tests
-        run: pytest certeasy_api_tests/src/tests
+        run: pytest certeasy_api_tests/src/tests --junitxml=certeasy_api_tests/target/report.xml
+      - name: Package Test Reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: target
+          path: |
+            certeasy_api_tests/target
+      - name: Report test results
+        uses: dorny/test-reporter@v1.6.0
+        if: success() || failure()
+        with:
+          name: Integration Test Results
+          path: certeasy_api_tests/target/report.xml
+          reporter: java-junit
 
   publish-develop-image:
     runs-on: ubuntu-latest
