@@ -8,3 +8,4 @@ precisely
 PyHamcrest==1.9.0
 testcontainers
 python-dateutil
+pytest-junit

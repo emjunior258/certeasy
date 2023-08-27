@@ -13,7 +13,7 @@ class TestIssuerDeletion:
         # Create issuer ID before listing them
         ISSUER_ID = create_issuer_from_spec()
         # Delete issuer
-        delete_issuer = requests.delete(url=f'{BASE_URL}/issuers/{ISSUER_ID}')
+        delete_issuer = requests.delete(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}')
         assert delete_issuer.status_code == 204
 
     @staticmethod

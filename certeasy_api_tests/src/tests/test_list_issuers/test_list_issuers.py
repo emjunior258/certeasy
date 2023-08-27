@@ -12,7 +12,7 @@ class TestIssuerValidation:
     def test_validate_if_the_body_response_include_the_newest_issuer(app_container):
         ISSUER_ID = create_issuer_from_spec()
         response = requests.get(url=f'{BASE_URL}/issuers')
-        assert ISSUER_ID == response.json()[0]['id'], f'body response {response.json}'
+        assert ISSUER_ID[0] == response.json()[0]['id'], f'body response {response.json}'
 
     @staticmethod
     def test_should_return_200(app_container):
@@ -32,5 +32,10 @@ class TestIssuerValidation:
                                 "serial",
                                 "dn",
                                 "path_length",
-                                "parent",
                                 "children_count")), f'body response {response.json}'
+
+    @staticmethod
+    def test_validate_type_of_issuer_created_with_path_length_equal_to_zero(app_container):
+        create_issuer_from_spec()
+        response = requests.get(url=f'{BASE_URL}/issuers')
+        assert response.json()[0]["type"] == "ROOT"

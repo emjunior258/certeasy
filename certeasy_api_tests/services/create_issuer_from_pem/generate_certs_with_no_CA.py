@@ -6,7 +6,7 @@ from cryptography.hazmat.primitives import hashes
 from datetime import datetime, timedelta
 
 
-def generate_valid_certs_with_ca():
+def generate_certs_with_no_ca():
     # Generate a private key
     private_key = rsa.generate_private_key(
         public_exponent=65537,
@@ -31,7 +31,7 @@ def generate_valid_certs_with_ca():
     ).not_valid_after(
         datetime.utcnow() + timedelta(days=365)
     ).add_extension(
-        x509.BasicConstraints(ca=True, path_length=None), critical=False,
+        x509.BasicConstraints(ca=False, path_length=None), critical=False,
     ).sign(private_key, hashes.SHA256(), default_backend())
 
     # Serialize private key and certificate to PEM format

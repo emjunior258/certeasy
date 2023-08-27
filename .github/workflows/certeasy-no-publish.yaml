@@ -270,5 +270,5 @@ jobs:
           python-version: 3.9
       - name: Install dependencies
         run: pip install -r certeasy_api_tests/requirements.txt
-      - name: Run tests
-        run: pytest certeasy_api_tests/src/tests
+      - name: Run tests & Generate test report
+        run: pytest certeasy_api_tests/src/tests --junitxml=report.xml
