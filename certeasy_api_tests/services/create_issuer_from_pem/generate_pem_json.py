@@ -1,9 +1,22 @@
+import random
 from cryptography import x509
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import hashes
 from datetime import datetime, timedelta
+
+
+def generate_cert_name_atribute():
+    syllables = ["ab", "ac", "ad", "ba", "be", "ca", "ce", "da", "de", "do", "fa", "fi", "ga", "ge", "ha", "he", "ja",
+                 "je",
+                 "ka", "ke", "la", "le", "ma", "me", "na", "ne", "pa", "pe", "ra", "re", "sa", "se", "ta", "te", "va",
+                 "ve",
+                 "ya", "ye", "za", "ze"]
+    name_length = random.randint(2, 5)  # Provide the lower and upper limits for the name length
+    name = ''.join(random.choice(syllables) for _ in range(name_length))
+    cert_name = name + ".com"
+    return cert_name
 
 
 def generate_valid_certs_with_ca():
@@ -16,7 +29,7 @@ def generate_valid_certs_with_ca():
 
     # Generate a CSR
     subject = x509.Name([
-        x509.NameAttribute(x509.NameOID.COMMON_NAME, u"example.com"),
+        x509.NameAttribute(x509.NameOID.COMMON_NAME, generate_cert_name_atribute()),
     ])
     csr = x509.CertificateSigningRequestBuilder().subject_name(subject).sign(
         private_key, hashes.SHA256(), default_backend()
