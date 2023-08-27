@@ -280,6 +280,10 @@ jobs:
           name: target
           path: |
             certeasy_api_tests/target
+      - name: list dir
+        run: ls -la
+      - name: list api_tests
+        run: ls -la certeasy_api_tests/target
       - name: Report test results
         uses: dorny/test-reporter@v1.6.0
         if: success() || failure()
