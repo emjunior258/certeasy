@@ -286,6 +286,7 @@ jobs:
         with:
           name: Integration Test Results
           path: certeasy_api_tests/target/report.xml
+          fail-on-error: 'false'
           reporter: java-junit
 
   publish-develop-image:
