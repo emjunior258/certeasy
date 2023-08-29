@@ -31,8 +31,10 @@
 </style>
 <script setup>
 import IconActionButton from "./buttons/IconActionButton.vue";
+import plusIcon from "@/assets/icons/plus.svg";
+
 const actionButton = {
-  icon: "./src/assets/icons/plus.svg",
+  icon: plusIcon,
   text: "New Issuer",
   outlined: true,
 };
