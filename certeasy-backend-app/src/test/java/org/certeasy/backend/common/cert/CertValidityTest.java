@@ -6,6 +6,9 @@ import org.certeasy.backend.common.validation.ValidationPath;
 import org.certeasy.backend.persistence.MemoryPersistenceProfile;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+import java.time.Month;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @QuarkusTest
@@ -44,10 +47,25 @@ class CertValidityTest {
     }
 
     @Test
-    void must_add_violations_for_precedence() {
-
-        CertValidity certValidity = new CertValidity("2023-01-01", "2022-01-01 ");
+    void must_add_violation_for_precedence() {
+        LocalDate today = LocalDate.now();
+        CertValidity certValidity = new CertValidity(LocalDate.of(today.getYear()+5, today.getMonth(), today.getDayOfMonth()).toString(), LocalDate.of(today.getYear()+2, today.getMonth(), today.getDayOfMonth()).toString());
         assertEquals(1, certValidity.validate(ValidationPath.of("body")).size());
+    }
+
+    @Test
+    void must_add_violation_for_past() {
+        LocalDate today = LocalDate.now();
+        CertValidity certValidity = new CertValidity(LocalDate.of(today.getYear()-5, today.getMonth(), today.getDayOfMonth()).toString(), LocalDate.of(today.getYear()-1, today.getMonth(), today.getDayOfMonth()).toString());
+        assertEquals(1, certValidity.validate(ValidationPath.of("body")).size());
+    }
+
+
+    @Test
+    void must_pass_past_validation() {
+        LocalDate today = LocalDate.now();
+        CertValidity certValidity = new CertValidity(LocalDate.of(today.getYear()-5, today.getMonth(), today.getDayOfMonth()).toString(), LocalDate.of(today.getYear()+1, today.getMonth(), today.getDayOfMonth()).toString());
+        assertEquals(0, certValidity.validate(ValidationPath.of("body")).size());
     }
 
 }

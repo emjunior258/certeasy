@@ -7,6 +7,7 @@ import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.*;
 
 import io.restassured.http.ContentType;
+import io.restassured.path.json.JsonPath;
 import org.certeasy.*;
 import org.certeasy.backend.BaseRestTest;
 import org.certeasy.backend.ProblemTemplate;
@@ -14,6 +15,8 @@ import org.certeasy.backend.common.CertPEM;
 import org.certeasy.backend.common.SubCaSpec;
 import org.certeasy.backend.common.cert.CertValidity;
 import org.certeasy.backend.common.cert.GeographicAddressInfo;
+import org.certeasy.backend.common.problem.ConstraintViolationProblem;
+import org.certeasy.backend.common.validation.Violation;
 import org.certeasy.backend.persistence.IssuerRegistry;
 import org.certeasy.backend.persistence.MapIssuerRegistry;
 import org.certeasy.backend.persistence.MemoryPersistenceProfile;
@@ -333,6 +336,35 @@ class IssuersResourceTest extends BaseRestTest {
     }
 
     @Test
+    @Tag("createFromPem")
+    @DisplayName("createFromPem() must fail when certificate has expired")
+    void createFromPem_must_fail_when_certificate_has_expired() throws IOException {
+
+        Path pemDirectory = Paths.get("src/test/resources/pem/expired-ca");
+        String certPem = Files.readString(pemDirectory.resolve("cert.pem"));
+        String keyPem = Files.readString(pemDirectory.resolve("key.pem"));
+
+        CertPEM pem = new CertPEM(certPem, keyPem);
+
+        JsonPath jsonPath = given().contentType(ContentType.JSON)
+                .body(pem)
+                .when()
+                .post("/cert-pem")
+                .then()
+                .statusCode(422)
+                .body("type", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getType()))
+                .body("title", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getTitle()))
+                .body("status", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getStatus()))
+                .extract().body().jsonPath().setRootPath("violations[0]");
+
+
+        assertEquals("body.pem.cert_file", jsonPath.get("field"));
+        assertEquals("state", jsonPath.get("type"));
+        assertEquals("certificate has already expired", jsonPath.get("message"));
+
+    }
+
+    @Test
     @Tag("createFromSpec")
     @DisplayName("createFromSpec() must create issuer successfully")
     void createFromSpec_must_create_issuer_successfully(){
@@ -411,6 +443,36 @@ class IssuersResourceTest extends BaseRestTest {
                 .body("violations[0].field", equalTo("body.validity"))
                 .body("violations[0].type", equalTo("required"))
                 .body("violations[0].message", equalTo("validity is required"));
+
+    }
+
+    @Test
+    @Tag("createFromSpec")
+    @DisplayName("createFromSpec() must fail when validity is past")
+    void createFromSpec_must_fail_when_validity_is_past() {
+
+        SubCaSpec spec = new SubCaSpec();
+        spec.setName("Google");
+        spec.setKeyStrength(KeyStrength.VERY_HIGH.name());
+        spec.setPathLength(3);
+        spec.setGeographicAddressInfo(new GeographicAddressInfo("US", "California", "Mountain View", "1600 Amphitheatre Parkway"));
+        spec.setValidity(new CertValidity("2023-01-01", "2023-05-05"));
+
+        assertFalse(registry.exists("google"));
+        given().contentType(ContentType.JSON)
+                .body(spec)
+                .when()
+                .post("/cert-spec")
+                .then()
+                .statusCode(422)
+                .body("type", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getType()))
+                .body("title", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getTitle()))
+                .body("detail", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getDetail()))
+                .body("status", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getStatus()))
+                .body("violations", hasSize(1))
+                .body("violations[0].field", equalTo("body.validity.until"))
+                .body("violations[0].type", equalTo("state"))
+                .body("violations[0].message", equalTo("until date cannot be a past date"));
 
     }
 

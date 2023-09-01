@@ -18,6 +18,7 @@ import org.jboss.logging.Logger;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
@@ -115,6 +116,16 @@ public class IssuersResource extends BaseResource {
                                 "not_ca", "cert_file is does not have CA basic constraint"
                         ))).build();
             }
+
+            DateRange dateRange = certificate.getValidityPeriod();
+            //Expired already
+            if(dateRange.end().isBefore(LocalDate.now())){
+                return Response.status(422).entity(new ConstraintViolationProblem(
+                        new Violation("body.pem.cert_file", ViolationType.STATE,
+                                "expired", "certificate has already expired"
+                        ))).build();
+            }
+
             CertIssuer issuer = registry().add(certificate);
             return Response.ok(new CreatedIssuerInfo(issuer.getId())).build();
         }catch (IllegalCertPemException ex) {
