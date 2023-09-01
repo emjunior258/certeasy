@@ -12,13 +12,13 @@
 
     <section class="mb-[112px]">
       <div class="flex justify-between px-16 mt-12 mb-6 items-end">
-        <div class="font-light text-lg margin-trim">
+        <div class="font-light text-lg">
           <IconTextButton
             v-for="filterButton in filterButtons"
             :key="filterButton.id"
             :buttonProps="filterButton"
             @handleClick="navigateToRoute(filterButton.route)"
-            class="mr-6"
+            class="mr-6 last:mr-0"
           />
         </div>
         <div class="flex gap-11">
@@ -178,9 +178,3 @@ const actionButtons = [
   },
 ];
 </script>
-
-<style>
-.margin-trim > :last-child {
-  margin-right: 0;
-}
-</style>
