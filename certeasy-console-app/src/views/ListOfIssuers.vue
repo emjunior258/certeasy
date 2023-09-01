@@ -112,7 +112,7 @@ const fetchData = async (url = "/issuers") => {
 };
 
 onMounted(() => {
-  fetchData();
+  fetchData(`/issuers${route.query.type ? `?type=${route.query.type}` : ""}`);
 });
 
 const logo = {
