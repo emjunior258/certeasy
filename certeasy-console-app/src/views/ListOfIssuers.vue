@@ -17,7 +17,7 @@
             v-for="filterButton in filterButtons"
             :key="filterButton.id"
             :buttonProps="filterButton"
-            @handleClick="navigateToRoute(filterButton.route)"
+            @handleClick="navigateToRoute(filterButton.query)"
             class="mr-6 last:mr-0"
           />
         </div>
@@ -47,7 +47,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 
 import addFileIcon from "@/assets/icons/add-file.svg";
@@ -71,14 +71,6 @@ const router = useRouter();
 const route = useRoute();
 const issuersList = ref([]);
 const loading = ref(true);
-const countAll = computed(() => issuersList.value.length);
-const countRoot = computed(
-  () => issuersList.value.filter((item) => item.type == "ROOT").length
-);
-const disabledFilter = countAll === 0;
-
-const countSub = 0;
-const countTree = 0;
 
 const fetchData = async (url = "/issuers") => {
   loading.value = true;
@@ -95,6 +87,7 @@ const fetchData = async (url = "/issuers") => {
 
 onMounted(() => {
   fetchData(`/issuers${route.query.type ? `?type=${route.query.type}` : ""}`);
+  setActiveButton(route.query.type ? route.query.type : "");
 });
 
 const logo = {
@@ -119,50 +112,58 @@ const navLinks = [
   },
 ];
 
-const navigateToRoute = (routeURL) => {
-  router.push(routeURL);
-  fetchData("/issuers" + routeURL);
+const navigateToRoute = async (query) => {
+  router.push({ name: "issuers", query: query ? { type: query } : "" });
+  fetchData("/issuers?type=" + query);
+  setActiveButton(query);
 };
 
 const filterButtons = ref([
   {
     id: 0,
     text: "All",
-    amount: countAll,
-    active: true,
-    disabled: disabledFilter,
-    route: "",
+    amount: 0,
+    active: false,
+    disabled: false,
+    query: "",
   },
   {
     id: 1,
     icon: storageIcon,
     iconAlt: "storage",
     text: "Root",
-    amount: countRoot,
-    disabled: disabledFilter,
-    route: "/?type=ROOT",
+    amount: 0,
+    active: false,
+    disabled: false,
+    query: "ROOT",
   },
   {
     id: 2,
     icon: subStorageIcon,
     iconAlt: "sub-storage",
     text: "Sub",
-    amount: countSub,
+    amount: 0,
     active: false,
-    disabled: disabledFilter,
-    route: "/?type=SUB_CA",
+    disabled: false,
+    query: "SUB_CA",
   },
   {
     id: 3,
     icon: treeIcon,
     iconAlt: "tree",
     text: "Tree",
-    amount: countTree,
+    amount: 0,
     active: false,
-    disabled: disabledFilter,
-    route: "/",
+    disabled: false,
+    query: "TREE",
   },
 ]);
+
+const setActiveButton = (type) => {
+  filterButtons.value = filterButtons.value.map((item) => {
+    return { ...item, active: type === item.query ? true : false };
+  });
+};
 
 const actionButtons = [
   {

@@ -6,7 +6,7 @@ const router = createRouter({
   routes: [
     {
       path: "/",
-      name: "issuers.list",
+      name: "issuers",
       component: ListOfIssuers,
     },
   ],
