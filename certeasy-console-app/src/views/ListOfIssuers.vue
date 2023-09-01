@@ -42,26 +42,7 @@
       </ul>
       <IssuerCardNoContent v-else />
     </section>
-    <footer class="px-16 fixed bottom-0 w-full bg-white">
-      <div class="border-t text-right pt-8 pb-11">
-        <a href="#"
-          ><img
-            src="../assets/icons/github.svg"
-            alt="api"
-            class="inline"
-          />
-          Read Documentation</a
-        >
-        <a href="#"
-          ><img
-            src="../assets/icons/warning.svg"
-            alt="api"
-            class="inline ml-6"
-          />
-          Report Issue</a
-        >
-      </div>
-    </footer>
+    <TheFooter />
   </div>
 </template>
 
@@ -69,21 +50,22 @@
 import { ref, onMounted, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 
-import NavComponent from "@/components/NavComponent.vue";
-import IconTextButton from "@/components/buttons/IconTextButton.vue";
-import IconActionButton from "@/components/buttons/IconActionButton.vue";
-import IssuerCard from "@/components/IssuerCard.vue";
-import PlaceholderLoading from "@/components/loading/PlaceholderLoading.vue";
-import IssuerCardNoContent from "@/components/IssuerCardNoContent.vue";
+import addFileIcon from "@/assets/icons/add-file.svg";
 import api from "@/config/config";
-import imgSrc from "@/assets/logo.svg";
 import apiIcon from "@/assets/icons/api.svg";
 import cogIcon from "@/assets/icons/cog.svg";
+import TheFooter from "@/components/TheFooter.vue";
+import IconActionButton from "@/components/buttons/IconActionButton.vue";
+import IconTextButton from "@/components/buttons/IconTextButton.vue";
+import imgSrc from "@/assets/logo.svg";
+import importFileIcon from "@/assets/icons/import-file.svg";
+import IssuerCard from "@/components/IssuerCard.vue";
+import IssuerCardNoContent from "@/components/IssuerCardNoContent.vue";
+import NavComponent from "@/components/NavComponent.vue";
+import PlaceholderLoading from "@/components/loading/PlaceholderLoading.vue";
 import storageIcon from "@/assets/icons/storage.svg";
 import subStorageIcon from "@/assets/icons/sub-storage.svg";
 import treeIcon from "@/assets/icons/tree.svg";
-import addFileIcon from "@/assets/icons/add-file.svg";
-import importFileIcon from "@/assets/icons/import-file.svg";
 
 const router = useRouter();
 const route = useRoute();
