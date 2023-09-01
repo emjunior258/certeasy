@@ -46,6 +46,12 @@ public record CertValidity(String from, String until) implements Validable {
         if ((fromLocalDate != null && untilLocalDate != null) && fromLocalDate.isAfter(untilLocalDate))
             violations.add(new Violation(path, "from", ViolationType.PRECEDENCE, "from date cannot be after until date"));
 
+        if ((fromLocalDate != null && untilLocalDate != null)){
+            if(LocalDate.now().isAfter(untilLocalDate)){
+                violations.add(new Violation(path, "until", ViolationType.STATE, "until date cannot be a past date"));
+            }
+        }
+
         violations.addAll(violationsFrom);
         violations.addAll(violationsUntil);
         return violations;
