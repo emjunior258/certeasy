@@ -17,6 +17,7 @@
             v-for="filterButton in filterButtons"
             :key="filterButton.id"
             :buttonProps="filterButton"
+            @handleClick="navigateToRoute(filterButton.route)"
             class="mr-6"
           />
         </div>
@@ -65,6 +66,9 @@
 </template>
 
 <script setup>
+import { ref, onMounted, computed } from "vue";
+import { useRouter, useRoute } from "vue-router";
+
 import NavComponent from "@/components/NavComponent.vue";
 import IconTextButton from "@/components/buttons/IconTextButton.vue";
 import IconActionButton from "@/components/buttons/IconActionButton.vue";
@@ -72,7 +76,6 @@ import IssuerCard from "@/components/IssuerCard.vue";
 import PlaceholderLoading from "@/components/loading/PlaceholderLoading.vue";
 import IssuerCardNoContent from "@/components/IssuerCardNoContent.vue";
 import api from "@/config/config";
-import { ref, onMounted, computed } from "vue";
 import imgSrc from "@/assets/logo.svg";
 import apiIcon from "@/assets/icons/api.svg";
 import cogIcon from "@/assets/icons/cog.svg";
@@ -82,6 +85,8 @@ import treeIcon from "@/assets/icons/tree.svg";
 import addFileIcon from "@/assets/icons/add-file.svg";
 import importFileIcon from "@/assets/icons/import-file.svg";
 
+const router = useRouter();
+const route = useRoute();
 const issuersList = ref([]);
 const loading = ref(true);
 const countAll = computed(() => issuersList.value.length);
@@ -93,10 +98,10 @@ const disabledFilter = countAll === 0;
 const countSub = 0;
 const countTree = 0;
 
-const fetchData = async () => {
+const fetchData = async (url = "/issuers") => {
   loading.value = true;
   try {
-    const res = await api.get("/issuers");
+    const res = await api.get(url);
     const data = await res;
     issuersList.value = data.data;
   } catch (error) {
@@ -132,13 +137,19 @@ const navLinks = [
   },
 ];
 
-const filterButtons = [
+const navigateToRoute = (routeURL) => {
+  router.push(routeURL);
+  fetchData("/issuers" + routeURL);
+};
+
+const filterButtons = ref([
   {
     id: 0,
     text: "All",
     amount: countAll,
     active: true,
     disabled: disabledFilter,
+    route: "",
   },
   {
     id: 1,
@@ -147,6 +158,7 @@ const filterButtons = [
     text: "Root",
     amount: countRoot,
     disabled: disabledFilter,
+    route: "/?type=ROOT",
   },
   {
     id: 2,
@@ -156,6 +168,7 @@ const filterButtons = [
     amount: countSub,
     active: false,
     disabled: disabledFilter,
+    route: "/?type=SUB_CA",
   },
   {
     id: 3,
@@ -165,8 +178,9 @@ const filterButtons = [
     amount: countTree,
     active: false,
     disabled: disabledFilter,
+    route: "/",
   },
-];
+]);
 
 const actionButtons = [
   {

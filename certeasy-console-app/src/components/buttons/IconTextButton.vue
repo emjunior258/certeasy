@@ -8,6 +8,7 @@
     }"
     type="button"
     :disabled="buttonProps.disabled"
+    @click="$emit('handleClick')"
   >
     <img
       v-if="buttonProps.icon"
