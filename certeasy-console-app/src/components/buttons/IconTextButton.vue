@@ -10,12 +10,11 @@
     :disabled="buttonProps.disabled"
     @click="$emit('handleClick')"
   >
-    <img
-      v-if="buttonProps.icon"
-      :src="buttonProps.icon"
-      :alt="buttonProps.iconAlt"
+    <component
+      :is="buttonProps.icon"
       class="inline"
-    />
+      :class="{ 'text-primary': !buttonProps.active }"
+    ></component>
     <span
       class="align-middle"
       :class="{ 'ml-2': buttonProps.icon }"

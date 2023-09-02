@@ -47,7 +47,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, watch, shallowRef } from "vue";
 import { useRouter, useRoute } from "vue-router";
 
 import addFileIcon from "@/assets/icons/add-file.svg";
@@ -63,16 +63,20 @@ import IssuerCard from "@/components/IssuerCard.vue";
 import IssuerCardNoContent from "@/components/IssuerCardNoContent.vue";
 import NavComponent from "@/components/NavComponent.vue";
 import PlaceholderLoading from "@/components/loading/PlaceholderLoading.vue";
-import storageIcon from "@/assets/icons/storage.svg";
-import subStorageIcon from "@/assets/icons/sub-storage.svg";
-import treeIcon from "@/assets/icons/tree.svg";
+import StorageIcon from "@/assets/icons/StorageIcon.vue";
+import SubStorageIcon from "@/assets/icons/SubStorageIcon.vue";
+import TreeIcon from "@/assets/icons/TreeIcon.vue";
+
+const storageIcon = StorageIcon;
+const subStorageIcon = SubStorageIcon;
+const treeIcon = TreeIcon;
 
 const router = useRouter();
 const route = useRoute();
 const issuersList = ref([]);
 const loading = ref(true);
 
-const countAll = computed(() => issuersList.value.length);
+const countAll = ref(0);
 
 const fetchData = async (url) => {
   loading.value = true;
@@ -80,6 +84,7 @@ const fetchData = async (url) => {
     const res = await api.get(url);
     const data = await res;
     issuersList.value = data.data;
+    setCounters(issuersList);
   } catch (error) {
     console.error("Error fetching data", error);
   } finally {
@@ -103,6 +108,18 @@ const setActiveButton = (type) => {
   });
 };
 
+const setCounters = (list) => {
+  filterButtons.value[0].amount = list.value.length;
+  filterButtons.value[1].amount = list.value.filter((item) => {
+    return item.type === "ROOT";
+  }).length;
+  filterButtons.value[2].amount = list.value.filter((item) => {
+    return item.type === "SUB_CA";
+  }).length;
+};
+
+const filterIssuersList = (type) => {};
+
 const logo = {
   imgSrc: imgSrc,
   alt: "Certeasy",
@@ -125,7 +142,7 @@ const navLinks = [
   },
 ];
 
-const filterButtons = ref([
+const filterButtons = shallowRef([
   {
     id: 0,
     text: "All",
