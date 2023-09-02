@@ -34,7 +34,7 @@
         v-if="issuersList.length > 0"
       >
         <IssuerCard
-          v-for="issuer in issuersList"
+          v-for="issuer in filteredIssuersList || issuersList"
           :key="issuer.id"
           :issuer="issuer"
           data-test="issuer"
@@ -74,9 +74,8 @@ const treeIcon = TreeIcon;
 const router = useRouter();
 const route = useRoute();
 const issuersList = ref([]);
+const filteredIssuersList = ref(null);
 const loading = ref(true);
-
-const countAll = ref(0);
 
 const fetchData = async (url) => {
   loading.value = true;
@@ -85,6 +84,7 @@ const fetchData = async (url) => {
     const data = await res;
     issuersList.value = data.data;
     setCounters(issuersList);
+    filterIssuersList(route.query.type ? route.query.type : "");
   } catch (error) {
     console.error("Error fetching data", error);
   } finally {
@@ -99,6 +99,7 @@ onMounted(() => {
 
 const navigateToRoute = async (query) => {
   router.push({ name: "issuers", query: query ? { type: query } : "" });
+  filterIssuersList(query);
   setActiveButton(query);
 };
 
@@ -118,7 +119,15 @@ const setCounters = (list) => {
   }).length;
 };
 
-const filterIssuersList = (type) => {};
+const filterIssuersList = (type) => {
+  if (type === "") {
+    filteredIssuersList.value = null;
+  } else {
+    filteredIssuersList.value = issuersList.value.filter((item) => {
+      return item.type === type;
+    });
+  }
+};
 
 const logo = {
   imgSrc: imgSrc,
