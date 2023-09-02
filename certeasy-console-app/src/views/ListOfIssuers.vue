@@ -47,7 +47,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 
 import addFileIcon from "@/assets/icons/add-file.svg";
@@ -72,7 +72,9 @@ const route = useRoute();
 const issuersList = ref([]);
 const loading = ref(true);
 
-const fetchData = async (url = "/issuers") => {
+const countAll = computed(() => issuersList.value.length);
+
+const fetchData = async (url) => {
   loading.value = true;
   try {
     const res = await api.get(url);
@@ -86,9 +88,20 @@ const fetchData = async (url = "/issuers") => {
 };
 
 onMounted(() => {
-  fetchData(`/issuers${route.query.type ? `?type=${route.query.type}` : ""}`);
+  fetchData("/issuers");
   setActiveButton(route.query.type ? route.query.type : "");
 });
+
+const navigateToRoute = async (query) => {
+  router.push({ name: "issuers", query: query ? { type: query } : "" });
+  setActiveButton(query);
+};
+
+const setActiveButton = (type) => {
+  filterButtons.value = filterButtons.value.map((item) => {
+    return { ...item, active: type === item.query ? true : false };
+  });
+};
 
 const logo = {
   imgSrc: imgSrc,
@@ -111,12 +124,6 @@ const navLinks = [
     linkHref: "#",
   },
 ];
-
-const navigateToRoute = async (query) => {
-  router.push({ name: "issuers", query: query ? { type: query } : "" });
-  fetchData("/issuers?type=" + query);
-  setActiveButton(query);
-};
 
 const filterButtons = ref([
   {
@@ -158,12 +165,6 @@ const filterButtons = ref([
     query: "TREE",
   },
 ]);
-
-const setActiveButton = (type) => {
-  filterButtons.value = filterButtons.value.map((item) => {
-    return { ...item, active: type === item.query ? true : false };
-  });
-};
 
 const actionButtons = [
   {
