@@ -50,7 +50,7 @@
 import { ref, onMounted, computed, watch, shallowRef } from "vue";
 import { useRouter, useRoute } from "vue-router";
 
-import addFileIcon from "@/assets/icons/add-file.svg";
+import AddFileIcon from "@/assets/icons/AddFileIcon.vue";
 import api from "@/config/config";
 import apiIcon from "@/assets/icons/api.svg";
 import cogIcon from "@/assets/icons/cog.svg";
@@ -58,7 +58,7 @@ import TheFooter from "@/components/TheFooter.vue";
 import IconActionButton from "@/components/buttons/IconActionButton.vue";
 import IconTextButton from "@/components/buttons/IconTextButton.vue";
 import imgSrc from "@/assets/logo.svg";
-import importFileIcon from "@/assets/icons/import-file.svg";
+import ImportFileIcon from "@/assets/icons/ImportFileIcon.vue";
 import IssuerCard from "@/components/IssuerCard.vue";
 import IssuerCardNoContent from "@/components/IssuerCardNoContent.vue";
 import NavComponent from "@/components/NavComponent.vue";
@@ -67,6 +67,8 @@ import StorageIcon from "@/assets/icons/StorageIcon.vue";
 import SubStorageIcon from "@/assets/icons/SubStorageIcon.vue";
 import TreeIcon from "@/assets/icons/TreeIcon.vue";
 
+const addFileIcon = AddFileIcon;
+const importFileIcon = ImportFileIcon;
 const storageIcon = StorageIcon;
 const subStorageIcon = SubStorageIcon;
 const treeIcon = TreeIcon;

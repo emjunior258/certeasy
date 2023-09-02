@@ -12,6 +12,7 @@ module.exports = {
         "red-0.6": "rgba(255, 0, 0, 0.6)",
         "red-light": "#FFEBEB",
         purple: "#D4C6FB",
+        "black-0.4": "rgba(0, 0, 0, 0.4)",
         "black-0.3": "rgba(0, 0, 0, 0.3)",
         "black-0.6": "rgba(0, 0, 0, 0.6)",
         "gray-40": "#BCBCBC",

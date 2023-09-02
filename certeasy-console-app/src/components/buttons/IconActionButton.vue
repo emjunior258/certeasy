@@ -12,10 +12,9 @@
     type="button"
   >
     {{ buttonProps.text }}
-    <img
-      :src="buttonProps.icon"
-      :alt="buttonProps.altIcon"
-      class="inline ml-2"
+    <component
+      :is="buttonProps.icon"
+      class="inline"
     />
   </button>
 </template>
