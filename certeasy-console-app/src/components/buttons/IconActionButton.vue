@@ -14,7 +14,7 @@
     {{ buttonProps.text }}
     <component
       :is="buttonProps.icon"
-      class="inline"
+      class="inline ml-2"
     />
   </button>
 </template>
