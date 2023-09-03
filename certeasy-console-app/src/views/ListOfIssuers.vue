@@ -29,17 +29,12 @@
           />
         </div>
       </div>
-      <ul
+
+      <IssuersList
         class="px-16"
         v-if="issuersList.length > 0"
-      >
-        <IssuerCard
-          v-for="issuer in filteredIssuersList || issuersList"
-          :key="issuer.id"
-          :issuer="issuer"
-          data-test="issuer"
-        />
-      </ul>
+        :issuersList="filteredIssuersList || issuersList"
+      />
       <IssuerCardNoContent v-else />
     </section>
     <TheFooter />
@@ -61,6 +56,7 @@ import imgSrc from "@/assets/logo.svg";
 import ImportFileIcon from "@/assets/icons/ImportFileIcon.vue";
 import IssuerCard from "@/components/IssuerCard.vue";
 import IssuerCardNoContent from "@/components/IssuerCardNoContent.vue";
+import IssuersList from "@/components/IssuersList.vue";
 import NavComponent from "@/components/NavComponent.vue";
 import PlaceholderLoading from "@/components/loading/PlaceholderLoading.vue";
 import StorageIcon from "@/assets/icons/StorageIcon.vue";
