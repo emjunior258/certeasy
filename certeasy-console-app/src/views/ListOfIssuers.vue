@@ -29,13 +29,19 @@
           />
         </div>
       </div>
-
-      <IssuersList
-        class="px-16"
-        v-if="issuersList.length > 0"
-        :issuersList="filteredIssuersList || issuersList"
-      />
-      <IssuerCardNoContent v-else />
+      <div>
+        <TheTree
+          class="px-16"
+          :treeData="treeData"
+          v-if="currentRoute === 'TREE' && issuersList.length > 0"
+        />
+        <IssuersList
+          class="px-16"
+          v-if="issuersList.length > 0"
+          :issuersList="filteredIssuersList || issuersList"
+        />
+        <IssuerCardNoContent v-else />
+      </div>
     </section>
     <TheFooter />
   </div>
@@ -54,13 +60,13 @@ import IconActionButton from "@/components/buttons/IconActionButton.vue";
 import IconTextButton from "@/components/buttons/IconTextButton.vue";
 import imgSrc from "@/assets/logo.svg";
 import ImportFileIcon from "@/assets/icons/ImportFileIcon.vue";
-import IssuerCard from "@/components/IssuerCard.vue";
 import IssuerCardNoContent from "@/components/IssuerCardNoContent.vue";
 import IssuersList from "@/components/IssuersList.vue";
 import NavComponent from "@/components/NavComponent.vue";
 import PlaceholderLoading from "@/components/loading/PlaceholderLoading.vue";
 import StorageIcon from "@/assets/icons/StorageIcon.vue";
 import SubStorageIcon from "@/assets/icons/SubStorageIcon.vue";
+import TheTree from "@/components/TheTree.vue";
 import TreeIcon from "@/assets/icons/TreeIcon.vue";
 
 const addFileIcon = AddFileIcon;
@@ -71,6 +77,7 @@ const treeIcon = TreeIcon;
 
 const router = useRouter();
 const route = useRoute();
+const currentRoute = computed(() => route.query.type);
 const issuersList = ref([]);
 const filteredIssuersList = ref(null);
 const loading = ref(true);
@@ -203,4 +210,27 @@ const actionButtons = [
     outlined: true,
   },
 ];
+
+const treeData = ref({
+  name: "My Tree",
+  children: [
+    { name: "hello" },
+    { name: "wat" },
+    {
+      name: "child folder",
+      children: [
+        {
+          name: "child folder",
+          children: [{ name: "hello" }, { name: "wat" }],
+        },
+        { name: "hello" },
+        { name: "wat" },
+        {
+          name: "child folder",
+          children: [{ name: "hello" }, { name: "wat" }],
+        },
+      ],
+    },
+  ],
+});
 </script>
