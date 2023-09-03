@@ -1,4 +1,6 @@
 import requests
+
+from certeasy_api_tests.services.create_issuer_from_pem.create_issuer_from_pem import create_issuer_from_pem
 from certeasy_api_tests.services.create_issuer_from_spec.create_issuer_from_spec import create_issuer_from_spec
 from certeasy_api_tests.services.create_issuer_from_spec.generate_issuer_id import generate_hex_id
 from certeasy_api_tests.services.global_var import EMPTY_ISSUER_ID, SEQUENCE_OF_SPACE_ISSUER_ID
@@ -12,6 +14,14 @@ class TestIssuerDeletion:
     def test_should_delete_issuer_created_from_spec(app_container):
         # Create issuer ID before listing them
         ISSUER_ID = create_issuer_from_spec()
+        # Delete issuer
+        delete_issuer = requests.delete(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}')
+        assert delete_issuer.status_code == 204
+
+    @staticmethod
+    def test_should_delete_issuer_created_from_pem(app_container):
+        # Create issuer ID before listing them
+        ISSUER_ID = create_issuer_from_pem()
         # Delete issuer
         delete_issuer = requests.delete(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}')
         assert delete_issuer.status_code == 204
