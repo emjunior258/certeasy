@@ -1,5 +1,5 @@
 <template>
-  <header class="bg-primary px-16 py-4 text-white">
+  <header class="bg-primary px-16 py-4 text-white z-50">
     <div class="flex justify-between">
       <img
         :src="logo.imgSrc"
