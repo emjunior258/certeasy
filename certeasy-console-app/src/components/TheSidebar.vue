@@ -1,5 +1,7 @@
 <template>
-  <div class="shadow-md w-[500px] h-screen fixed top-0 right-0 p-8 z-50">
+  <div
+    class="shadow-md w-[500px] h-screen fixed top-0 right-0 bg-white p-8 z-50"
+  >
     <img
       src="@/assets/avatar-placeholder.svg"
       alt="avatar"
@@ -36,7 +38,7 @@
       />
     </div>
     <div class="absolute bottom-0 left-0 px-8 w-full bg-white">
-      <div class="border-t text-left pt-6 pb-7">
+      <div class="border-t text-left pt-8 pb-8">
         <IconActionButton
           :buttonProps="deleteButton"
           class="text-sm px-[16px] py-[8px] bg-red"
