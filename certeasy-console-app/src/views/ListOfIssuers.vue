@@ -43,6 +43,9 @@
         <IssuerCardNoContent v-else />
       </div>
     </section>
+    <section>
+      <TheSidebar />
+    </section>
     <TheFooter />
   </div>
 </template>
@@ -66,6 +69,7 @@ import NavComponent from "@/components/NavComponent.vue";
 import PlaceholderLoading from "@/components/loading/PlaceholderLoading.vue";
 import StorageIcon from "@/assets/icons/StorageIcon.vue";
 import SubStorageIcon from "@/assets/icons/SubStorageIcon.vue";
+import TheSidebar from "@/components/TheSidebar.vue";
 import TheTree from "@/components/TheTree.vue";
 import TreeIcon from "@/assets/icons/TreeIcon.vue";
 
@@ -90,6 +94,7 @@ const fetchData = async (url) => {
     issuersList.value = data.data;
     setCounters(issuersList);
     filterIssuersList(route.query.type ? route.query.type : "");
+    console.log(issuersList.value);
   } catch (error) {
     console.error("Error fetching data", error);
   } finally {
