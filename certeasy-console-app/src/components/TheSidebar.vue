@@ -57,10 +57,12 @@ import ImportFileIcon from "@/assets/icons/ImportFileIcon.vue";
 import IssuerDetails from "@/components/IssuerDetails.vue";
 import TheBadge from "@/components/text-containers/TheBadge.vue";
 import TheSquaredBadge from "@/components/text-containers/TheSquaredBadge.vue";
+import ViewIcon from "@/assets/icons/ViewIcon.vue";
 
 const addFileIcon = AddFileIcon;
 const importFileIcon = ImportFileIcon;
 const trashIcon = TrashIcon;
+const viewIcon = ViewIcon;
 
 const details = [
   { key: "CN", value: "John Doe" },
@@ -91,7 +93,7 @@ const actionButtons = [
   },
   {
     id: 3,
-    icon: importFileIcon,
+    icon: viewIcon,
     text: "View Certificates",
     outlined: true,
   },
