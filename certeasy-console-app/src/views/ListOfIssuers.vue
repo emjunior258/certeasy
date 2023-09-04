@@ -30,17 +30,26 @@
         </div>
       </div>
       <div>
-        <TheTree
-          class="px-16"
-          :treeData="treeData"
-          v-if="currentRoute === 'TREE' && issuersList.length > 0"
-        />
+        <div
+          v-if="
+            currentRoute === 'TREE' &&
+            filteredIssuersList &&
+            filteredIssuersList.length > 0
+          "
+        >
+          <TheTree
+            :treeData="treeData"
+            :getChildren="getChildren"
+            v-for="treeData in filteredIssuersList"
+            :key="treeData.id"
+          />
+        </div>
         <IssuersList
           class="px-16"
-          v-if="issuersList.length > 0"
+          v-if="issuersList.length > 0 && currentRoute !== 'TREE'"
           :issuersList="filteredIssuersList || issuersList"
         />
-        <IssuerCardNoContent v-else />
+        <IssuerCardNoContent v-if="issuersList.length === 0" />
       </div>
     </section>
     <section>
@@ -93,12 +102,27 @@ const fetchData = async (url) => {
     const data = await res;
     issuersList.value = data.data;
     setCounters(issuersList);
-    filterIssuersList(route.query.type ? route.query.type : "");
-    console.log(issuersList.value);
+    filterIssuersList(
+      route.query.type
+        ? route.query.type === "TREE"
+          ? "ROOT"
+          : route.query.type
+        : ""
+    );
   } catch (error) {
     console.error("Error fetching data", error);
   } finally {
     loading.value = false;
+  }
+};
+
+const fetchChildren = async (node) => {
+  try {
+    const res = await api.get(`issuers/${node.id}/children`);
+    const data = await res;
+    node.children = data.data;
+  } catch (error) {
+    console.error("Error fetching data", error);
   }
 };
 
@@ -109,7 +133,7 @@ onMounted(() => {
 
 const navigateToRoute = async (query) => {
   router.push({ name: "issuers", query: query ? { type: query } : "" });
-  filterIssuersList(query);
+  filterIssuersList(query === "TREE" ? "ROOT" : query);
   setActiveButton(query);
 };
 
@@ -137,6 +161,25 @@ const filterIssuersList = (type) => {
       return item.type === type;
     });
   }
+};
+
+function findNodeInTrees(nodes, targetId) {
+  for (const node of nodes) {
+    if (node.id === targetId) {
+      return node;
+    } else if (node.children) {
+      const foundInChildren = findNodeInTrees(node.children, targetId);
+      if (foundInChildren) {
+        return foundInChildren;
+      }
+    }
+  }
+  return null;
+}
+
+const getChildren = (id) => {
+  const node = findNodeInTrees(filteredIssuersList.value, id);
+  fetchChildren(node);
 };
 
 const logo = {
@@ -215,27 +258,4 @@ const actionButtons = [
     outlined: true,
   },
 ];
-
-const treeData = ref({
-  name: "My Tree",
-  children: [
-    { name: "hello" },
-    { name: "wat" },
-    {
-      name: "child folder",
-      children: [
-        {
-          name: "child folder",
-          children: [{ name: "hello" }, { name: "wat" }],
-        },
-        { name: "hello" },
-        { name: "wat" },
-        {
-          name: "child folder",
-          children: [{ name: "hello" }, { name: "wat" }],
-        },
-      ],
-    },
-  ],
-});
 </script>
