@@ -1,7 +1,7 @@
 <template>
   <li>
     <div
-      @click="toggle"
+      @click="toggle(item)"
       class="flex items-center gap-[14px] font-light"
     >
       <span
@@ -23,9 +23,10 @@
       v-if="isParent"
     >
       <TreeNode
-        v-for="(child, index) in item.children"
-        :key="index"
+        v-for="child in item.children"
+        :key="child.id"
         :item="child"
+        :getChildren="getChildren"
       />
     </ul>
   </li>
@@ -34,18 +35,22 @@
 <script setup>
 import { ref } from "vue";
 
-const { item } = defineProps(["item"]);
+const { item, getChildren } = defineProps(["item", "getChildren"]);
 
 const isOpen = ref(false);
 const isParent = ref(false);
 
-if (item.children && item.children.length) {
+if (item.children_count && item.children_count > 0) {
   isParent.value = true;
 }
 
-const toggle = () => {
+const toggle = (node) => {
   if (isParent.value) {
     isOpen.value = !isOpen.value;
+  }
+
+  if (!node.children) {
+    getChildren(node.id);
   }
 };
 </script>

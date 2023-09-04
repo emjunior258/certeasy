@@ -1,17 +1,24 @@
 <template>
   <ul class="root">
-    <TreeNode :item="treeData" />
+    <TreeNode
+      :item="treeData"
+      :getChildren="getChild"
+    />
   </ul>
 </template>
 
 <script setup>
 import TreeNode from "@/components/TreeNode.vue";
 
-defineProps(["treeData"]);
+const { getChildren } = defineProps(["treeData", "getChildren"]);
+
+const getChild = (id) => {
+  getChildren(id);
+};
 </script>
 
 <style>
-ul:not(:first-child) {
+.root ul {
   padding-left: 30px;
 }
 
