@@ -36,6 +36,7 @@
             filteredIssuersList &&
             filteredIssuersList.length > 0
           "
+          class="px-16"
         >
           <TheTree
             :treeData="treeData"
