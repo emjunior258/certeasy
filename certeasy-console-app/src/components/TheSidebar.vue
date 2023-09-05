@@ -20,7 +20,7 @@
       <DownIcon class="inline mr-2 text-primary" /><TheSquaredBadge
         class="mr-2"
         :text="issuer && issuer.children_count"
-      /><TheBadge :text="issuer.type" />
+      /><TheBadge :text="issuer && issuer.type" />
     </div>
     <div class="py-6 border-t">
       <IssuerDetails
