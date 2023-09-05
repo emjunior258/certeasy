@@ -3,6 +3,7 @@
     <TreeNode
       :item="treeData"
       :getChildren="getChild"
+      :selectNode="handleSelectNode"
     />
   </ul>
 </template>
@@ -10,10 +11,18 @@
 <script setup>
 import TreeNode from "@/components/TreeNode.vue";
 
-const { getChildren } = defineProps(["treeData", "getChildren"]);
+const { getChildren, selectNode } = defineProps([
+  "treeData",
+  "getChildren",
+  "selectNode",
+]);
 
 const getChild = (id) => {
   getChildren(id);
+};
+
+const handleSelectNode = (id) => {
+  selectNode(id);
 };
 </script>
 
@@ -64,5 +73,9 @@ const getChild = (id) => {
   top: 12px;
   bottom: 0;
   z-index: -1;
+}
+
+li > div {
+  cursor: pointer;
 }
 </style>

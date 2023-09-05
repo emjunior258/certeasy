@@ -27,6 +27,7 @@
         :key="child.id"
         :item="child"
         :getChildren="getChildren"
+        :selectNode="selectNode"
       />
     </ul>
   </li>
@@ -35,7 +36,11 @@
 <script setup>
 import { ref } from "vue";
 
-const { item, getChildren } = defineProps(["item", "getChildren"]);
+const { item, getChildren, selectNode } = defineProps([
+  "item",
+  "getChildren",
+  "selectNode",
+]);
 
 const isOpen = ref(false);
 const isParent = ref(false);
@@ -49,8 +54,9 @@ const toggle = (node) => {
     isOpen.value = !isOpen.value;
   }
 
-  if (!node.children) {
+  if (isParent.value && !node.children) {
     getChildren(node.id);
   }
+  selectNode(node.id);
 };
 </script>

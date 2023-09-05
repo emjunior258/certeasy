@@ -41,6 +41,7 @@
           <TheTree
             :treeData="treeData"
             :getChildren="getChildren"
+            :selectNode="handleSelectNode"
             v-for="treeData in filteredIssuersList"
             :key="treeData.id"
           />
@@ -54,7 +55,10 @@
       </div>
     </section>
     <section>
-      <TheSidebar />
+      <TheSidebar
+        :key="selectedNode"
+        :issuer="selectedNode"
+      />
     </section>
     <TheFooter />
   </div>
@@ -94,6 +98,7 @@ const route = useRoute();
 const currentRoute = computed(() => route.query.type);
 const issuersList = ref([]);
 const filteredIssuersList = ref(null);
+const selectedNode = ref(null);
 const loading = ref(true);
 
 const fetchData = async (url) => {
@@ -152,6 +157,9 @@ const setCounters = (list) => {
   filterButtons.value[2].amount = list.value.filter((item) => {
     return item.type === "SUB_CA";
   }).length;
+  filterButtons.value[3].amount = list.value.filter((item) => {
+    return item.type === "ROOT";
+  }).length;
 };
 
 const filterIssuersList = (type) => {
@@ -177,6 +185,18 @@ function findNodeInTrees(nodes, targetId) {
   }
   return null;
 }
+
+const handleSelectNode = (id) => {
+  if (
+    !selectedNode.value ||
+    (selectedNode.value &&
+      selectedNode.value.id &&
+      selectedNode.value.id !== id)
+  ) {
+    const node = findNodeInTrees(filteredIssuersList.value, id);
+    selectedNode.value = node;
+  }
+};
 
 const getChildren = (id) => {
   const node = findNodeInTrees(filteredIssuersList.value, id);

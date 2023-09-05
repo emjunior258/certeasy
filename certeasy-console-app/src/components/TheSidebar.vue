@@ -8,13 +8,18 @@
       class="w-[52px] h-[52px] rounded ml-auto"
     />
     <div class="py-6">
-      <h2 class="text-xl text-primary font-medium mb-1">My Sub Issuer Name</h2>
+      <h2 class="text-xl text-primary font-medium mb-1">
+        {{ issuer && issuer.name }}
+      </h2>
       <p class="text-sm font-light text-black-0.4 mb-2">
-        6332dd1934bd-4322 <CopyIcon class="inline" />
+        {{ issuer && issuer.id.substring(0, 12) }}-{{
+          issuer && issuer.id.substring(issuer.id.length - 4)
+        }}
+        <CopyIcon class="inline" />
       </p>
       <DownIcon class="inline mr-2 text-primary" /><TheSquaredBadge
         class="mr-2"
-        text="6"
+        :text="issuer && issuer.children_count"
       /><TheBadge text="sub" />
     </div>
     <div class="py-6 border-t">
@@ -58,6 +63,8 @@ import IssuerDetails from "@/components/IssuerDetails.vue";
 import TheBadge from "@/components/text-containers/TheBadge.vue";
 import TheSquaredBadge from "@/components/text-containers/TheSquaredBadge.vue";
 import ViewIcon from "@/assets/icons/ViewIcon.vue";
+
+const { issuer } = defineProps(["issuer"]);
 
 const addFileIcon = AddFileIcon;
 const importFileIcon = ImportFileIcon;
