@@ -58,7 +58,7 @@
       <TheSidebar
         :key="selectedNode"
         :issuer="selectedNode"
-        v-if="currentRoute === 'TREE'"
+        v-if="currentRoute === 'TREE' && selectedNode"
       />
     </section>
     <TheFooter />
