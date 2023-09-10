@@ -10,13 +10,15 @@
         >{{ isOpen ? "-" : "+" }}</span
       >
       <div
-        class="flex items-center gap-2"
+        class="flex items-center gap-2 text-sm py-0.5"
         :class="{
           'bg-primary-0.08': item.active,
           'border-primary-0.6': item.active,
           border: item.active,
           rounded: item.active,
           'px-1.5': item.active,
+          'font-medium': item.active,
+          'text-primary': item.active,
         }"
       >
         <img

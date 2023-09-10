@@ -189,6 +189,18 @@ function findNodeInTrees(nodes, targetId) {
 
 const handleSelectNode = (id) => {
   if (
+    selectedTreeNode.value &&
+    selectedTreeNode.value.id &&
+    selectedTreeNode.value.id !== id
+  ) {
+    const node = findNodeInTrees(
+      filteredIssuersList.value,
+      selectedTreeNode.value.id
+    );
+    delete node.active;
+  }
+
+  if (
     !selectedTreeNode.value ||
     (selectedTreeNode.value &&
       selectedTreeNode.value.id &&
@@ -197,14 +209,12 @@ const handleSelectNode = (id) => {
     const node = findNodeInTrees(filteredIssuersList.value, id);
     selectedTreeNode.value = node;
     node.active = true;
-    console.log(node);
   }
 };
 
 const getChildren = (id) => {
   const node = findNodeInTrees(filteredIssuersList.value, id);
   fetchChildren(node);
-  console.log(filteredIssuersList.value);
 };
 
 const logo = {
