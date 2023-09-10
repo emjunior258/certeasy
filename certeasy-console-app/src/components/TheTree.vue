@@ -41,7 +41,7 @@ const handleSelectNode = (id) => {
   content: "";
   position: absolute;
   left: 8px;
-  top: -8px;
+  top: -10px;
   width: 0;
   height: 100%;
   border-left: 1px solid #c0c0c0;
@@ -56,7 +56,7 @@ const handleSelectNode = (id) => {
   content: "";
   position: absolute;
   left: -22px;
-  top: 0;
+  top: -3px;
   width: 22px;
   height: 16px;
   border-left: 1px solid #c0c0c0;
@@ -70,7 +70,7 @@ const handleSelectNode = (id) => {
   width: 1px;
   left: -22px;
   background: #fff;
-  top: 12px;
+  top: 9px;
   bottom: 0;
   z-index: -1;
 }
