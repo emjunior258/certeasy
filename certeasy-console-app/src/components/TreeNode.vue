@@ -7,7 +7,7 @@
       <span
         class="border border-primary text-primary font-semibold rounded w-4 h-4 flex items-center justify-center"
         v-if="isParent"
-        >{{ isOpen ? "-" : "+" }}</span
+        >{{ item.isOpen ? "-" : "+" }}</span
       >
       <div
         class="flex items-center gap-2 text-sm py-0.5"
@@ -30,7 +30,7 @@
       </div>
     </div>
     <ul
-      v-show="isOpen"
+      v-show="item.isOpen"
       v-if="isParent"
     >
       <TreeNode
@@ -53,7 +53,6 @@ const { item, getChildren, selectNode } = defineProps([
   "selectNode",
 ]);
 
-const isOpen = ref(false);
 const isParent = ref(false);
 
 if (item.children_count && item.children_count > 0) {
@@ -62,7 +61,11 @@ if (item.children_count && item.children_count > 0) {
 
 const toggle = (node) => {
   if (isParent.value) {
-    isOpen.value = !isOpen.value;
+    if (!node.isOpen) {
+      node.isOpen = true;
+    } else {
+      node.isOpen = !node.isOpen;
+    }
   }
 
   if (isParent.value && !node.children) {
