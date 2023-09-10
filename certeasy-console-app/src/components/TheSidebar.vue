@@ -1,48 +1,50 @@
 <template>
   <div
-    class="shadow-md w-[500px] h-screen fixed top-0 right-0 bg-white p-8 z-50"
+    class="shadow-md w-[500px] h-screen fixed top-0 right-0 bg-white z-50 overflow-y-scroll"
   >
-    <img
-      src="@/assets/avatar-placeholder.svg"
-      alt="avatar"
-      class="w-[52px] h-[52px] rounded ml-auto"
-    />
-    <div class="py-6">
-      <h2 class="text-xl text-primary font-medium mb-1">
-        {{ issuer && issuer.name }}
-      </h2>
-      <p class="text-sm font-light text-black-0.4 mb-2">
-        {{ issuer && issuer.id.substring(0, 12) }}-{{
-          issuer && issuer.id.substring(issuer.id.length - 4)
-        }}
-        <CopyIcon class="inline" />
-      </p>
-      <DownIcon class="inline mr-2 text-primary" /><TheSquaredBadge
-        class="mr-2"
-        :text="issuer && issuer.children_count"
-      /><TheBadge :text="issuer && issuer.type" />
-    </div>
-    <div class="py-6 border-t">
-      <IssuerDetails
-        heading="Distinguished Name"
-        :details="issuer && childDN"
+    <div class="p-8 mb-[104px]">
+      <img
+        src="@/assets/avatar-placeholder.svg"
+        alt="avatar"
+        class="w-[52px] h-[52px] rounded ml-auto"
       />
+      <div class="py-6">
+        <h2 class="text-xl text-primary font-medium mb-1">
+          {{ issuer && issuer.name }}
+        </h2>
+        <p class="text-sm font-light text-black-0.4 mb-2">
+          {{ issuer && issuer.id.substring(0, 12) }}-{{
+            issuer && issuer.id.substring(issuer.id.length - 4)
+          }}
+          <CopyIcon class="inline" />
+        </p>
+        <DownIcon class="inline mr-2 text-primary" /><TheSquaredBadge
+          class="mr-2"
+          :text="issuer && issuer.children_count"
+        /><TheBadge :text="issuer && issuer.type" />
+      </div>
+      <div class="py-6 border-t">
+        <IssuerDetails
+          heading="Distinguished Name"
+          :details="issuer && childDN"
+        />
+      </div>
+      <div class="py-6 border-t">
+        <IssuerDetails
+          heading="Parent"
+          :details="details"
+        />
+      </div>
+      <div class="flex flex-wrap gap-4 py-6 border-t">
+        <IconActionButton
+          v-for="actionButton in actionButtons"
+          :key="actionButton.id"
+          :buttonProps="actionButton"
+          class="text-sm px-[16px] py-[8px]"
+        />
+      </div>
     </div>
-    <div class="py-6 border-t">
-      <IssuerDetails
-        heading="Parent"
-        :details="details"
-      />
-    </div>
-    <div class="flex flex-wrap gap-4 py-6 border-t">
-      <IconActionButton
-        v-for="actionButton in actionButtons"
-        :key="actionButton.id"
-        :buttonProps="actionButton"
-        class="text-sm px-[16px] py-[8px]"
-      />
-    </div>
-    <div class="absolute bottom-0 left-0 px-8 w-full bg-white">
+    <div class="fixed w-[500px] bottom-0 right-0 px-8 bg-white">
       <div class="border-t text-left pt-8 pb-8">
         <IconActionButton
           :buttonProps="deleteButton"
