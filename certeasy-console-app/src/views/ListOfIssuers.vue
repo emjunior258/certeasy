@@ -56,9 +56,9 @@
     </section>
     <section>
       <TheSidebar
-        :key="selectedNode"
-        :issuer="selectedNode"
-        v-if="currentRoute === 'TREE' && selectedNode"
+        :key="selectedTreeNode"
+        :issuer="selectedTreeNode"
+        v-if="currentRoute === 'TREE' && selectedTreeNode"
       />
     </section>
     <TheFooter />
@@ -99,7 +99,7 @@ const route = useRoute();
 const currentRoute = computed(() => route.query.type);
 const issuersList = ref([]);
 const filteredIssuersList = ref(null);
-const selectedNode = ref(null);
+const selectedTreeNode = ref(null);
 const loading = ref(true);
 
 const fetchData = async (url) => {
@@ -189,19 +189,22 @@ function findNodeInTrees(nodes, targetId) {
 
 const handleSelectNode = (id) => {
   if (
-    !selectedNode.value ||
-    (selectedNode.value &&
-      selectedNode.value.id &&
-      selectedNode.value.id !== id)
+    !selectedTreeNode.value ||
+    (selectedTreeNode.value &&
+      selectedTreeNode.value.id &&
+      selectedTreeNode.value.id !== id)
   ) {
     const node = findNodeInTrees(filteredIssuersList.value, id);
-    selectedNode.value = node;
+    selectedTreeNode.value = node;
+    node.active = true;
+    console.log(node);
   }
 };
 
 const getChildren = (id) => {
   const node = findNodeInTrees(filteredIssuersList.value, id);
   fetchChildren(node);
+  console.log(filteredIssuersList.value);
 };
 
 const logo = {
