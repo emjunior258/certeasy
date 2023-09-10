@@ -31,7 +31,7 @@
 </style>
 <script setup>
 import IconActionButton from "./buttons/IconActionButton.vue";
-import plusIcon from "@/assets/icons/plus.svg";
+import plusIcon from "@/assets/icons/PlusIcon.vue";
 
 const actionButton = {
   icon: plusIcon,
