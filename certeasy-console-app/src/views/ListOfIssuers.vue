@@ -55,11 +55,14 @@
       </div>
     </section>
     <section>
-      <TheSidebar
-        :key="selectedTreeNode"
-        :issuer="selectedTreeNode"
-        v-if="currentRoute === 'TREE' && selectedTreeNode"
-      />
+      <Transition name="slide">
+        <TheSidebar
+          :key="selectedTreeNode"
+          :issuer="selectedTreeNode"
+          @toggleSidebar="toggleSidebar"
+          v-if="currentRoute === 'TREE' && selectedTreeNode && isSidebarOpen"
+        />
+      </Transition>
     </section>
     <TheFooter />
   </div>
@@ -101,6 +104,15 @@ const issuersList = ref([]);
 const filteredIssuersList = ref(null);
 const selectedTreeNode = ref(null);
 const loading = ref(true);
+const isSidebarOpen = ref(false);
+
+const toggleSidebar = () => {
+  isSidebarOpen.value = !isSidebarOpen.value;
+  if (selectedTreeNode && !isSidebarOpen.value) {
+    unselectTreeNode();
+    selectedTreeNode.value = null;
+  }
+};
 
 const fetchData = async (url) => {
   loading.value = true;
@@ -187,17 +199,21 @@ function findNodeInTrees(nodes, targetId) {
   return null;
 }
 
+const unselectTreeNode = () => {
+  const node = findNodeInTrees(
+    filteredIssuersList.value,
+    selectedTreeNode.value.id
+  );
+  delete node.active;
+};
+
 const handleSelectNode = (id) => {
   if (
     selectedTreeNode.value &&
     selectedTreeNode.value.id &&
     selectedTreeNode.value.id !== id
   ) {
-    const node = findNodeInTrees(
-      filteredIssuersList.value,
-      selectedTreeNode.value.id
-    );
-    delete node.active;
+    unselectTreeNode();
   }
 
   if (
@@ -209,6 +225,9 @@ const handleSelectNode = (id) => {
     const node = findNodeInTrees(filteredIssuersList.value, id);
     selectedTreeNode.value = node;
     node.active = true;
+  }
+  if (!isSidebarOpen.value) {
+    toggleSidebar();
   }
 };
 
@@ -294,3 +313,17 @@ const actionButtons = [
   },
 ];
 </script>
+<style scoped>
+.slide-enter-active {
+  transition: transform 0.8s ease-in-out;
+}
+
+.slide-leave-active {
+  transition: transform 0.3s ease-in-out;
+}
+
+.slide-enter-from,
+.slide-leave-to {
+  transform: translate(500px);
+}
+</style>

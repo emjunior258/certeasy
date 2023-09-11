@@ -3,11 +3,18 @@
     class="shadow-md w-[500px] h-screen fixed top-0 right-0 bg-white z-50 overflow-y-scroll"
   >
     <div class="p-8 mb-[104px]">
-      <img
-        src="@/assets/avatar-placeholder.svg"
-        alt="avatar"
-        class="w-[52px] h-[52px] rounded ml-auto"
-      />
+      <div class="flex justify-between items-center">
+        <span
+          @click="$emit('toggleSidebar')"
+          class="cursor-pointer p-4"
+          >x</span
+        >
+        <img
+          src="@/assets/avatar-placeholder.svg"
+          alt="avatar"
+          class="w-[52px] h-[52px] rounded ml-auto"
+        />
+      </div>
       <div class="py-6">
         <h2 class="text-xl text-primary font-medium mb-1">
           {{ issuer && issuer.name }}
