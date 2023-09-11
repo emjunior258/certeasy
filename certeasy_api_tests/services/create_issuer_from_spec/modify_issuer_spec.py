@@ -3,6 +3,11 @@ def modify_json_values(json_data, key, value):
         json_data[key] = value
 
 
+def remove_json_values(json_data, key):
+    if key in json_data:
+        del json_data[key]
+
+
 def turn_empty_dict_in_json(json_data, key):
     if key in json_data and isinstance(json_data[key], dict):
         json_data[key] = {}

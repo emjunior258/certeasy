@@ -8,9 +8,9 @@ def create_issuer_from_spec():
     loaded_schema = file_reader(filename='../services/create_issuer_from_spec/issuer_schema.json')
     VALID_BODY = generate_issuer_json(loaded_schema)
     try:
-        create_issuer = requests.post(url=f'{BASE_URL}/issuers/cert-spec', json=VALID_BODY)  # No need for json.dumps()
+        create_issuer = requests.post(url=f'{BASE_URL}/issuers/cert-spec', json=VALID_BODY)
         if create_issuer.status_code == 200:
             issuer_id = create_issuer.json()['issuer_id']
-            return issuer_id
+            return issuer_id, VALID_BODY
     except (requests.RequestException, ValueError) as e:
         raise RuntimeError(f"Error occurred while trying to create issuer from spec: {str(e)}")
