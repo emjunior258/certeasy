@@ -75,7 +75,8 @@ const handleSelectNode = (id) => {
   z-index: -1;
 }
 
-li > div {
+li > div > div,
+li > div > span {
   cursor: pointer;
 }
 </style>
