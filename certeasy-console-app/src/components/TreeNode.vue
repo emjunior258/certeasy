@@ -1,15 +1,14 @@
 <template>
   <li>
-    <div
-      @click="toggle(item)"
-      class="flex items-center gap-[14px] font-light mb-1"
-    >
+    <div class="flex items-center gap-[14px] font-light mb-1">
       <span
+        @click="toggle(item)"
         class="border border-primary text-primary font-semibold rounded w-4 h-4 flex items-center justify-center"
         v-if="isParent"
         >{{ item.isOpen ? "-" : "+" }}</span
       >
       <div
+        @click="handleSelectNode(item)"
         class="flex items-center gap-2 text-sm py-0.5"
         :class="{
           'bg-primary-0.08': item.active,
@@ -71,6 +70,9 @@ const toggle = (node) => {
   if (isParent.value && !node.children) {
     getChildren(node.id);
   }
+};
+
+const handleSelectNode = (node) => {
   selectNode(node.id);
 };
 </script>
