@@ -5,7 +5,7 @@
         <img
           src="../assets/avatar-placeholder.svg"
           :alt="issuer.altText"
-          class="h-[54px] w-[54px] border border-primary-0.4 rounded"
+          class="h-[54px] w-[54px]"
         />
         <div class="flex flex-col justify-between items-start">
           <h3 class="text-xl font-medium">{{ issuer.name }}</h3>
