@@ -1,5 +1,5 @@
 <template>
-  <ul class="root">
+  <ul class="root mb-6">
     <TreeNode
       :item="treeData"
       :getChildren="getChild"
@@ -41,7 +41,7 @@ const handleSelectNode = (id) => {
   content: "";
   position: absolute;
   left: 8px;
-  top: -10px;
+  top: -9px;
   width: 0;
   height: 100%;
   border-left: 1px solid #c0c0c0;
@@ -52,16 +52,20 @@ const handleSelectNode = (id) => {
   position: relative;
 }
 
-.root ul li::before {
+.node-tab::before {
   content: "";
   position: absolute;
   left: -22px;
-  top: -3px;
-  width: 22px;
+  top: -4px;
+  width: 52px;
   height: 16px;
   border-left: 1px solid #c0c0c0;
   border-bottom: 1px solid #c0c0c0;
   border-radius: 0 0 0 4px;
+}
+
+.node-parent-tab::before {
+  width: 22px;
 }
 
 .root ul li:last-child:after {

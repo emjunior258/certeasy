@@ -1,6 +1,12 @@
 <template>
-  <li>
-    <div class="flex items-center gap-[14px] font-light mb-1">
+  <li
+    class="node-tab"
+    :class="isParent && 'node-parent-tab'"
+  >
+    <div
+      class="flex items-center gap-[14px] font-light mb-1"
+      :class="{ 'ml-[30px]': !isParent }"
+    >
       <span
         @click="toggle(item)"
         class="border border-primary text-primary font-semibold rounded w-4 h-4 flex items-center justify-center"
