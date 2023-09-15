@@ -19,7 +19,8 @@
       class="align-middle"
       :class="{ 'ml-2': buttonProps.icon }"
     >
-      {{ buttonProps.text }} ({{ buttonProps.amount }})</span
+      {{ buttonProps.text }}
+      {{ buttonProps.amount && `(${buttonProps.amount})` }}</span
     >
   </button>
 </template>

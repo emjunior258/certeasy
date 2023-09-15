@@ -170,9 +170,6 @@ const setCounters = (list) => {
   filterButtons.value[2].amount = list.value.filter((item) => {
     return item.type === "SUB_CA";
   }).length;
-  filterButtons.value[3].amount = list.value.filter((item) => {
-    return item.type === "ROOT";
-  }).length;
 };
 
 const filterIssuersList = (type) => {
@@ -292,7 +289,6 @@ const filterButtons = shallowRef([
     icon: treeIcon,
     iconAlt: "tree",
     text: "Tree",
-    amount: 0,
     active: false,
     disabled: false,
     query: "TREE",
