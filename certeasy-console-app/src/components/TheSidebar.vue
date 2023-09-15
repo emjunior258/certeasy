@@ -20,9 +20,7 @@
           {{ issuer && issuer.name }}
         </h2>
         <p class="text-sm font-light text-black-0.4 mb-2">
-          {{ issuer && issuer.id.substring(0, 12) }}-{{
-            issuer && issuer.id.substring(issuer.id.length - 4)
-          }}
+          {{ issuer && issuer.id }}
           <CopyIcon class="inline" />
         </p>
         <DownIcon class="inline mr-2 text-primary" /><TheSquaredBadge
