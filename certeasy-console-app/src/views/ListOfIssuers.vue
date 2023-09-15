@@ -68,7 +68,7 @@
 
 <script setup>
 import { ref, onMounted, computed, shallowRef } from "vue";
-import { useRouter, useRoute, onBeforeRouteUpdate } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 
 import AddFileIcon from "@/assets/icons/AddFileIcon.vue";
 import api from "@/config/config";
@@ -201,6 +201,9 @@ const unselectTreeNode = () => {
   if (selectedTreeNode.value)
     node = findNodeInTrees(issuersList.value, selectedTreeNode.value.id);
   if (node) delete node.active;
+  issuersList.value.forEach((item) => {
+    delete item.active;
+  });
 };
 
 const handleSelectNode = (id) => {
@@ -219,7 +222,6 @@ const handleSelectNode = (id) => {
       selectedTreeNode.value.id &&
       selectedTreeNode.value.id !== id)
   ) {
-    console.log("WRONG VALUE");
     const node = findNodeInTrees(filteredIssuersList.value, id);
     selectedTreeNode.value = node;
     node.active = true;
