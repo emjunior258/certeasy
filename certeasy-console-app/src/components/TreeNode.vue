@@ -82,3 +82,62 @@ const handleSelectNode = (node) => {
   selectNode(node.id);
 };
 </script>
+
+<style scoped>
+.root ul {
+  padding-left: 30px;
+}
+
+.root > li:first-child > div::before {
+  display: none;
+}
+.root ul {
+  position: relative;
+}
+.root ul::before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: -9px;
+  width: 0;
+  height: 100%;
+  border-left: 1px solid #c0c0c0;
+  z-index: -2;
+}
+
+.root ul li {
+  position: relative;
+}
+
+.node-tab::before {
+  content: "";
+  position: absolute;
+  left: -22px;
+  top: -4px;
+  width: 52px;
+  height: 16px;
+  border-left: 1px solid #c0c0c0;
+  border-bottom: 1px solid #c0c0c0;
+  border-radius: 0 0 0 4px;
+}
+
+.node-parent-tab::before {
+  width: 22px;
+}
+
+.root ul li:last-child:after {
+  content: "";
+  position: absolute;
+  width: 1px;
+  left: -22px;
+  background: #fff;
+  top: 9px;
+  bottom: 0;
+  z-index: -1;
+}
+
+li > div > div,
+li > div > span {
+  cursor: pointer;
+}
+</style>
