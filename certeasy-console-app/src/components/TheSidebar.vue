@@ -26,7 +26,9 @@
         <DownIcon class="inline mr-2 text-primary" /><TheSquaredBadge
           class="mr-2"
           :text="issuer && issuer.children_count"
-        /><TheBadge :text="issuer && issuer.type" />
+        /><TheBadge
+          :text="issuer && issuer.type === 'SUB_CA' ? 'SUB' : issuer.type"
+        />
       </div>
       <div class="py-6 border-t">
         <IssuerDetails

@@ -11,7 +11,7 @@
           <h3 class="text-xl font-medium">{{ issuer.name }}</h3>
           <span
             class="rounded-full py-0.5 px-2.5 bg-purple font-light text-xs"
-            >{{ issuer.type }}</span
+            >{{ issuer.type === "SUB_CA" ? "SUB" : issuer.type }}</span
           >
         </div>
       </div>
