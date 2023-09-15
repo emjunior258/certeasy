@@ -6,9 +6,9 @@
       <div class="flex justify-between items-center">
         <span
           @click="$emit('toggleSidebar')"
-          class="cursor-pointer p-4"
-          >x</span
-        >
+          class="cursor-pointer text-primary text-md"
+          ><CloseIcon
+        /></span>
         <img
           src="@/assets/avatar-placeholder.svg"
           alt="avatar"
@@ -72,7 +72,7 @@ import IssuerDetails from "@/components/IssuerDetails.vue";
 import TheBadge from "@/components/text-containers/TheBadge.vue";
 import TheSquaredBadge from "@/components/text-containers/TheSquaredBadge.vue";
 import ViewIcon from "@/assets/icons/ViewIcon.vue";
-
+import CloseIcon from "@/assets/icons/CloseIcon.vue";
 const { issuer } = defineProps(["issuer"]);
 
 const addFileIcon = AddFileIcon;
