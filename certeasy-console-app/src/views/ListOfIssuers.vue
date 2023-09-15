@@ -1,9 +1,6 @@
 <template>
   <PlaceholderLoading v-if="loading" />
-  <div
-    v-else
-    class=""
-  >
+  <div v-else>
     <NavComponent
       :logo="logo"
       :navLinks="navLinks"
@@ -50,6 +47,7 @@
           class="px-16"
           v-if="issuersList.length > 0 && currentRoute !== 'TREE'"
           :issuersList="filteredIssuersList || issuersList"
+          :selectNode="handleSelectNode"
         />
         <IssuerCardNoContent v-if="issuersList.length === 0" />
       </div>
@@ -60,7 +58,7 @@
           :key="selectedTreeNode"
           :issuer="selectedTreeNode"
           @toggleSidebar="toggleSidebar"
-          v-if="currentRoute === 'TREE' && selectedTreeNode && isSidebarOpen"
+          v-if="selectedTreeNode && isSidebarOpen"
         />
       </Transition>
     </section>
@@ -69,8 +67,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch, shallowRef } from "vue";
-import { useRouter, useRoute } from "vue-router";
+import { ref, onMounted, computed, shallowRef } from "vue";
+import { useRouter, useRoute, onBeforeRouteUpdate } from "vue-router";
 
 import AddFileIcon from "@/assets/icons/AddFileIcon.vue";
 import api from "@/config/config";
@@ -151,6 +149,8 @@ onMounted(() => {
 });
 
 const navigateToRoute = async (query) => {
+  unselectTreeNode();
+  selectedTreeNode.value = null;
   router.push({ name: "issuers", query: query ? { type: query } : "" });
   filterIssuersList(query === "TREE" ? "ROOT" : query);
   setActiveButton(query);
@@ -197,11 +197,10 @@ function findNodeInTrees(nodes, targetId) {
 }
 
 const unselectTreeNode = () => {
-  const node = findNodeInTrees(
-    filteredIssuersList.value,
-    selectedTreeNode.value.id
-  );
-  delete node.active;
+  let node;
+  if (selectedTreeNode.value)
+    node = findNodeInTrees(issuersList.value, selectedTreeNode.value.id);
+  if (node) delete node.active;
 };
 
 const handleSelectNode = (id) => {
@@ -214,15 +213,28 @@ const handleSelectNode = (id) => {
   }
 
   if (
-    !selectedTreeNode.value ||
-    (selectedTreeNode.value &&
+    (currentRoute.value === "TREE" && !selectedTreeNode.value) ||
+    (currentRoute.value === "TREE" &&
+      selectedTreeNode.value &&
       selectedTreeNode.value.id &&
       selectedTreeNode.value.id !== id)
   ) {
+    console.log("WRONG VALUE");
     const node = findNodeInTrees(filteredIssuersList.value, id);
     selectedTreeNode.value = node;
     node.active = true;
   }
+
+  if (!currentRoute.value) {
+    const node = issuersList.value.find((item) => item.id === id);
+    selectedTreeNode.value = node;
+    node.active = true;
+  } else if (currentRoute.value !== "TREE") {
+    const node = filteredIssuersList.value.find((item) => item.id === id);
+    selectedTreeNode.value = node;
+    node.active = true;
+  }
+
   if (!isSidebarOpen.value) {
     toggleSidebar();
   }

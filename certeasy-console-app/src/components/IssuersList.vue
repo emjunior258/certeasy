@@ -5,10 +5,15 @@
       :key="issuer.id"
       :issuer="issuer"
       data-test="issuer"
+      :selectNode="handleSelectNode"
     />
   </ul>
 </template>
 <script setup>
 import IssuerCard from "@/components/IssuerCard.vue";
-defineProps(["issuersList"]);
+const { selectNode } = defineProps(["issuersList", "selectNode"]);
+
+const handleSelectNode = (id) => {
+  selectNode(id);
+};
 </script>

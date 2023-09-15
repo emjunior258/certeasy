@@ -1,7 +1,14 @@
 <template>
-  <li class="border border-gray-200 rounded shadow px-11 py-6 mb-2">
+  <li
+    class="border border-gray-200 rounded shadow px-11 py-6 mb-2 hover:text-primary"
+    :class="issuer.active && 'shadow shadow-primary-0.6'"
+  >
     <div class="flex justify-between">
-      <div class="flex gap-6">
+      <div
+        class="flex gap-6 cursor-pointer"
+        :class="issuer.active && 'text-primary'"
+        @click="handleSelectNode(issuer)"
+      >
         <img
           src="../assets/avatar-placeholder.svg"
           :alt="issuer.altText"
@@ -34,5 +41,9 @@
 </template>
 
 <script setup>
-defineProps(["issuer"]);
+const { selectNode } = defineProps(["selectNode", "issuer"]);
+
+const handleSelectNode = (node) => {
+  selectNode(node.id);
+};
 </script>
