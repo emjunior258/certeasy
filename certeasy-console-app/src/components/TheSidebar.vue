@@ -84,8 +84,12 @@ const trashIcon = TrashIcon;
 const viewIcon = ViewIcon;
 
 const splitDN = (dn) => {
-  return dn.split(", ").map((item) => {
+  const re = /[^\\], /;
+  return dn.split(re).map((item) => {
     const detail = item.split("=");
+    if (detail[1].includes("\\")) {
+      detail[1] = detail[1].split("\\").join("");
+    }
     return { key: detail[0], value: detail[1] };
   });
 };
