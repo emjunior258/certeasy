@@ -1,0 +1,30 @@
+<template>
+  <button
+    class="rounded py-1 px-4 min-h-[41px]"
+    :class="{
+      'bg-primary': buttonProps.active && !buttonProps.disabled,
+      'text-white': buttonProps.active && !buttonProps.disabled,
+      'text-black-0.6': buttonProps.disabled,
+    }"
+    type="button"
+    :disabled="buttonProps.disabled"
+    @click="$emit('handleClick')"
+  >
+    <component
+      :is="buttonProps.icon"
+      class="inline"
+      :class="{ 'text-primary': !buttonProps.active }"
+    ></component>
+    <span
+      class="align-middle"
+      :class="{ 'ml-2': buttonProps.icon }"
+    >
+      {{ buttonProps.text }}
+      {{ buttonProps.amount >= 0 && `(${buttonProps.amount})` }}
+    </span>
+  </button>
+</template>
+
+<script setup>
+defineProps(["buttonProps"]);
+</script>

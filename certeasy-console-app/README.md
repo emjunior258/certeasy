@@ -1,68 +1,57 @@
-# Certeasy Console App
-The easiest certificate authority for development and experiments
+# certeasy-console-app
 
+This template should help get you started developing with Vue 3 in Vite.
 
-## Project structure
-- [`src`](#src)
-  - [`assets`](#assets)
-  - [`components`](#components)
-  - [`views`](#views)
-  - [`config`](#config)
-  - [`router`](#router)
-  - [`services`](#services)
-  - [`store`](#store)
-  - [`main.js`](#mainjs)
-- [`tests`](#tests)
+## Recommended IDE Setup
 
-### `src`
-Source 
+[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
 
-### `assets`
-Images
+## Customize configuration
 
-### `components`
-Shared components folder.
+See [Vite Configuration Reference](https://vitejs.dev/config/).
 
+## Project Setup
 
-### `config`
-App config files.
-
-
-### `views`
-Page wrapper components(Pages) and Local components.
-
-### `router`
-Router instance and routing declaration.
-- `index` - router initialization.
-
-### `store`
-App store with separate modules.
-
-
-### `main.js`
-Root app initialization file.
-
-
-## Build Setup
-```
+```sh
 npm install
 ```
 
-### Compiles and hot-reloads for development
-```
-npm run serve
+### Compile and Hot-Reload for Development
+
+```sh
+npm run dev
 ```
 
-### Compiles and minifies for production
-```
+### Compile and Minify for Production
+
+```sh
 npm run build
 ```
 
-### Run your end-to-end tests
+### Run Unit Tests with [Vitest](https://vitest.dev/)
+
+```sh
+npm run test:unit
 ```
+
+### Run End-to-End Tests with [Cypress](https://www.cypress.io/)
+
+```sh
+npm run test:e2e:dev
+```
+
+This runs the end-to-end tests against the Vite development server.
+It is much faster than the production build.
+
+But it's still recommended to test the production build with `test:e2e` before deploying (e.g. in CI environments):
+
+```sh
+npm run build
 npm run test:e2e
 ```
 
-### Lints and fixes files
-```
+### Lint with [ESLint](https://eslint.org/)
+
+```sh
 npm run lint
+```
