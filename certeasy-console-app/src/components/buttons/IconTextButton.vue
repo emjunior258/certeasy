@@ -20,8 +20,8 @@
       :class="{ 'ml-2': buttonProps.icon }"
     >
       {{ buttonProps.text }}
-      {{ buttonProps.amount && `(${buttonProps.amount})` }}</span
-    >
+      {{ buttonProps.amount >= 0 && `(${buttonProps.amount})` }}
+    </span>
   </button>
 </template>
 
