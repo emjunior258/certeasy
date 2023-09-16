@@ -8,7 +8,9 @@
     />
 
     <section class="mb-[112px]">
-      <div class="flex justify-between px-16 mt-12 mb-6 items-end">
+      <div
+        class="flex justify-between px-16 mt-12 mb-6 items-end border-b pb-6"
+      >
         <div class="font-light text-lg">
           <IconTextButton
             v-for="filterButton in filterButtons"
