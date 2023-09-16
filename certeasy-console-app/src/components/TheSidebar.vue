@@ -36,7 +36,10 @@
           :details="issuer && childDN"
         />
       </div>
-      <div class="py-6 border-t">
+      <div
+        class="py-6 border-t"
+        v-if="issuer.type !== 'ROOT'"
+      >
         <IssuerDetails
           heading="Parent"
           :details="details"
