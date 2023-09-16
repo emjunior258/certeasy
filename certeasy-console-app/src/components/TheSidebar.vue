@@ -4,16 +4,16 @@
   >
     <div class="p-8 mb-[104px]">
       <div class="flex justify-between items-center">
+        <img
+          src="@/assets/avatar-placeholder.svg"
+          alt="avatar"
+          class="w-[52px] h-[52px] rounded"
+        />
         <span
           @click="$emit('toggleSidebar')"
           class="cursor-pointer text-primary text-md"
           ><CloseIcon
         /></span>
-        <img
-          src="@/assets/avatar-placeholder.svg"
-          alt="avatar"
-          class="w-[52px] h-[52px] rounded ml-auto"
-        />
       </div>
       <div class="py-6">
         <h2 class="text-xl text-primary font-medium mb-1">
