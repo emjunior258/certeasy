@@ -172,6 +172,11 @@ const setCounters = (list) => {
   filterButtons.value[2].amount = list.value.filter((item) => {
     return item.type === "SUB_CA";
   }).length;
+
+  filterButtons.value[0].disabled = !issuersList.value.length;
+  filterButtons.value[1].disabled = !issuersList.value.length;
+  filterButtons.value[2].disabled = !issuersList.value.length;
+  filterButtons.value[3].disabled = !issuersList.value.length;
 };
 
 const filterIssuersList = (type) => {
@@ -277,7 +282,7 @@ const filterButtons = shallowRef([
     text: "All",
     amount: 0,
     active: false,
-    disabled: false,
+    disabled: !issuersList.value.length,
     query: "",
   },
   {
