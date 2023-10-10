@@ -7,12 +7,6 @@ services:
     network_mode: "host"
     volumes:
       - ~/data/certeasy:/work/data
-#      - ./certeasy-backend-app/target:/work/data
-#    command: nginx-debug -g "daemon off;" &&  /work/app -Dquarkus.http.host=0.0.0.0 &&  wait
     environment:
       - "QUARKUS_LOG_LEVEL=DEBUG"
       - "JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
-#      JAVA_TOOL_OPTIONS: -agentlib:jdwp=transport=dt_socket,address=*:5005,server=y,suspend=n
-#      MYSQL_DATABASE: voting_service
-#      MYSQL_USER: mariadb
-#      MYSQL_PASSWORD: mariadb
