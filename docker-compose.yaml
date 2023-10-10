@@ -1,0 +1,12 @@
+version: '3'
+services:
+  app:
+    image: certeasy:local
+    container_name: certeasy
+    hostname: certeasy
+    network_mode: "host"
+    volumes:
+      - ~/data/certeasy:/work/data
+    environment:
+      - "QUARKUS_LOG_LEVEL=DEBUG"
+      - "JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
