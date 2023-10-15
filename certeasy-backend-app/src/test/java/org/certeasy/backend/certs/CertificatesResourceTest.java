@@ -138,7 +138,7 @@ class CertificatesResourceTest extends BaseRestTest {
 
         ServerSpec spec = new ServerSpec();
         spec.setName("certeasy.org");
-        spec.setDomains(Set.of("www example", "certeasy$", "das#.com"));
+        spec.setDomains(Set.of("www example", "Certeasy.com", "das#.com"));
         spec.setKeyStrength(KeyStrength.HIGH.name());
         spec.setGeographicAddressInfo(new GeographicAddressInfo("ZA",
                 "Nelspruit",
@@ -175,7 +175,7 @@ class CertificatesResourceTest extends BaseRestTest {
     }
 
     @Test
-    void must_succeed_issuing_tls_cert_with_valid_spec(){
+    void must_succeed_issuing_tls_cert_with_valid_spec_and_domains_1(){
 
         Certificate authorityCert = context.generator().generate(certificateAuthoritySpec);
         CertIssuer certIssuer = registry.add(authorityCert);
@@ -183,6 +183,36 @@ class CertificatesResourceTest extends BaseRestTest {
         ServerSpec spec = new ServerSpec();
         spec.setName("certeasy.org");
         spec.setDomains(Set.of("www.certeasy.org", "certeasy.org"));
+        spec.setKeyStrength(KeyStrength.HIGH.name());
+        spec.setGeographicAddressInfo(new GeographicAddressInfo("ZA",
+                "Nelspruit",
+                "Mpumalanga",
+                "Third Base Urban. Fashion. UG73"));
+        spec.setValidity(new CertValidity(new DateRange(LocalDate.of(3010,
+                Month.DECEMBER, 31))));
+        spec.setOrganization("Certeasy Inc");
+
+
+        given().contentType(MediaType.APPLICATION_JSON)
+                .body(spec)
+                .post(String.format("/api/issuers/%s/certificates/tls-server", certIssuer.getId()))
+                .then()
+                .log().all()
+                .statusCode(200)
+                .body("serial", notNullValue())
+                .log().all();
+
+    }
+
+    @Test
+    void must_succeed_issuing_tls_cert_with_valid_spec_and_domains_2(){
+
+        Certificate authorityCert = context.generator().generate(certificateAuthoritySpec);
+        CertIssuer certIssuer = registry.add(authorityCert);
+
+        ServerSpec spec = new ServerSpec();
+        spec.setName("example");
+        spec.setDomains(Set.of("example.com", "example.co.mz","example","example.io"));
         spec.setKeyStrength(KeyStrength.HIGH.name());
         spec.setGeographicAddressInfo(new GeographicAddressInfo("ZA",
                 "Nelspruit",

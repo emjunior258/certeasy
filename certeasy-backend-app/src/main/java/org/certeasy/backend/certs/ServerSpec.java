@@ -6,6 +6,7 @@ import org.certeasy.backend.common.validation.Violation;
 import org.certeasy.backend.common.validation.ViolationType;
 
 import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ServerSpec extends BaseCertSpec {
@@ -16,7 +17,9 @@ public class ServerSpec extends BaseCertSpec {
 
     private String organization;
 
-    private static final Pattern DOMAIN_REGEX = Pattern.compile("^(?!:\\\\/\\\\/)(?:(?!-)[a-z0-9-]{1,63}(?<!-)\\\\.)+(?:[a-z]{2,6}|[a-z]{2}|[a-z]{2}\\\\.[a-z]{2})$\n");
+
+    private static final String DOMAIN_REGEX = "^(?:(?!-)[a-z0-9-]{1,63}(?<!-)\\.)+[a-z]{2,6}$|^(?!-)[a-z0-9-]{1,63}(?<!-)$";
+    private static final Pattern DOMAIN_PATTERN = Pattern.compile(DOMAIN_REGEX);
 
     public String getName() {
         return name;
@@ -52,11 +55,10 @@ public class ServerSpec extends BaseCertSpec {
         if(domains!=null && !domains.isEmpty()){
             int index=0;
             for(String domain: domains) {
-                if(!DOMAIN_REGEX.matcher(domain).matches()) {
+                Matcher matcher = DOMAIN_PATTERN.matcher(domain.trim());
+                if(!matcher.matches()) {
                     violationSet.add(new Violation(path, String.format("domains[%d]", index),
                             ViolationType.PATTERN, "must match domain name regex pattern"));
-                }else{
-                    System.out.println("Hex");
                 }
                 index++;
             }
@@ -65,5 +67,5 @@ public class ServerSpec extends BaseCertSpec {
             violationSet.add(new Violation(path, "organization", ViolationType.LENGTH, "must have at least a single character"));
         return violationSet;
     }
-
+    
 }
