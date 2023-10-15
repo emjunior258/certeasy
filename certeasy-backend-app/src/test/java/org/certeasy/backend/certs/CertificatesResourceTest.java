@@ -9,6 +9,7 @@ import org.certeasy.backend.common.cert.CertValidity;
 import org.certeasy.backend.common.cert.GeographicAddressInfo;
 import org.certeasy.backend.common.problem.ConstraintViolationProblem;
 import org.certeasy.backend.common.validation.Violation;
+import org.certeasy.backend.common.validation.ViolationType;
 import org.certeasy.backend.issuer.CertIssuer;
 import org.certeasy.backend.persistence.IssuerRegistry;
 import org.certeasy.backend.persistence.MapIssuerRegistry;
@@ -125,6 +126,51 @@ class CertificatesResourceTest extends BaseRestTest {
                 .post(String.format("/api/issuers/%s/certificates/tls-server", certIssuer.getId()))
                 .then()
                 .statusCode(500).log().all();
+
+    }
+
+
+    @Test
+    void must_fail_issuing_tls_cert_with_invalid_domain_names(){
+
+        Certificate authorityCert = context.generator().generate(certificateAuthoritySpec);
+        CertIssuer certIssuer = registry.add(authorityCert);
+
+        ServerSpec spec = new ServerSpec();
+        spec.setName("certeasy.org");
+        spec.setDomains(Set.of("www example", "certeasy$", "das#.com"));
+        spec.setKeyStrength(KeyStrength.HIGH.name());
+        spec.setGeographicAddressInfo(new GeographicAddressInfo("ZA",
+                "Nelspruit",
+                "Mpumalanga",
+                "Third Base Urban. Fashion. UG73"));
+        spec.setValidity(new CertValidity(new DateRange(LocalDate.of(3010,
+                Month.DECEMBER, 31))));
+        spec.setOrganization("Certeasy Inc");
+
+        ConstraintViolationProblem problem = given().contentType(MediaType.APPLICATION_JSON)
+                .body(spec)
+                .post(String.format("/api/issuers/%s/certificates/tls-server", certIssuer.getId()))
+                .then()
+                .statusCode(422)
+                .extract().body().as(ConstraintViolationProblem.class);
+
+        Set<Violation> violations = problem.getViolations();
+        assertEquals(3, violations.size());
+
+        final String expectedViolationMessage = "must match domain name regex pattern";
+        final String expectedViolationType = ViolationType.PATTERN;
+        Violation violation1 = violations.stream().filter(it -> it.field().equals("body.domains[0]")).findAny().orElseThrow();
+        assertEquals(expectedViolationMessage, violation1.message());
+        assertEquals(expectedViolationType, violation1.type());
+
+        Violation violation2 = violations.stream().filter(it -> it.field().equals("body.domains[1]")).findAny().orElseThrow();
+        assertEquals(expectedViolationMessage, violation2.message());
+        assertEquals(expectedViolationType, violation2.type());
+
+        Violation violation3 = violations.stream().filter(it -> it.field().equals("body.domains[2]")).findAny().orElseThrow();
+        assertEquals(expectedViolationMessage, violation3.message());
+        assertEquals(expectedViolationType, violation3.type());
 
     }
 
