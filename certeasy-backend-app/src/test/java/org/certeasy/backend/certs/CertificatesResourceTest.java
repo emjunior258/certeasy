@@ -138,7 +138,7 @@ class CertificatesResourceTest extends BaseRestTest {
 
         ServerSpec spec = new ServerSpec();
         spec.setName("certeasy.org");
-        spec.setDomains(Set.of("www example", "Certeasy.com", "das#.com"));
+        spec.setDomains(Set.of("www example", "Certeasy.com", "das#.com", "-example.com", "example.10.com" ));
         spec.setKeyStrength(KeyStrength.HIGH.name());
         spec.setGeographicAddressInfo(new GeographicAddressInfo("ZA",
                 "Nelspruit",
@@ -152,11 +152,12 @@ class CertificatesResourceTest extends BaseRestTest {
                 .body(spec)
                 .post(String.format("/api/issuers/%s/certificates/tls-server", certIssuer.getId()))
                 .then()
+                .log().all()
                 .statusCode(422)
                 .extract().body().as(ConstraintViolationProblem.class);
 
         Set<Violation> violations = problem.getViolations();
-        assertEquals(3, violations.size());
+        assertEquals(5, violations.size());
 
         final String expectedViolationMessage = "must match domain name regex pattern";
         final String expectedViolationType = ViolationType.PATTERN;
@@ -172,6 +173,14 @@ class CertificatesResourceTest extends BaseRestTest {
         assertEquals(expectedViolationMessage, violation3.message());
         assertEquals(expectedViolationType, violation3.type());
 
+        Violation violation4 = violations.stream().filter(it -> it.field().equals("body.domains[3]")).findAny().orElseThrow();
+        assertEquals(expectedViolationMessage, violation4.message());
+        assertEquals(expectedViolationType, violation4.type());
+
+        Violation violation5 = violations.stream().filter(it -> it.field().equals("body.domains[4]")).findAny().orElseThrow();
+        assertEquals(expectedViolationMessage, violation5.message());
+        assertEquals(expectedViolationType, violation5.type());
+
     }
 
     @Test
@@ -182,7 +191,7 @@ class CertificatesResourceTest extends BaseRestTest {
 
         ServerSpec spec = new ServerSpec();
         spec.setName("certeasy.org");
-        spec.setDomains(Set.of("www.certeasy.org", "certeasy.org"));
+        spec.setDomains(Set.of("www.certeasy.org", "certeasy.org", "cert-easy.io", "site.cert-easy.io"));
         spec.setKeyStrength(KeyStrength.HIGH.name());
         spec.setGeographicAddressInfo(new GeographicAddressInfo("ZA",
                 "Nelspruit",
