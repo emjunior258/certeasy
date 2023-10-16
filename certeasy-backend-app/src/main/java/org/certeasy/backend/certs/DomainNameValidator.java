@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 public class DomainNameValidator {
 
-    private static final Pattern SPECIAL_CHARS_PATTERN = Pattern.compile("[!@#$%^&*()_+\\[\\]{};':\"\\\\|,.<>/?]+");
+    private static final Pattern SPECIAL_CHARS_PATTERN = Pattern.compile("[!@#$%^&*()_+\\s\\[\\]{};':\"\\\\|,.<>/?]+");
     private static final Pattern CAPITAL_CASE_PATTERN = Pattern.compile("[A-Z]");
     private static final Pattern DIGIT_START_PATTERN = Pattern.compile("^\\d.*");
 

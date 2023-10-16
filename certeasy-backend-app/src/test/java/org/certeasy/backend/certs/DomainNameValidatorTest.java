@@ -38,6 +38,7 @@ class DomainNameValidatorTest {
     void validator_must_return_false_when_domain_segment_contains_special_or_uppercase_chars(){
         assertFalse(DomainNameValidator.isValidDomain("Domain.com"));
         assertFalse(DomainNameValidator.isValidDomain("Doma!n.com"));
+        assertFalse(DomainNameValidator.isValidDomain("do main.com"));
     }
 
     @Test
@@ -49,6 +50,7 @@ class DomainNameValidatorTest {
     @Test
     void validator_must_return_false_when_domain_segment_starts_with_digit(){
         assertFalse(DomainNameValidator.isValidDomain("domain.2go.com"));
+        assertFalse(DomainNameValidator.isValidDomain("domain.10.com"));
     }
 
     @Test
