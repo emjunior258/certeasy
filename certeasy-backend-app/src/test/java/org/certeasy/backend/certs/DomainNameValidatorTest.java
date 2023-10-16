@@ -31,6 +31,7 @@ class DomainNameValidatorTest {
         assertFalse(DomainNameValidator.isValidDomain(".com"));
         assertFalse(DomainNameValidator.isValidDomain(" .com"));
         assertFalse(DomainNameValidator.isValidDomain("domain."));
+        assertFalse(DomainNameValidator.isValidDomain("domain. "));
     }
 
     @Test
