@@ -14,7 +14,6 @@ public class ServerSpec extends BaseCertSpec {
     private Set<String> domains;
 
     private String organization;
-
     public String getName() {
         return name;
     }
@@ -46,6 +45,16 @@ public class ServerSpec extends BaseCertSpec {
             violationSet.add(new Violation(path, "name", ViolationType.REQUIRED, "must specify a name for the certificate"));
         if(domains==null || domains.isEmpty())
             violationSet.add(new Violation(path, "domains", ViolationType.REQUIRED, "must specify at least one domain"));
+        if(domains!=null && !domains.isEmpty()){
+            int index=0;
+            for(String domain: domains) {
+                if(!DomainNameValidator.isValidDomain(domain)){
+                    violationSet.add(new Violation(path, String.format("domains[%d]", index),
+                            ViolationType.PATTERN, "must match domain name regex pattern"));
+                }
+                index++;
+            }
+        }
         if(organization !=null && ( organization.isBlank() || organization.trim().length() < 1) )
             violationSet.add(new Violation(path, "organization", ViolationType.LENGTH, "must have at least a single character"));
         return violationSet;

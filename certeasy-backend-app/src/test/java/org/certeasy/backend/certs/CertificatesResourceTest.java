@@ -9,6 +9,7 @@ import org.certeasy.backend.common.cert.CertValidity;
 import org.certeasy.backend.common.cert.GeographicAddressInfo;
 import org.certeasy.backend.common.problem.ConstraintViolationProblem;
 import org.certeasy.backend.common.validation.Violation;
+import org.certeasy.backend.common.validation.ViolationType;
 import org.certeasy.backend.issuer.CertIssuer;
 import org.certeasy.backend.persistence.IssuerRegistry;
 import org.certeasy.backend.persistence.MapIssuerRegistry;
@@ -128,15 +129,99 @@ class CertificatesResourceTest extends BaseRestTest {
 
     }
 
+
     @Test
-    void must_succeed_issuing_tls_cert_with_valid_spec(){
+    void must_fail_issuing_tls_cert_with_invalid_domain_names(){
 
         Certificate authorityCert = context.generator().generate(certificateAuthoritySpec);
         CertIssuer certIssuer = registry.add(authorityCert);
 
         ServerSpec spec = new ServerSpec();
         spec.setName("certeasy.org");
-        spec.setDomains(Set.of("www.certeasy.org", "certeasy.org"));
+        spec.setDomains(Set.of("www example", "Certeasy.com", "das#.com", "-example.com", "example.10.com" ));
+        spec.setKeyStrength(KeyStrength.HIGH.name());
+        spec.setGeographicAddressInfo(new GeographicAddressInfo("ZA",
+                "Nelspruit",
+                "Mpumalanga",
+                "Third Base Urban. Fashion. UG73"));
+        spec.setValidity(new CertValidity(new DateRange(LocalDate.of(3010,
+                Month.DECEMBER, 31))));
+        spec.setOrganization("Certeasy Inc");
+
+        ConstraintViolationProblem problem = given().contentType(MediaType.APPLICATION_JSON)
+                .body(spec)
+                .post(String.format("/api/issuers/%s/certificates/tls-server", certIssuer.getId()))
+                .then()
+                .log().all()
+                .statusCode(422)
+                .extract().body().as(ConstraintViolationProblem.class);
+
+        Set<Violation> violations = problem.getViolations();
+        assertEquals(5, violations.size());
+
+        final String expectedViolationMessage = "must match domain name regex pattern";
+        final String expectedViolationType = ViolationType.PATTERN;
+        Violation violation1 = violations.stream().filter(it -> it.field().equals("body.domains[0]")).findAny().orElseThrow();
+        assertEquals(expectedViolationMessage, violation1.message());
+        assertEquals(expectedViolationType, violation1.type());
+
+        Violation violation2 = violations.stream().filter(it -> it.field().equals("body.domains[1]")).findAny().orElseThrow();
+        assertEquals(expectedViolationMessage, violation2.message());
+        assertEquals(expectedViolationType, violation2.type());
+
+        Violation violation3 = violations.stream().filter(it -> it.field().equals("body.domains[2]")).findAny().orElseThrow();
+        assertEquals(expectedViolationMessage, violation3.message());
+        assertEquals(expectedViolationType, violation3.type());
+
+        Violation violation4 = violations.stream().filter(it -> it.field().equals("body.domains[3]")).findAny().orElseThrow();
+        assertEquals(expectedViolationMessage, violation4.message());
+        assertEquals(expectedViolationType, violation4.type());
+
+        Violation violation5 = violations.stream().filter(it -> it.field().equals("body.domains[4]")).findAny().orElseThrow();
+        assertEquals(expectedViolationMessage, violation5.message());
+        assertEquals(expectedViolationType, violation5.type());
+
+    }
+
+    @Test
+    void must_succeed_issuing_tls_cert_with_valid_spec_and_domains_1(){
+
+        Certificate authorityCert = context.generator().generate(certificateAuthoritySpec);
+        CertIssuer certIssuer = registry.add(authorityCert);
+
+        ServerSpec spec = new ServerSpec();
+        spec.setName("certeasy.org");
+        spec.setDomains(Set.of("www.certeasy.org", "certeasy.org", "cert-easy.io", "site.cert-easy.io"));
+        spec.setKeyStrength(KeyStrength.HIGH.name());
+        spec.setGeographicAddressInfo(new GeographicAddressInfo("ZA",
+                "Nelspruit",
+                "Mpumalanga",
+                "Third Base Urban. Fashion. UG73"));
+        spec.setValidity(new CertValidity(new DateRange(LocalDate.of(3010,
+                Month.DECEMBER, 31))));
+        spec.setOrganization("Certeasy Inc");
+
+
+        given().contentType(MediaType.APPLICATION_JSON)
+                .body(spec)
+                .post(String.format("/api/issuers/%s/certificates/tls-server", certIssuer.getId()))
+                .then()
+                .log().all()
+                .statusCode(200)
+                .body("serial", notNullValue())
+                .log().all();
+
+    }
+
+    @Test
+    void must_succeed_issuing_tls_cert_with_valid_spec_and_domains_2(){
+
+        Certificate authorityCert = context.generator().generate(certificateAuthoritySpec);
+        CertIssuer certIssuer = registry.add(authorityCert);
+
+        ServerSpec spec = new ServerSpec();
+        spec.setName("example");
+        spec.setDomains(Set.of("example.com", "example.co.mz","example","example.io"));
         spec.setKeyStrength(KeyStrength.HIGH.name());
         spec.setGeographicAddressInfo(new GeographicAddressInfo("ZA",
                 "Nelspruit",
