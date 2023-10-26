@@ -266,5 +266,4 @@ class TestIssueTLSServerCertificate:
         VALID_BODY = generate_tls_server_data(self.loaded_schema)
         add_values_into_list_in_json(VALID_BODY, "domains", generate_invalid_domains())
         response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/tls-server', json=VALID_BODY)
-        print(VALID_BODY)
         assert response.status_code == 422
