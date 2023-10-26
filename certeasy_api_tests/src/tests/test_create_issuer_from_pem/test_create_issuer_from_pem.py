@@ -19,6 +19,8 @@ class TestIssuerCreationFromPEM:
         VALID_BODY = generate_valid_certs_with_ca()
         # Make a request to the API
         response = requests.post(url=f'{BASE_URL}/issuers/cert-pem', json=VALID_BODY)
+        print("Test body", VALID_BODY)
+        print("Test response", response.json())
         assert response.status_code == 200
         assert 'issuer_id' in response.text
 

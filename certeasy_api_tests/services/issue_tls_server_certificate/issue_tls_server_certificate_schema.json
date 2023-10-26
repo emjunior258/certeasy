@@ -1,0 +1,16 @@
+{
+  "validity": {
+        "from": "validity-from",
+        "until": "validity-until"
+    },
+  "key_strength": "certificate-key-strength",
+  "address": {
+        "country": "address-country",
+        "state": "address-state",
+        "locality": "address-locality",
+        "street_address": "street-address"
+    },
+  "name": "server-name",
+  "domains": [ ],
+  "organization": "org-name"
+}
