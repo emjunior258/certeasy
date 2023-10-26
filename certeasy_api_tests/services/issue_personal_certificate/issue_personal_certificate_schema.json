@@ -10,9 +10,11 @@
         "locality": "address-locality",
         "street_address": "street-address"
     },
-  "name": "server-name",
-  "domains": [ ],
-  "organization": "org-name"
+  "name": "user-name",
+  "surname": "user-surname",
+  "telephone": "user-telephone",
+  "email_addresses": ["user-email"],
+  "usernames": ["user-username"]
 }
 
 
