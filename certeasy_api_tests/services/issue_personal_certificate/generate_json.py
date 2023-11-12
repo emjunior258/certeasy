@@ -38,6 +38,7 @@ def generate_user_telephone(country_codes):
     return number
 
 
+
 def generate_personal_data(schema):
     data = {}
     country_codes = ["Mozambique", "South Africa", "Spain", "EUA"]
@@ -65,20 +66,25 @@ def generate_personal_data(schema):
         elif prop_schema == "certificate-key-strength":
             data[prop] = generate_key_strength()
         elif isinstance(prop_schema, str):
+            # Process string properties
             if prop_schema == "user-name":
                 data[prop] = user_name
-            if prop_schema == "user-surname":
+            elif prop_schema == "user-surname":
                 data[prop] = user_surname
-            if prop_schema == "user-telephone":
+            elif prop_schema == "user-telephone":
                 data[prop] = generate_user_telephone(country_codes)
+            # Add more conditions for other string properties if needed
             else:
                 data[prop] = None
         elif isinstance(prop_schema, list):
-            if prop == "user-email":
-                data[prop] = generate_email(user_name, user_surname)
-            if prop == "user-username":
-                data[prop] = user_surname
+            # Process list properties
+            if prop == "email_addresses":
+                data[prop] = [generate_email(user_name, user_surname)]
+            elif prop == "usernames":
+                data[prop] = [user_surname]
+            # Add more conditions for other list properties if needed
             else:
-                data[prop] = generate_personal_data(prop_schema)
+                # Assuming you want to recursively process the list elements
+                data[prop] = [generate_personal_data(item) for item in prop_schema]
 
     return data

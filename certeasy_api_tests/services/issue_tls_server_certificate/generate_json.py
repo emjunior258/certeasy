@@ -11,7 +11,7 @@ def generate_random_domain(suffix=".com", length=5):
 
 
 def generate_invalid_domains():
-    set_invalid_domains = [".com", "domain", "domains@test.com", "domain@"]
+    set_invalid_domains = [".com", "domains@test.com", "domain@"]
     return random.choice(set_invalid_domains)
 
 

@@ -13,8 +13,8 @@
   "name": "user-name",
   "surname": "user-surname",
   "telephone": "user-telephone",
-  "email_addresses": ["user-email"],
-  "usernames": ["user-username"]
+  "email_addresses": [],
+  "usernames": []
 }
 
 
