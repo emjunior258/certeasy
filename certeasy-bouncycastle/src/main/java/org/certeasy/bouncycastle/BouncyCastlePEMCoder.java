@@ -63,10 +63,10 @@ public class BouncyCastlePEMCoder implements PEMCoder  {
                 KeyFactory keyFactory = KeyFactory.getInstance("RSA", BouncyCastleProvider.PROVIDER_NAME);
                 return keyFactory.generatePrivate(keySpec);
             } else throw new IllegalPrivateKeyPemException("provided PEM content doesn't contain a privateKey");
-        }catch (InvalidKeySpecException | DecoderException | PEMException ex){
+        }catch (InvalidKeySpecException | DecoderException | IOException ex){
             throw ILLEGAL_PRIVATE_KEY_PEM_EXCEPTION;
 
-        }catch (IOException | NoSuchAlgorithmException | NoSuchProviderException ex){
+        }catch ( NoSuchAlgorithmException | NoSuchProviderException ex){
             throw new PEMCoderException("error decoding RSA private key", ex);
         }
     }
@@ -79,11 +79,8 @@ public class BouncyCastlePEMCoder implements PEMCoder  {
             if (pemObj instanceof X509CertificateHolder certificateHolder) {
                 return new CertificateDecoder(certificateHolder);
             } else throw ILLEGAL_CERT_PEM_EXCEPTION;
-        }catch (DecoderException | PEMException ex){
+        }catch (DecoderException | IOException ex){
             throw ILLEGAL_CERT_PEM_EXCEPTION;
-        }catch (IOException ex) {
-            throw new BouncyCastleCoderException("error decoding certificate",
-                    ex);
         }
     }
 
