@@ -13,9 +13,8 @@
             :key="navLink.id"
           >
             <a :href="navLink.linkHref">
-              <img
-                :src="navLink.icon"
-                :alt="navLink.altIcon"
+              <component
+                :is="navLink.icon"
                 class="inline"
               />
               {{ navLink.text }}

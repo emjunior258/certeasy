@@ -74,8 +74,7 @@ import { useRouter, useRoute } from "vue-router";
 
 import AddFileIcon from "@/assets/icons/AddFileIcon.vue";
 import api from "@/config/config";
-import apiIcon from "@/assets/icons/api.svg";
-import cogIcon from "@/assets/icons/cog.svg";
+import ApiIcon from "@/assets/icons/ApiIcon.vue";
 import TheFooter from "@/components/TheFooter.vue";
 import IconActionButton from "@/components/buttons/IconActionButton.vue";
 import IconTextButton from "@/components/buttons/IconTextButton.vue";
@@ -90,12 +89,15 @@ import SubStorageIcon from "@/assets/icons/SubStorageIcon.vue";
 import TheSidebar from "@/components/TheSidebar.vue";
 import TheTree from "@/components/TheTree.vue";
 import TreeIcon from "@/assets/icons/TreeIcon.vue";
+import CogIcon from "@/assets/icons/CogIcon.vue";
 
 const addFileIcon = AddFileIcon;
 const importFileIcon = ImportFileIcon;
 const storageIcon = StorageIcon;
 const subStorageIcon = SubStorageIcon;
 const treeIcon = TreeIcon;
+const cogIcon = CogIcon;
+const apiIcon = ApiIcon;
 
 const router = useRouter();
 const route = useRoute();
