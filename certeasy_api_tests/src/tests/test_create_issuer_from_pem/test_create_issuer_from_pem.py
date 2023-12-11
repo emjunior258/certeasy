@@ -84,6 +84,7 @@ class TestIssuerCreationFromPEM:
 
     def test_should_not_create_a_new_issuer_from_pem_with_expired_pem(self, app_container):
         INVALID_BODY = generate_expired_certs_with_ca()
+        print(INVALID_BODY)
         # Make a request to the API
         response = requests.post(url=f'{BASE_URL}/issuers/cert-pem', json=INVALID_BODY)
         assert response.status_code == 422
@@ -105,6 +106,7 @@ class TestIssuerCreationFromPEM:
     def test_should_not_create_a_new_issuer_from_pem_with_uncompleted_cert(self, app_container):
         INVALID_BODY = generate_valid_certs_with_ca()
         modify_json_values(INVALID_BODY, "cert_file", incomplete_cert_pem)
+        print(INVALID_BODY)
         # Make a request to the API
         response = requests.post(url=f'{BASE_URL}/issuers/cert-pem', json=INVALID_BODY)
         assert response.status_code == 422
@@ -112,13 +114,15 @@ class TestIssuerCreationFromPEM:
     def test_should_not_create_a_new_issuer_from_pem_with_uncompleted_key(self, app_container):
         INVALID_BODY = generate_valid_certs_with_ca()
         modify_json_values(INVALID_BODY, "key_file", incomplete_key_pem)
+        print(INVALID_BODY)
         # Make a request to the API
         response = requests.post(url=f'{BASE_URL}/issuers/cert-pem', json=INVALID_BODY)
         assert response.status_code == 422
 
     def test_should_not_create_a_new_issuer_from_pem_with_missing_cert_content(self, app_container):
         INVALID_BODY = generate_valid_certs_with_ca()
-        modify_json_values(INVALID_BODY, "key_file", missing_cert_pem)
+        modify_json_values(INVALID_BODY, "cert_file", missing_cert_pem)
+        print(INVALID_BODY)
         # Make a request to the API
         response = requests.post(url=f'{BASE_URL}/issuers/cert-pem', json=INVALID_BODY)
         assert response.status_code == 422
@@ -126,6 +130,7 @@ class TestIssuerCreationFromPEM:
     def test_should_not_create_a_new_issuer_from_pem_with_missing_key_content(self, app_container):
         INVALID_BODY = generate_valid_certs_with_ca()
         modify_json_values(INVALID_BODY, "key_file", missing_key_pem)
+        print(INVALID_BODY)
         # Make a request to the API
         response = requests.post(url=f'{BASE_URL}/issuers/cert-pem', json=INVALID_BODY)
         assert response.status_code == 422
@@ -154,6 +159,7 @@ class TestIssuerCreationFromPEM:
     def test_should_not_create_a_new_issuer_from_pem_with_incorrect_base_64_encoding_cert(self, app_container):
         INVALID_BODY = generate_valid_certs_with_ca()
         modify_json_values(INVALID_BODY, "key_file", invalid_base64_encoding_cert_content)
+        print(INVALID_BODY)
         # Make a request to the API
         response = requests.post(url=f'{BASE_URL}/issuers/cert-pem', json=INVALID_BODY)
         assert response.status_code == 422
@@ -161,6 +167,7 @@ class TestIssuerCreationFromPEM:
     def test_should_not_create_a_new_issuer_from_pem_with_incorrect_base_64_encoding_key(self, app_container):
         INVALID_BODY = generate_valid_certs_with_ca()
         modify_json_values(INVALID_BODY, "key_file", invalid_base64_encoding_key_content)
+        print(INVALID_BODY)
         # Make a request to the API
         response = requests.post(url=f'{BASE_URL}/issuers/cert-pem', json=INVALID_BODY)
         assert response.status_code == 422

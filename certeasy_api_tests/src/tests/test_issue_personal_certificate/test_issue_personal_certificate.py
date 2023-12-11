@@ -34,8 +34,6 @@ class TestIssuePersonalCertificate:
         VALID_BODY = generate_personal_data(self.loaded_schema)
         remove_json_values(VALID_BODY, "telephone")
         response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/personal', json=VALID_BODY)
-        
-        print(response.json())
         assert response.status_code == 200
         assert "serial" in response.json() and len(response.json()) > 0
 
@@ -340,3 +338,9 @@ class TestIssuePersonalCertificate:
         response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/personal', json=VALID_BODY)
         assert response.status_code == 422
 
+    def test_should_not_issue_a_personal_certificate_when_pass_null_employment_object(self, app_container):
+        ISSUER_ID = create_issuer_from_spec()
+        VALID_BODY = generate_personal_data(self.loaded_schema)
+        remove_dict(VALID_BODY, "employment")
+        response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID}/certificates/personal', json=VALID_BODY)
+        assert response.status_code == 422
