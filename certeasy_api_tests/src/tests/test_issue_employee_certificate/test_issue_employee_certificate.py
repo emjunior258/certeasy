@@ -80,6 +80,13 @@ class TestIssuePersonalCertificate:
         assert response.status_code == 422
 
 
+    def test_should_not_issue_an_employee_certificate_when_pass_null_employment_object(self, app_container):
+        ISSUER_ID = create_issuer_from_spec()
+        VALID_BODY = generate_employee_data(self.loaded_schema)
+        remove_dict(VALID_BODY, "employment")
+        response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/employee', json=VALID_BODY)
+        assert response.status_code == 422
+
     def test_should_not_issue_an_employee_certificate_when_pass_null_validity_object(self, app_container):
         ISSUER_ID = create_issuer_from_spec()
         VALID_BODY = generate_employee_data(self.loaded_schema)
@@ -108,6 +115,14 @@ class TestIssuePersonalCertificate:
         ISSUER_ID = create_issuer_from_spec()
         VALID_BODY = generate_employee_data(self.loaded_schema)
         remove_json_values(VALID_BODY, "key_strength")
+        response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/employee', json=VALID_BODY)
+        assert response.status_code == 422
+
+
+    def test_should_not_issue_an_employee_certificate_when_pass_null_address_object(self, app_container):
+        ISSUER_ID = create_issuer_from_spec()
+        VALID_BODY = generate_employee_data(self.loaded_schema)
+        remove_dict(VALID_BODY, "address")
         response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/employee', json=VALID_BODY)
         assert response.status_code == 422
 
@@ -156,3 +171,222 @@ class TestIssuePersonalCertificate:
         remove_json_values(VALID_BODY, "surname")
         response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/employee', json=VALID_BODY)
         assert response.status_code == 422
+
+
+    #
+    def test_should_issue_an_employee_certificate_when_pass_an_empty_telephone(self, app_container):
+        ISSUER_ID = create_issuer_from_spec()
+        VALID_BODY = generate_employee_data(self.loaded_schema)
+        modify_json_values(VALID_BODY, "telephone", "")
+        response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/employee', json=VALID_BODY)
+        assert response.status_code == 422
+
+    def test_should_not_issue_an_employee_certificate_when_pass_an_empty_employment_object(self, app_container):
+        ISSUER_ID = create_issuer_from_spec()
+        VALID_BODY = generate_employee_data(self.loaded_schema)
+        turn_empty_dict_in_json(VALID_BODY, "employment")
+        response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/employee', json=VALID_BODY)
+        assert response.status_code == 422
+
+    def test_should_issue_an_employee_certificate_when_pass_an_empty_organization_name(self, app_container):
+        ISSUER_ID = create_issuer_from_spec()
+        VALID_BODY = generate_employee_data(self.loaded_schema)
+        set_empty_dict_value(VALID_BODY, "employment", "organization_name", "")
+        response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/employee', json=VALID_BODY)
+        assert response.status_code == 422
+
+    def test_should_issue_an_employee_certificate_when_pass_an_empty_department(self, app_container):
+        ISSUER_ID = create_issuer_from_spec()
+        VALID_BODY = generate_employee_data(self.loaded_schema)
+        set_empty_dict_value(VALID_BODY, "employment", "department", "")
+        response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/employee', json=VALID_BODY)
+        assert response.status_code == 422
+
+
+    def test_should_issue_an_employee_certificate_when_pass_an_empty_email_address(self, app_container):
+        ISSUER_ID = create_issuer_from_spec()
+        VALID_BODY = generate_employee_data(self.loaded_schema)
+        set_empty_dict_value(VALID_BODY, "employment", "email_address", "")
+        response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/employee', json=VALID_BODY)
+        assert response.status_code == 422
+    
+    def test_should_issue_an_employee_certificate_when_pass_an_empty_username(self, app_container):
+        ISSUER_ID = create_issuer_from_spec()
+        VALID_BODY = generate_employee_data(self.loaded_schema)
+        set_empty_dict_value(VALID_BODY, "employment", "username", "")
+        response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/employee', json=VALID_BODY)
+        assert response.status_code == 422
+
+
+    def test_should_not_issue_an_employee_certificate_when_pass_an_empty_job_title(self, app_container):
+        ISSUER_ID = create_issuer_from_spec()
+        VALID_BODY = generate_employee_data(self.loaded_schema)
+        set_empty_dict_value(VALID_BODY, "employment", "job_title", "")
+        response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/employee', json=VALID_BODY)
+        assert response.status_code == 422
+
+
+    def test_should_not_issue_an_employee_certificate_when_pass_an_empty_validity_object(self, app_container):
+        ISSUER_ID = create_issuer_from_spec()
+        VALID_BODY = generate_employee_data(self.loaded_schema)
+        turn_empty_dict_in_json(VALID_BODY, "validity")
+        response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/employee', json=VALID_BODY)
+        assert response.status_code == 422
+
+
+    def test_should_not_issue_an_employee_certificate_when_pass_an_empty_until_validity(self, app_container):
+        ISSUER_ID = create_issuer_from_spec()
+        VALID_BODY = generate_employee_data(self.loaded_schema)
+        set_empty_dict_value(VALID_BODY, "validity", "until", "")
+        response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/employee', json=VALID_BODY)
+        assert response.status_code == 422
+
+
+    def test_should_not_issue_an_employee_certificate_when_pass_an_empty_from_validity(self, app_container):
+        ISSUER_ID = create_issuer_from_spec()
+        VALID_BODY = generate_employee_data(self.loaded_schema)
+        set_empty_dict_value(VALID_BODY, "validity", "from", "")
+        response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/employee', json=VALID_BODY)
+        assert response.status_code == 422
+
+
+    def test_should_not_issue_an_employee_certificate_when_pass_an_empty_key_strength(self, app_container):
+        ISSUER_ID = create_issuer_from_spec()
+        VALID_BODY = generate_employee_data(self.loaded_schema)
+        modify_json_values(VALID_BODY, "key_strength", "")
+        response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/employee', json=VALID_BODY)
+        assert response.status_code == 422
+
+    def test_should_not_issue_an_employee_certificate_when_pass_an_empty_address_object(self, app_container):
+        ISSUER_ID = create_issuer_from_spec()
+        VALID_BODY = generate_employee_data(self.loaded_schema)
+        turn_empty_dict_in_json(VALID_BODY, "address")
+        response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/employee', json=VALID_BODY)
+        assert response.status_code == 422
+
+
+    def test_should_not_issue_an_employee_certificate_when_pass_an_empty_country(self, app_container):
+        ISSUER_ID = create_issuer_from_spec()
+        VALID_BODY = generate_employee_data(self.loaded_schema)
+        set_empty_dict_value(VALID_BODY, "address", "country", "")
+        response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/employee', json=VALID_BODY)
+        assert response.status_code == 422
+
+
+    def test_should_not_issue_an_employee_certificate_when_pass_an_empty_state(self, app_container):
+        ISSUER_ID = create_issuer_from_spec()
+        VALID_BODY = generate_employee_data(self.loaded_schema)
+        set_empty_dict_value(VALID_BODY, "address", "state", "")
+        response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/employee', json=VALID_BODY)
+        assert response.status_code == 422
+
+
+    def test_should_not_issue_an_employee_certificate_when_pass_an_empty_locality(self, app_container):
+        ISSUER_ID = create_issuer_from_spec()
+        VALID_BODY = generate_employee_data(self.loaded_schema)
+        set_empty_dict_value(VALID_BODY, "address", "locality", "")
+        response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/employee', json=VALID_BODY)
+        assert response.status_code == 422
+
+    def test_should_not_issue_an_employee_certificate_when_pass_an_empty_street_address(self, app_container):
+        ISSUER_ID = create_issuer_from_spec()
+        VALID_BODY = generate_employee_data(self.loaded_schema)
+        set_empty_dict_value(VALID_BODY, "address", "street_address", "")
+        response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/employee', json=VALID_BODY)
+        assert response.status_code == 422
+
+    def test_should_not_issue_an_employee_certificate_when_pass_an_empty_name(self, app_container):
+        ISSUER_ID = create_issuer_from_spec()
+        VALID_BODY = generate_employee_data(self.loaded_schema)
+        modify_json_values(VALID_BODY, "name", "")
+        response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/employee', json=VALID_BODY)
+        assert response.status_code == 422
+
+
+    def test_should_not_issue_an_employee_certificate_when_pass_an_empty_surname(self, app_container):
+        ISSUER_ID = create_issuer_from_spec()
+        VALID_BODY = generate_employee_data(self.loaded_schema)
+        modify_json_values(VALID_BODY, "surname", "")
+        response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/employee', json=VALID_BODY)
+        assert response.status_code == 422
+    
+    # 
+    def test_should_issue_an_employee_certificate_when_pass_a_sequence_of_space_email_address(self, app_container):
+        ISSUER_ID = create_issuer_from_spec()
+        VALID_BODY = generate_employee_data(self.loaded_schema)
+        set_empty_dict_value(VALID_BODY, "employment", "email_address", "       ")
+        response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/employee', json=VALID_BODY)
+        assert response.status_code == 422
+
+    def test_should_not_issue_an_employee_certificate_when_pass_email_address_spaces(self, app_container):
+        ISSUER_ID = create_issuer_from_spec()
+        VALID_BODY = generate_personal_data(self.loaded_schema)
+        add_values_into_list_in_json(VALID_BODY, "employment", "example domain com")
+        response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/employee', json=VALID_BODY)
+        assert response.status_code == 422
+
+    def test_should_not_issue_an_employee_certificate_when_pass_email_address_missing_domain(self, app_container):
+        ISSUER_ID = create_issuer_from_spec()
+        VALID_BODY = generate_personal_data(self.loaded_schema)
+        add_values_into_list_in_json(VALID_BODY, "employment", "no.domain@")
+        response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/employee', json=VALID_BODY)
+        assert response.status_code == 422
+
+    def test_should_not_issue_an_employee_certificate_when_pass_email_address_special_characters(self, app_container):
+        ISSUER_ID = create_issuer_from_spec()
+        VALID_BODY = generate_personal_data(self.loaded_schema)
+        add_values_into_list_in_json(VALID_BODY, "employment", "example@domain!com")
+        response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/employee', json=VALID_BODY)
+        assert response.status_code == 422
+
+    def test_should_not_issue_an_employee_certificate_when_pass_email_address_missing_symbol(self, app_container):
+        """missing "@" symbol"""
+        ISSUER_ID = create_issuer_from_spec()
+        VALID_BODY = generate_personal_data(self.loaded_schema)
+        add_values_into_list_in_json(VALID_BODY, "employment", "examplegmail.com")
+        response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/employee', json=VALID_BODY)
+        assert response.status_code == 422
+
+    def test_should_issue_an_employee_certificate_when_pass_uppercase_email_address(self, app_container):
+        ISSUER_ID = create_issuer_from_spec()
+        VALID_BODY = generate_personal_data(self.loaded_schema)
+        add_values_into_list_in_json(VALID_BODY, "employment", "EXAMPLE@GMAIL.COM")
+        response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/employee', json=VALID_BODY)
+        assert response.status_code == 200
+
+    def test_should_not_issue_an_employee_certificate_when_pass_email_address_accents(self, app_container):
+        ISSUER_ID = create_issuer_from_spec()
+        VALID_BODY = generate_personal_data(self.loaded_schema)
+        add_values_into_list_in_json(VALID_BODY, "employment", "certidão@gmail.com")
+        response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/employee', json=VALID_BODY)
+        assert response.status_code == 422
+
+    def test_should_not_issue_an_employee_certificate_when_pass_an_email_missing_top_level_domain(self, app_container):
+        ISSUER_ID = create_issuer_from_spec()
+        VALID_BODY = generate_personal_data(self.loaded_schema)
+        add_values_into_list_in_json(VALID_BODY, "employment", "invalid.email@domain")
+        response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/employee', json=VALID_BODY)
+        assert response.status_code == 422
+
+    def test_should_not_issue_an_employee_certificate_when_pass_invalid_key_strength(self, app_container):
+        ISSUER_ID = create_issuer_from_spec()
+        VALID_BODY =  generate_personal_data(self.loaded_schema)
+        modify_json_values(VALID_BODY, "key_strength", generate_invalid_key_strength())
+        response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/employee', json=VALID_BODY)
+        assert response.status_code == 422
+
+
+    def test_should_issue_an_employee_certificate_when_pass_an_invalid_telephone_data(self, app_container):
+        ISSUER_ID = create_issuer_from_spec()
+        VALID_BODY = generate_employee_data(self.loaded_schema)
+        modify_json_values(VALID_BODY, "telephone", "INVALID-TELEPHONE")
+        response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/employee', json=VALID_BODY)
+        assert response.status_code == 422
+
+    def test_should_issue_an_employee_certificate_when_pass_an_invalid_telephone(self, app_container):
+        ISSUER_ID = create_issuer_from_spec()
+        VALID_BODY = generate_employee_data(self.loaded_schema)
+        modify_json_values(VALID_BODY, "telephone", "+2588499o2432")
+        response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/employee', json=VALID_BODY)
+        assert response.status_code == 422
+    
