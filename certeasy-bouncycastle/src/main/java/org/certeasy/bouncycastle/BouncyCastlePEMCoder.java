@@ -25,6 +25,7 @@ import java.util.Set;
 public class BouncyCastlePEMCoder implements PEMCoder  {
 
     private static final IllegalCertPemException ILLEGAL_CERT_PEM_EXCEPTION = new IllegalCertPemException("cert is not valid PEM encoded certificate");
+    private static final IllegalPrivateKeyPemException ILLEGAL_PRIVATE_KEY_PEM_EXCEPTION = new IllegalPrivateKeyPemException("key is not valid PEM encoded privateKey");
 
     public BouncyCastlePEMCoder(){
         BouncyCastleSecurityProvider.install();
@@ -62,10 +63,11 @@ public class BouncyCastlePEMCoder implements PEMCoder  {
                 KeyFactory keyFactory = KeyFactory.getInstance("RSA", BouncyCastleProvider.PROVIDER_NAME);
                 return keyFactory.generatePrivate(keySpec);
             } else throw new IllegalPrivateKeyPemException("provided PEM content doesn't contain a privateKey");
-        }catch (IOException | NoSuchAlgorithmException | NoSuchProviderException ex){
+        }catch (InvalidKeySpecException | DecoderException | IOException ex){
+            throw ILLEGAL_PRIVATE_KEY_PEM_EXCEPTION;
+
+        }catch ( NoSuchAlgorithmException | NoSuchProviderException ex){
             throw new PEMCoderException("error decoding RSA private key", ex);
-        }catch (InvalidKeySpecException | DecoderException ex){
-            throw new IllegalPrivateKeyPemException("provided PEM content is not a valid privateKey");
         }
     }
 
@@ -77,11 +79,8 @@ public class BouncyCastlePEMCoder implements PEMCoder  {
             if (pemObj instanceof X509CertificateHolder certificateHolder) {
                 return new CertificateDecoder(certificateHolder);
             } else throw ILLEGAL_CERT_PEM_EXCEPTION;
-        }catch (DecoderException | PEMException ex){
+        }catch (DecoderException | IOException ex){
             throw ILLEGAL_CERT_PEM_EXCEPTION;
-        }catch (IOException ex) {
-            throw new BouncyCastleCoderException("error decoding certificate",
-                    ex);
         }
     }
 
