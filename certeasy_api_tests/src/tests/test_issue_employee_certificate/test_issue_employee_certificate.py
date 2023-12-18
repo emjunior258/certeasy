@@ -390,3 +390,23 @@ class TestIssuePersonalCertificate:
         response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/employee', json=VALID_BODY)
         assert response.status_code == 422
     
+    def test_should_not_issue_an_employee_certificate_when_pass_invalid_format_until_validity(self, app_container):
+        ISSUER_ID = create_issuer_from_spec()
+        VALID_BODY = generate_personal_data(self.loaded_schema)
+        set_empty_dict_value(VALID_BODY, "validity", "until", generate_invalid_validity_dates())
+        response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/employee', json=VALID_BODY)
+        assert response.status_code == 422
+
+    def test_should_not_issue_an_employee_certificate_when_pass_invalid_format_from_validity(self, app_container):
+        ISSUER_ID = create_issuer_from_spec()
+        VALID_BODY =  generate_personal_data(self.loaded_schema)
+        set_empty_dict_value(VALID_BODY, "validity", "from", generate_invalid_validity_dates())
+        response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/employee', json=VALID_BODY)
+        assert response.status_code == 422
+
+    def test_should_not_issue_an_employee_certificate_when_pass_out_of_range_until_validity(self, app_container):
+        ISSUER_ID = create_issuer_from_spec()
+        VALID_BODY =  generate_personal_data(self.loaded_schema)
+        set_empty_dict_value(VALID_BODY, "validity", "until", get_two_years_ago_date())
+        response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/employee', json=VALID_BODY)
+        assert response.status_code == 422

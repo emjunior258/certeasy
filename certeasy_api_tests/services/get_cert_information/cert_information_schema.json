@@ -1,0 +1,31 @@
+{
+  "name": "my-cert",
+  "serial": "d9028c1c-6778-403a-b888-c72d7de5aeb3",
+  "type": "CA",
+  "key_size": 512,
+  "distinguished_name": "CN=John Smith, OU=Test, O=IBM, C=GB",
+  "issuer": "CN=Ipsum, OU=Test, O=IBM, C=GB",
+  "basic_constraints": {
+    "ca": true,
+    "path_length": 0
+  },
+  "subject_alt_names": [
+    {
+      "type": "DNS",
+      "value": "example.com"
+    }
+  ],
+  "key_usages": [
+    "DigitalSignature"
+  ],
+  "extended_key_usages": {
+    "usages": [
+      "TLS_WEB_SERVER_AUTH"
+    ],
+    "effect": "Info"
+  },
+  "validity": {
+    "from": "2023-01-01",
+    "until": "2023-12-31"
+  }
+}

@@ -73,7 +73,6 @@ def generate_personal_data(schema):
                 data[prop] = user_surname
             elif prop_schema == "user-telephone":
                 data[prop] = generate_user_telephone(country_codes)
-            # Add more conditions for other string properties if needed
             else:
                 data[prop] = None
         elif isinstance(prop_schema, list):

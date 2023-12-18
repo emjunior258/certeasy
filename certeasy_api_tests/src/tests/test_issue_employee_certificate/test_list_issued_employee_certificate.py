@@ -11,19 +11,19 @@ class TestListEmployeeIssuedCerts:
         response = requests.get(url=f'{BASE_URL}/issuers/{ISSUER_ID}/certificates', params=PARAMS)
         assert response.status_code == 200
 
-    def test_should_return_employee_as_cert_type_when_get_issued_tls_server(self, app_container):
+    def test_should_return_employee_as_cert_type_when_get_issued_employee(self, app_container):
         CERT_SERIAL, ISSUER_ID, CERT_NAME, CA_NAME = issue_employee_certs()
         PARAMS = {"type": "EMPLOYEE"}
         response = requests.get(url=f'{BASE_URL}/issuers/{ISSUER_ID}/certificates', params=PARAMS)
         assert response.json()[0]["type"] == "EMPLOYEE"
 
-    def test_should_return_correct_cert_name_when_get_issued_tls_server(self, app_container):
+    def test_should_return_correct_cert_name_when_get_issued_employee(self, app_container):
         CERT_SERIAL, ISSUER_ID, CERT_NAME, CA_NAME = issue_employee_certs()
         PARAMS = {"type": "EMPLOYEE"}
         response = requests.get(url=f'{BASE_URL}/issuers/{ISSUER_ID}/certificates', params=PARAMS)
         assert response.json()[0]["name"] == CERT_NAME
 
-    def test_should_return_correct_cert_serial_when_get_issued_tls_server(self, app_container):
+    def test_should_return_correct_cert_serial_when_get_issued_employee(self, app_container):
         CERT_SERIAL, ISSUER_ID, CERT_NAME, CA_NAME = issue_employee_certs()
         PARAMS = {"type": "EMPLOYEE"}
         response = requests.get(url=f'{BASE_URL}/issuers/{ISSUER_ID}/certificates', params=PARAMS)
@@ -35,7 +35,7 @@ class TestListEmployeeIssuedCerts:
         response = requests.get(url=f'{BASE_URL}/issuers/{ISSUER_ID}/certificates', params=PARAMS)
         assert len(response.json()) == 0
 
-    def test_should_return_the_correct_ca_name_associated_with_issued_tls_when_pass_ca_type(self, app_container):
+    def test_should_return_the_correct_ca_name_associated_with_issued_employee_when_pass_ca_type(self, app_container):
         CERT_SERIAL, ISSUER_ID, CERT_NAME, CA_NAME = issue_employee_certs()
         PARAMS = {"type": "CA"}
         response = requests.get(url=f'{BASE_URL}/issuers/{ISSUER_ID}/certificates', params=PARAMS)
