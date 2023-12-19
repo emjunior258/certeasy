@@ -18,6 +18,7 @@ module.exports = {
         "gray-40": "#BCBCBC",
         "gray-30": "#DBDBDB",
         "gray-20": "#E6E6E6",
+        "gray-14": "rgba(1, 17, 38, 0.14)",
         "gray-10": "#F7F7F7",
       },
       fontFamily: {
