@@ -11,6 +11,7 @@ class TestGetCertInformation:
         get_cert_serial = requests.get(url=f'{BASE_URL}/issuers')
         CERT_SERIAL = get_cert_serial.json()[0]['serial']
         response = requests.get(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/{CERT_SERIAL}')
+        assert response.status_code == 200
         assert len(response.json()) == 11
         print(response.text)
 

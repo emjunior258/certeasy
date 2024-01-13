@@ -8,7 +8,6 @@ class TestGetCertInformation:
     def test_should_return_information_of_issued_employee_certs(self, app_container):
         CERT_SERIAL, ISSUER_ID, CERT_NAME, CA_NAME = issue_employee_certs()
         response = requests.get(url=f'{BASE_URL}/issuers/{ISSUER_ID}/certificates/{CERT_SERIAL}')
-        print(response.json())
         assert response.status_code == 200
         assert len(response.json()) == 11
 
