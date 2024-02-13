@@ -1,6 +1,6 @@
 <template>
   <button
-    class="rounded py-1 px-4 min-h-[41px]"
+    class="rounded-lg py-2 px-4 min-h-[41px] border border-primary"
     :class="{
       'bg-primary': buttonProps.active && !buttonProps.disabled,
       'text-white': buttonProps.active && !buttonProps.disabled,
@@ -12,11 +12,11 @@
   >
     <component
       :is="buttonProps.icon"
-      class="inline"
+      class="inline w-6 h-auto"
       :class="{ 'text-primary': !buttonProps.active }"
     ></component>
     <span
-      class="align-middle"
+      class="align-middle text-text font-normal leading-4 text-base"
       :class="{ 'ml-2': buttonProps.icon }"
     >
       {{ buttonProps.text }}
@@ -26,5 +26,5 @@
 </template>
 
 <script setup>
-defineProps(["buttonProps"]);
+defineProps(['buttonProps'])
 </script>

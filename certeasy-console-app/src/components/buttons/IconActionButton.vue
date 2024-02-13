@@ -1,6 +1,6 @@
 <template>
   <button
-    class="rounded py-3 px-6 font-medium text-lg"
+    class="rounded-lg py-3 px-6 font-normal leading-4 text-base"
     :class="{
       'text-white': !buttonProps.outlined,
       'text-primary': buttonProps.outlined,
@@ -11,14 +11,14 @@
     }"
     type="button"
   >
-    {{ buttonProps.text }}
     <component
       :is="buttonProps.icon"
-      class="inline ml-2"
+      class="inline mr-2 w-6 h-auto"
     />
+    {{ buttonProps.text }}
   </button>
 </template>
 
 <script setup>
-defineProps(["buttonProps"]);
+defineProps(['buttonProps'])
 </script>
