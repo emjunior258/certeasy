@@ -1,7 +1,9 @@
 <template>
-  <footer class="px-16 fixed bottom-0 w-full bg-white">
-    <div class="border-t text-right pt-8 pb-11">
-      <a href="#"
+  <footer class="w-full bg-white text-text">
+    <div class="border-t text-right py-4">
+      <a
+        href="#"
+        class="py-2.5"
         ><img
           src="../assets/icons/github.svg"
           alt="api"
@@ -9,11 +11,13 @@
         />
         Read Documentation</a
       >
-      <a href="#"
+      <a
+        href="#"
+        class="py-2.5 ml-9"
         ><img
           src="../assets/icons/warning.svg"
           alt="api"
-          class="inline ml-6"
+          class="inline"
         />
         Report Issue</a
       >

@@ -1,6 +1,6 @@
 <template>
   <li
-    class="border border-gray-200 rounded-lg shadow px-5 py-3 mb-2 hover:text-primary"
+    class="border border-gray-200 rounded-lg shadow-sm px-5 py-3 mb-2 hover:text-primary"
     :class="true && 'shadow shadow-primary-0.6'"
   >
     <div class="flex justify-between">
@@ -14,10 +14,12 @@
           :alt="'alt'"
           class="pt-1"
         />
-        <div class="flex flex-col justify-between items-stretch">
-          <h3 class="text-base font-medium text-text capitalize">issuer</h3>
+        <div class="flex flex-col justify-between items-stretch gap-2">
+          <h3 class="text-base text-text capitalize font-semibold leading-4">
+            issuer
+          </h3>
           <span
-            class="rounded text-[0.5rem] py-0.5 px-2.5 bg-purple font-light capitalize"
+            class="rounded text-[0.5rem] py-1 px-2 bg-purple font-base capitalize w-fit leading-2"
             >Sub</span
           >
         </div>
