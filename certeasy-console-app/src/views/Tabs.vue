@@ -56,9 +56,11 @@
             <IconActionButton :buttonProps="buttonProp4" />
           </div>
         </div>
-        <ul>
-          <IssuerCard />
-        </ul>
+        <IssuersList
+          v-if="issuersList.length > 0"
+          :issuersList="issuersList"
+        />
+        <IssuerCardNoContent v-if="issuersList.length === 0" />
         <TheFooter class="absolute bottom-0 left-0 px-16" />
       </div>
     </div>
@@ -67,6 +69,7 @@
 <script setup>
 import AddFileIcon from '@/assets/icons/AddFileIcon.vue'
 import NavComponent from '@/components/NavComponent.vue'
+import api from '@/config/config'
 import ApiIcon from '@/assets/icons/ApiIcon.vue'
 import CogIcon from '@/assets/icons/CogIcon.vue'
 import imgSrc from '@/assets/logo.svg'
@@ -74,9 +77,11 @@ import Issuer from '@/assets/icons/Issuer.vue'
 import Certificate from '../assets/icons/Certificate.vue'
 import IconActionButton from '@/components/buttons/IconActionButton.vue'
 import IconTextButton from '@/components/buttons/IconTextButton.vue'
-import IssuerCard from '@/components/IssuerCard.vue'
+import IssuersList from '@/components/IssuersList.vue'
+import IssuerCardNoContent from '@/components/IssuerCardNoContent.vue'
 import TreeIcon from '@/assets/icons/TreeIcon.vue'
-import TheFooter from '../components/TheFooter.vue'
+import TheFooter from '@/components/TheFooter.vue'
+import { onMounted, ref } from 'vue'
 const cogIcon = CogIcon
 const apiIcon = ApiIcon
 const addFileIcon = AddFileIcon
@@ -85,6 +90,8 @@ const logo = {
   imgSrc: imgSrc,
   alt: 'Certeasy',
 }
+const issuersList = ref([])
+const isLoading = ref(true)
 
 const buttonProp = {
   id: 0,
@@ -132,6 +139,22 @@ const navLinks = [
     linkHref: '#',
   },
 ]
+
+const fetchData = async (url) => {
+  try {
+    const res = await api.get(url)
+    const data = await res
+    issuersList.value = data.data
+  } catch (error) {
+    console.error('Error fetching data', error)
+  } finally {
+    isLoading.value = false
+  }
+}
+
+onMounted(() => {
+  fetchData('/issuers')
+})
 </script>
 
 <style scoped>

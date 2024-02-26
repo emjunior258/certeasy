@@ -16,11 +16,11 @@
         />
         <div class="flex flex-col justify-between items-stretch gap-2">
           <h3 class="text-base text-text capitalize font-semibold leading-4">
-            issuer
+            {{ issuer.name }}
           </h3>
           <span
             class="rounded text-[0.5rem] py-1 px-2 bg-purple font-base capitalize w-fit leading-2"
-            >Sub</span
+            >{{ issuer.type }}</span
           >
         </div>
       </div>
@@ -43,6 +43,8 @@
 </template>
 
 <script setup>
+const { issuer } = defineProps(['issuer'])
+console.log(issuer)
 // const { selectNode } = defineProps(["selectNode", "issuer"]);
 
 // const handleSelectNode = (node) => {
