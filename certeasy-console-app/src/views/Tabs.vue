@@ -7,7 +7,7 @@
     />
     <div class="px-16 full-page-nav pt-[104px]">
       <div
-        class="px-16 border-x border-t border-gray-14 rounded-tr-lg h-full relative flex-col"
+        class="border-x border-t border-gray-14 rounded-tr-lg h-full relative flex-col"
       >
         <ul class="absolute -top-[60px] -left-[1px] flex">
           <li>
@@ -28,7 +28,7 @@
             >
           </li>
         </ul>
-        <div class="flex justify-between mt-12 mb-6 items-end pb-6">
+        <div class="px-16 flex justify-between mt-12 mb-6 items-end pb-6">
           <div class="font-light text-lg">
             <IconTextButton
               :buttonProps="buttonProp"
@@ -56,11 +56,13 @@
             <IconActionButton :buttonProps="buttonProp4" />
           </div>
         </div>
-        <IssuersList
-          v-if="issuersList.length > 0"
-          :issuersList="issuersList"
-        />
-        <IssuerCardNoContent v-if="issuersList.length === 0" />
+        <div class="pl-16 mr-4 pr-8 overflow-y-auto max-h-[calc(100%-220px)]">
+          <IssuersList
+            v-if="issuersList.length > 0"
+            :issuersList="issuersList"
+          />
+          <IssuerCardNoContent v-if="issuersList.length === 0" />
+        </div>
         <TheFooter class="absolute bottom-0 left-0 px-16" />
       </div>
     </div>

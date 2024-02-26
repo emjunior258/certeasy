@@ -44,7 +44,6 @@
 
 <script setup>
 const { issuer } = defineProps(['issuer'])
-console.log(issuer)
 // const { selectNode } = defineProps(["selectNode", "issuer"]);
 
 // const handleSelectNode = (node) => {
