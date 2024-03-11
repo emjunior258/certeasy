@@ -91,10 +91,26 @@ class BouncyCastlePEMCoderTest {
     }
 
     @Test
-    @DisplayName("must throw an exception when decode ")
-    void mustThrowExceptionWhenDecode() {
+    @DisplayName("must throw an IllegalPrivateKeyPemException when privateKey has no content")
+    void mustThrowExceptionWhenPrivateKeyHasNoContent() {
+        String pKey = """
+                -----BEGIN PRIVATE KEY-----
+                -----END PRIVATE KEY-----
+                """;
         assertThrows(IllegalPrivateKeyPemException.class,
-                () -> bcPEMCoder.decodeCertificate("certPem", "privateKeyPem"));
+                () -> bcPEMCoder.decodeCertificate(certPem, pKey));
+
+    }
+
+    @Test
+    @DisplayName("must throw an IllegalCertPemException when certificate has no content")
+    void mustThrowExceptionWhenCertificateHasNoContent() {
+        String cert = """
+                -----BEGIN PRIVATE KEY-----
+                -----END PRIVATE KEY-----
+                """;
+        assertThrows(IllegalCertPemException.class,
+                () -> bcPEMCoder.decodeCertificate(cert, privateKeyPem));
 
     }
 
