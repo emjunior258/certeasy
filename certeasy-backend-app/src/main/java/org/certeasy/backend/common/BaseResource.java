@@ -61,7 +61,7 @@ public abstract class BaseResource {
 
     protected Optional<Response> checkIssuerId(String issuerId){
         Set<Violation> violationSet = new HashSet<>();
-        if(issuerId==null || issuerId.isEmpty())
+        if(issuerId==null || issuerId.isEmpty() || issuerId.isBlank())
             violationSet.add(new Violation("path.issuerId", ViolationType.REQUIRED,
                     "issuerId must not be null nor empty"));
         if(!ID_PATTERN.matcher(issuerId).matches())
