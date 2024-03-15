@@ -8,6 +8,7 @@ import org.certeasy.backend.common.CertPEM;
 import org.certeasy.backend.common.OrganizationInfo;
 import org.certeasy.backend.common.SubCaSpec;
 import org.certeasy.backend.common.cert.NotFoundProblem;
+import org.certeasy.backend.common.problem.BadRequestProblem;
 import org.certeasy.backend.common.problem.ConstraintViolationProblem;
 import org.certeasy.backend.common.problem.Problem;
 import org.certeasy.backend.common.problem.ProblemResponse;
@@ -15,9 +16,11 @@ import org.certeasy.backend.common.validation.ValidationPath;
 import org.certeasy.backend.common.validation.Violation;
 import org.certeasy.backend.common.validation.ViolationType;
 import org.certeasy.backend.issuer.CertIssuer;
+import org.certeasy.backend.issuer.IssuersResource;
 import org.certeasy.backend.issuer.ReadOnlyCertificateException;
 import org.certeasy.backend.persistence.StoredCert;
 import org.certeasy.certspec.*;
+import org.jboss.logging.Logger;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -33,6 +36,8 @@ import java.util.Optional;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class CertificatesResource extends BaseResource {
+
+    private static final Logger LOGGER = Logger.getLogger(CertificatesResource.class);
 
     @GET
     public Response list(@PathParam("issuerId") String issuerId, @QueryParam("type") String type){
@@ -208,6 +213,11 @@ public class CertificatesResource extends BaseResource {
     }
 
     private Response checkCertExistsThen(CertIssuer issuer, String serial, StoredCertOperation operation) {
+        if(serial.isBlank()) {
+            LOGGER.warn("The serial is null or empty");
+            return ProblemResponse.fromProblem(
+                    new BadRequestProblem("The serial cannot be null or empty"));
+        }
         Optional<StoredCert> issuedCertOptional = issuer.getIssuedCert(serial);
         if(issuedCertOptional.isEmpty()){
             return ProblemResponse.fromProblem(new NotFoundProblem(
