@@ -1,0 +1,20 @@
+{
+  "validity": {
+        "from": "validity-from",
+        "until": "validity-until"
+    },
+  "key_strength": "certificate-key-strength",
+  "address": {
+        "country": "address-country",
+        "state": "address-state",
+        "locality": "address-locality",
+        "street_address": "street-address"
+    },
+  "name": "user-name",
+  "surname": "user-surname",
+  "telephone": "user-telephone",
+  "email_addresses": [],
+  "usernames": []
+}
+
+

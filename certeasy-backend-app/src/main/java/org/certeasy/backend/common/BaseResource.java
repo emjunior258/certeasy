@@ -1,7 +1,7 @@
 package org.certeasy.backend.common;
 
 import org.certeasy.CertEasyContext;
-import org.certeasy.backend.common.problem.ConstraintViolationProblem;
+import org.certeasy.backend.common.problem.BadRequestProblem;
 import org.certeasy.backend.common.problem.Problem;
 import org.certeasy.backend.common.problem.ProblemResponse;
 import org.certeasy.backend.common.validation.Violation;
@@ -16,7 +16,6 @@ import javax.ws.rs.core.Response;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 public abstract class BaseResource {
@@ -42,6 +41,12 @@ public abstract class BaseResource {
     }
 
     public Response checkIssuerExistsThen(String issuerId, IssuerOperation operation){
+        if(issuerId.isBlank()){
+            LOGGER.warn("The serial is null or empty");
+            return ProblemResponse.fromProblem(
+                    new BadRequestProblem("The issuerId must not be null nor empty"));
+        }
+
         Optional<Response> optionalResponse = this.checkIssuerId(issuerId);
         if(optionalResponse.isPresent())
             return optionalResponse.get();
@@ -61,7 +66,7 @@ public abstract class BaseResource {
 
     protected Optional<Response> checkIssuerId(String issuerId){
         Set<Violation> violationSet = new HashSet<>();
-        if(issuerId==null || issuerId.isEmpty())
+        if(issuerId==null || issuerId.isEmpty() || issuerId.isBlank())
             violationSet.add(new Violation("path.issuerId", ViolationType.REQUIRED,
                     "issuerId must not be null nor empty"));
         if(!ID_PATTERN.matcher(issuerId).matches())

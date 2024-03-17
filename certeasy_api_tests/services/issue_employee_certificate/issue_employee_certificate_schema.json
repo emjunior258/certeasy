@@ -1,0 +1,24 @@
+{
+  "validity": {
+    "from": "validity-from",
+    "until": "validity-until"
+    },
+  "address": {
+      "country": "MZ",
+      "state": "Maputo",
+      "locality": "Boane",
+      "street_address": "1234 Main Street"
+      },
+  "employment": {
+    "organization_name": "employee-org-name",
+    "department": "employee-department",
+    "job_title": "employee-job-title",
+    "email_address": "employee-email-address",
+    "username": "employee-username"
+  },
+  "key_strength": "certificate-key-strength",
+  "name": "employee-name",
+  "surname": "employee-surname",
+  "telephone": "employee-telephone"
+
+}
