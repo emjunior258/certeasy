@@ -3,6 +3,9 @@ module.exports = {
   content: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
   theme: {
     extend: {
+      boxShadow: {
+        xs: '0px 18px 32px 0px rgba(1, 17, 38, 0.08);',
+      },
       colors: {
         primary: '#0433BF',
         'blue-pale': '#E6EBF9',
@@ -17,6 +20,7 @@ module.exports = {
         'black-0.4': 'rgba(0, 0, 0, 0.4)',
         'black-0.3': 'rgba(0, 0, 0, 0.3)',
         'black-0.6': 'rgba(0, 0, 0, 0.6)',
+        'black-0.08': 'rgba(1, 17, 38, 0.08)',
         'gray-40': '#BCBCBC',
         'gray-30': '#DBDBDB',
         'gray-20': '#E6E6E6',

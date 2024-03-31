@@ -1,7 +1,7 @@
 <template>
   <li
-    class="border border-gray-200 rounded-lg shadow-sm px-5 py-3 mb-2 hover:text-primary"
-    :class="true && 'shadow shadow-primary-0.6'"
+    class="border border-gray-200 rounded-lg shadow-xs px-5 py-3 mb-2 hover:text-primary"
+    :class="true && 'shadow-xs'"
   >
     <div class="flex justify-between">
       <div
