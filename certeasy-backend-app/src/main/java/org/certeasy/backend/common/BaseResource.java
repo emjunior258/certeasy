@@ -20,8 +20,8 @@ import java.util.regex.Pattern;
 
 public abstract class BaseResource {
 
-    final String ID_REGEX = "^[a-z0-9]+(-[a-z0-9]+){0,20}$";
-    final Pattern ID_PATTERN = Pattern.compile(ID_REGEX);
+    protected final String ID_REGEX = "^[a-z0-9]+(-[a-z0-9]+){0,20}$";
+    protected final Pattern ID_PATTERN = Pattern.compile(ID_REGEX);
 
     @Inject
     IssuerRegistry registry;
@@ -63,19 +63,10 @@ public abstract class BaseResource {
         return operation.getResponse(issuer.get());
     }
 
-
     protected Optional<Response> checkIssuerId(String issuerId){
-        Set<Violation> violationSet = new HashSet<>();
-        if(issuerId==null || issuerId.isEmpty() || issuerId.isBlank())
-            violationSet.add(new Violation("path.issuerId", ViolationType.REQUIRED,
-                    "issuerId must not be null nor empty"));
-        if(!ID_PATTERN.matcher(issuerId).matches())
-            violationSet.add(new Violation("path.issuerId", ViolationType.PATTERN,
-                    "issuerId does not match regular expression: "+ ID_REGEX));
-        if(violationSet.isEmpty())
-            return Optional.empty();
-        return Optional.of(ProblemResponse.constraintViolations(
-                violationSet));
+        if(issuerId==null || issuerId.isEmpty() || issuerId.isBlank() || !ID_PATTERN.matcher(issuerId).matches())
+            return Optional.of(ProblemResponse.badRequest("path.issuerId does not match regular expression: "+ ID_REGEX));
+        else return Optional.empty();
     }
 
 }

@@ -125,23 +125,27 @@ class IssuersResourceTest extends BaseRestTest {
     @DisplayName("deleteIssuer() must fail when issuer empty")
     void deleteIssuer_must_fail_when_issuer_empty(){
 
-        given().delete("/dummy")
-                .then()
-                .statusCode(404);
-        given().delete("/DUMMY")
-                .then()
-                .statusCode(422)
-                .body("violations[0].message", containsString("issuerId does not match regular expression"));
-
-        given().delete(" ")
-                .then()
-                .statusCode(405)
-                .log().all();
-
         given().delete()
                 .then()
                 .statusCode(405)
                 .log().all();
+
+    }
+
+
+    @Test
+    @DisplayName("deleteIssuer() must fail when issuerId does not match Regex")
+    void deleteIssuer_must_fail_when_issuerId_does_not_match_regex(){
+
+        given().delete("/dummy")
+                .then()
+                .statusCode(404);
+
+        given().delete("/DUMMY")
+                .then()
+                .statusCode(400)
+                .body("detail", containsString("path.issuerId does not match regular expression"));
+
 
     }
 

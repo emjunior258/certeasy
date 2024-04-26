@@ -78,11 +78,9 @@ paths:
                   $ref: "#/components/schemas/IssuerInfo"
                 minItems: 0
         400:
-          $ref: '#/components/responses/BadRequest'
+          $ref: '#/components/responses/IssuersBadRequest'
         404:
           $ref: '#/components/responses/IssuerNotFound'
-        422:
-          $ref: '#/components/responses/ListIssuerConstraintViolation'
         500:
           $ref: "#/components/responses/ServerError"
 
@@ -99,7 +97,7 @@ paths:
         204:
           description: Issuer deleted successfully
         400:
-          $ref: '#/components/responses/BadRequest'
+          $ref: '#/components/responses/IssuersBadRequest'
         404:
           $ref: '#/components/responses/IssuerNotFound'
         422:
@@ -190,7 +188,7 @@ paths:
         200:
           $ref: '#/components/responses/SuccessfullyIssuedCert'
         400:
-          $ref: '#/components/responses/BadRequest'
+          $ref: '#/components/responses/IssuersBadRequest'
         422:
           $ref: '#/components/responses/ConstraintViolation'
         500:
@@ -229,7 +227,7 @@ paths:
         200:
           $ref: '#/components/responses/SuccessfullyIssuedCert'
         400:
-          $ref: '#/components/responses/BadRequest'
+          $ref: '#/components/responses/IssuersBadRequest'
         422:
           $ref: '#/components/responses/ConstraintViolation'
         500:
@@ -268,7 +266,7 @@ paths:
         200:
           $ref: '#/components/responses/SuccessfullyIssuedCert'
         400:
-          $ref: '#/components/responses/BadRequest'
+          $ref: '#/components/responses/IssuersBadRequest'
         422:
           $ref: '#/components/responses/ConstraintViolation'
         500:
@@ -304,7 +302,7 @@ paths:
         200:
           $ref: '#/components/responses/SuccessfullyCreatedSubCa'
         400:
-          $ref: '#/components/responses/BadRequest'
+          $ref: '#/components/responses/IssuersBadRequest'
         422:
           $ref: '#/components/responses/ConstraintViolation'
         500:
@@ -361,6 +359,8 @@ paths:
                     - repeatable
                     - required
                 minItems: 1
+        400:
+          $ref: '#/components/responses/IssuersBadRequest'
         500:
           $ref: "#/components/responses/ServerError"
 
@@ -384,7 +384,7 @@ paths:
         200:
           $ref: '#/components/responses/SuccessfullyIssuedCert'
         400:
-          $ref: '#/components/responses/BadRequest'
+          $ref: '#/components/responses/IssuersBadRequest'
         422:
           $ref: '#/components/responses/ConstraintViolation'
         500:
@@ -420,6 +420,10 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/IssuedCertSummary'
+        400:
+          $ref: '#/components/responses/IssuersBadRequest'
+        404:
+          $ref: '#/components/responses/CertOrIssuerNotFound'
         500:
           $ref: "#/components/responses/ServerError"
 
@@ -446,6 +450,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/IssuedCertInfo'
+        400:
+          $ref: '#/components/responses/CertificatesBadRequest'
         404:
           $ref: '#/components/responses/CertOrIssuerNotFound'
         500:
@@ -469,7 +475,7 @@ paths:
         204:
           description: Certificate deleted successfully
         400:
-          $ref: '#/components/responses/BadRequest'
+          $ref: '#/components/responses/CertificatesBadRequest'
         404:
           $ref: '#/components/responses/CertOrIssuerNotFound'
         409:
@@ -495,6 +501,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CertPem"
+        400:
+          $ref: '#/components/responses/CertificatesBadRequest'
         404:
           $ref:  "#/components/responses/CertOrIssuerNotFound"
         500:
@@ -518,7 +526,8 @@ paths:
               schema:
                 type: string
                 description: Base64 encoded DER content
-
+        400:
+          $ref: '#/components/responses/CertificatesBadRequest'
         404:
           $ref: "#/components/responses/CertOrIssuerNotFound"
         500:
@@ -1249,7 +1258,7 @@ components:
   responses:
 
     IssuerSpecConstraintViolation:
-      description: Constraint violation
+      description: Body Constraint violation
       content:
         application/json:
           schema:
@@ -1259,7 +1268,7 @@ components:
               value:
                 type: /problems/constraint-violation
                 title: Constraint Violation
-                detail: The request contains one or more constraint violations
+                detail: The request body contains one or more constraint violations
                 status: 422
                 violations:
                   - field: body.name
@@ -1270,7 +1279,7 @@ components:
                     message: address must not be null nor empty
 
     IssuerConstraintViolation:
-      description: Constraint violation
+      description: Body Constraint violation
       content:
         application/json:
           schema:
@@ -1288,7 +1297,7 @@ components:
                     message: name must not be null nor empty
     
     IssuerCertRefConstraintViolation:
-      description: Constraint violation
+      description: Body Constraint violation
       content:
         application/json:
           schema:
@@ -1347,7 +1356,7 @@ components:
 
 
     IssuerPemConstraintViolation:
-      description: Constraint violation
+      description: Body Constraint violation
       content:
         application/json:
           schema:
@@ -1384,24 +1393,52 @@ components:
                   - field: body.pem.cert_file
                     type: format
                     message: cert_file is not valid PEM encoded certificate
-    
-    ListIssuerConstraintViolation:
-      description: Constraint violation
+
+    IssuersBadRequest:
+      description: Bad Request
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Problem'
           examples:
-            invalid-body:
+            bad-issuerId:
               value:
-                type: /problems/constraint-violation
-                title: Constraint Violation
-                detail: The request contains one or more constraint violations
-                status: 422
-                violations:
-                  - field: query.type
-                    type: enum
-                    message: "type MUST be one of: [ROOT, SUB_CA]"
+                type: /problems/bad-request
+                title: Bad Request
+                detail: path.issuerId does not match regular expression
+                status: 400
+            generic:
+              value:
+                type: /problems/bad-request
+                title: Bad Request
+                detail: Incorrect HTTP Request format
+                status: 400
+
+    CertificatesBadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          examples:
+            bad-serial:
+              value:
+                type: /problems/bad-request
+                title: Bad Request
+                detail: path.serial does not match regular expression
+                status: 400
+            bad-issuerId:
+              value:
+                type: /problems/bad-request
+                title: Bad Request
+                detail: path.issuerId does not match regular expression
+                status: 400
+            generic:
+              value:
+                type: /problems/bad-request
+                title: Bad Request
+                detail: Incorrect HTTP Request format
+                status: 400
 
 
     SuccessfullyIssuedCert:
@@ -1432,7 +1469,7 @@ components:
             detail: An internal server error occurred
 
     ConstraintViolation:
-      description: Constraint violation
+      description: Body Constraint violation
       content:
         application/json:
           schema:
@@ -1440,7 +1477,7 @@ components:
           example:
             type: /problems/constraint-violation
             title: Constraint Violation
-            detail: The request contains one or more constraint violations
+            detail: The request body contains one or more constraint violations
             status: 422
             violations:
               - field: body.location.country
@@ -1449,9 +1486,6 @@ components:
               - field: body.groups
                 message: must not contain more than 4 addresses
                 type: length
-              - field: path.name
-                message: Name must not have numeric characters
-                type: format
     IssuerCreatedSuccessfully:
       description: Issuer Created successfully
       content:

@@ -14,8 +14,25 @@ public final class ProblemResponse {
                 .build();
     }
 
+    public static Response badRequest(String message){
+        Problem problem = new Problem();
+        problem.setDetail(message);
+        problem.setStatus(400);
+        problem.setTitle("Bad Request");
+        problem.setType("/problems/bad-request");
+        return Response.status(400).entity(problem)
+                .type(MediaType.APPLICATION_JSON_TYPE)
+                .build();
+    }
+
     public static Response constraintViolations(Set<Violation> violations){
         return Response.status(422).entity(new ConstraintViolationProblem(violations))
+                .type(MediaType.APPLICATION_JSON_TYPE)
+                .build();
+    }
+
+    public static Response badRequestConstraintViolations(Set<Violation> violations){
+        return Response.status(400).entity(new ConstraintViolationProblem(violations))
                 .type(MediaType.APPLICATION_JSON_TYPE)
                 .build();
     }

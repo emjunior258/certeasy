@@ -116,6 +116,58 @@ class CertificatesResourceTest extends BaseRestTest {
     }
 
     @Test
+    void list_must_return_bad_request_when_issuerId_contains_spaces(){
+
+        given().get("/api/issuers/gh ost/certificates")
+                .then()
+                .body("type",equalTo("/problems/bad-request"))
+                .body("title",equalTo("Bad Request"))
+                .body("detail",startsWith("path.issuerId does not match regular expression"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .statusCode(400);
+
+    }
+
+    @Test
+    void list_must_return_bad_request_when_issuerId_has_special_characters(){
+
+        given().get("/api/issuers/gho$t/certificates")
+                .then()
+                .body("type",equalTo("/problems/bad-request"))
+                .body("title",equalTo("Bad Request"))
+                .body("detail",startsWith("path.issuerId does not match regular expression"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .statusCode(400);
+
+    }
+
+    @Test
+    void get_certificate_must_return_bad_request_when_serial_has_special_characters(){
+
+        given().get("/api/issuers/ghost/certificates/$$@hex10")
+                .then()
+                .body("type",equalTo("/problems/bad-request"))
+                .body("title",equalTo("Bad Request"))
+                .body("detail",startsWith("path.serial does not match regular expression"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .statusCode(400);
+
+    }
+
+    @Test
+    void get_certificate_must_return_bad_request_when_serial_has_space(){
+
+        given().get("/api/issuers/ghost/certificates/10 10")
+                .then()
+                .body("type",equalTo("/problems/bad-request"))
+                .body("title",equalTo("Bad Request"))
+                .body("detail",startsWith("path.serial does not match regular expression"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .statusCode(400);
+
+    }
+
+    @Test
     void must_fail_to_issue_tls_cert_with_empty_spec(){
 
         Certificate authorityCert = context.generator().generate(certificateAuthoritySpec);

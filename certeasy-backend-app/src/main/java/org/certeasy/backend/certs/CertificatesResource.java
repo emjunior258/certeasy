@@ -16,7 +16,6 @@ import org.certeasy.backend.common.validation.ValidationPath;
 import org.certeasy.backend.common.validation.Violation;
 import org.certeasy.backend.common.validation.ViolationType;
 import org.certeasy.backend.issuer.CertIssuer;
-import org.certeasy.backend.issuer.IssuersResource;
 import org.certeasy.backend.issuer.ReadOnlyCertificateException;
 import org.certeasy.backend.persistence.StoredCert;
 import org.certeasy.certspec.*;
@@ -26,11 +25,8 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
-import java.util.Optional;
 
 @Path("/api/issuers/{issuerId}/certificates")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -39,14 +35,19 @@ public class CertificatesResource extends BaseResource {
 
     private static final Logger LOGGER = Logger.getLogger(CertificatesResource.class);
 
+
     @GET
     public Response list(@PathParam("issuerId") String issuerId, @QueryParam("type") String type){
+        Optional<Response> badIssuerIdResponse = checkIssuerId(issuerId);
+        if(badIssuerIdResponse.isPresent())
+            return badIssuerIdResponse.get();
+
         IssuedCertType issuedCertType = null;
         if(type !=null && !type.isEmpty()){
            try {
                issuedCertType = IssuedCertType.valueOf(type);
            }catch (IllegalArgumentException ex){
-               return Response.status(422).entity(new ConstraintViolationProblem(
+               return Response.status(400).entity(new ConstraintViolationProblem(
                        new Violation("query.type", ViolationType.ENUM, "type MUST be one of: " + Arrays.toString(IssuedCertType.values()))))
                        .build();
            }
@@ -65,6 +66,10 @@ public class CertificatesResource extends BaseResource {
     @POST
     @Path("/tls-server")
     public Response issueTLSServerCertificate(@PathParam("issuerId") String issuerId, ServerSpec spec){
+        Optional<Response> badIssuerIdResponse = checkIssuerId(issuerId);
+        if(badIssuerIdResponse.isPresent())
+            return badIssuerIdResponse.get();
+
         Set<Violation> violationSet = spec.validate(ValidationPath.of("body"));
         if(!violationSet.isEmpty())
             return Response.status(422).entity(new ConstraintViolationProblem(violationSet))
@@ -89,6 +94,10 @@ public class CertificatesResource extends BaseResource {
     @POST
     @Path("/personal")
     public Response issuePersonalCertificate(@PathParam("issuerId") String issuerId, PersonalCertSpec spec){
+        Optional<Response> badIssuerIdResponse = checkIssuerId(issuerId);
+        if(badIssuerIdResponse.isPresent())
+            return badIssuerIdResponse.get();
+
         Set<Violation> violationSet = spec.validate(ValidationPath.of("body"));
         if(!violationSet.isEmpty())
             return Response.status(422).entity(new ConstraintViolationProblem(violationSet))
@@ -113,6 +122,10 @@ public class CertificatesResource extends BaseResource {
     @POST
     @Path("/employee")
     public Response issueEmployeeCertificate(@PathParam("issuerId") String issuerId, EmployeeCertSpec spec){
+        Optional<Response> badIssuerIdResponse = checkIssuerId(issuerId);
+        if(badIssuerIdResponse.isPresent())
+            return badIssuerIdResponse.get();
+
         Set<Violation> violationSet = spec.validate(ValidationPath.of("body"));
         if(!violationSet.isEmpty())
             return Response.status(422).entity(new ConstraintViolationProblem(violationSet))
@@ -143,6 +156,10 @@ public class CertificatesResource extends BaseResource {
     @POST
     @Path("/sub-ca")
     public Response issueSubCaCertificate(@PathParam("issuerId") String issuerId, SubCaSpec spec){
+        Optional<Response> badIssuerIdResponse = checkIssuerId(issuerId);
+        if(badIssuerIdResponse.isPresent())
+            return badIssuerIdResponse.get();
+
         Set<Violation> violationSet = spec.validate(ValidationPath.of("body"));
         if(!violationSet.isEmpty())
             return Response.status(422).entity(new ConstraintViolationProblem(violationSet))
@@ -171,15 +188,25 @@ public class CertificatesResource extends BaseResource {
     @GET
     @Path("/{serial}")
     public Response getCertInfo(@PathParam("issuerId") String issuerId, @PathParam("serial") String serial){
-        return this.checkIssuerExistsThen(issuerId, issuer -> checkCertExistsThen(issuer, serial, cert -> Response.ok(
-                CertificateConverter.toDetailsInfo(cert.getCertificate()))
-                .build()));
+        Optional<Response> badIssuerIdResponse = checkIssuerId(issuerId);
+        if(badIssuerIdResponse.isPresent())
+            return badIssuerIdResponse.get();
+
+        Optional<Response> badSerial = checkSerial(serial);
+        return badSerial.orElseGet(() -> this.checkIssuerExistsThen(issuerId, issuer -> checkCertExistsThen(issuer, serial, cert -> Response.ok(
+                        CertificateConverter.toDetailsInfo(cert.getCertificate()))
+                .build())));
     }
 
     @DELETE
     @Path("/{serial}")
     public Response delete(@PathParam("issuerId") String issuerId, @PathParam("serial") String serial){
-        return this.checkIssuerExistsThen(issuerId, issuer -> checkCertExistsThen(issuer, serial, cert -> {
+        Optional<Response> badIssuerIdResponse = checkIssuerId(issuerId);
+        if(badIssuerIdResponse.isPresent())
+            return badIssuerIdResponse.get();
+
+        Optional<Response> badSerial = checkSerial(serial);
+        return badSerial.orElseGet(() -> this.checkIssuerExistsThen(issuerId, issuer -> checkCertExistsThen(issuer, serial, cert -> {
             try {
                 issuer.deleteIssuedCert(cert);
                 return Response.status(Response.Status.NO_CONTENT).build();
@@ -190,26 +217,41 @@ public class CertificatesResource extends BaseResource {
                                 Response.Status.CONFLICT.getStatusCode(),
                         "Certificate is read-only therefore cannot be deleted"));
             }
-        }));
+        })));
     }
 
     @GET
     @Path("/{serial}/pem")
     public Response getCertPem(@PathParam("issuerId") String issuerId, @PathParam("serial") String serial){
-        return this.checkIssuerExistsThen(issuerId, issuer -> checkCertExistsThen(issuer, serial, cert -> Response.ok(
+        Optional<Response> badIssuerIdResponse = checkIssuerId(issuerId);
+        if(badIssuerIdResponse.isPresent())
+            return badIssuerIdResponse.get();
+        Optional<Response> badSerial = checkSerial(serial);
+        return badSerial.orElseGet(() -> checkIssuerExistsThen(issuerId, issuer -> checkCertExistsThen(issuer, serial, cert -> Response.ok(
                 new CertPEM(cert.getCertPem(), cert.getKeyPem()))
-                .build()));
+                .build())));
     }
 
     @GET
     @Path("/{serial}/der")
     @Produces(MediaType.TEXT_PLAIN)
     public Response getCertDER(@PathParam("issuerId") String issuerId, @PathParam("serial") String serial){
-        return this.checkIssuerExistsThen(issuerId, issuer -> checkCertExistsThen(issuer, serial, cert -> {
+        Optional<Response> badIssuerIdResponse = checkIssuerId(issuerId);
+        if(badIssuerIdResponse.isPresent())
+            return badIssuerIdResponse.get();
+        Optional<Response> badSerial = checkSerial(serial);
+        return badSerial.orElseGet(() -> this.checkIssuerExistsThen(issuerId, issuer -> checkCertExistsThen(issuer, serial, cert -> {
             byte[] encodedBytes = Base64.getEncoder().encode(cert.getCertificate().getDERBytes());
             String encodedContent = new String(encodedBytes, StandardCharsets.UTF_8);
             return Response.ok(encodedContent).build();
-        }));
+        })));
+
+    }
+
+    private Optional<Response> checkSerial(String serial){
+        if(serial==null || serial.isEmpty() || serial.isBlank() || !ID_PATTERN.matcher(serial).matches())
+            return Optional.of(ProblemResponse.badRequest("path.serial does not match regular expression: "+ ID_REGEX));
+        return Optional.empty();
     }
 
     private Response checkCertExistsThen(CertIssuer issuer, String serial, StoredCertOperation operation) {
