@@ -20,6 +20,13 @@ info:
     
     ### Certificate
     Represents An X509 V3 Certificate.
+    
+  
+    ## HTTP Statuses
+    ### Validation errors
+    This API uses both the `400` and `422` status codes for validation errors:
+    * `400` - Reports HTTP Request syntax errors and also reports semantic errors for `path` & `query` parameter validation errors
+    * `422` - Reports HTTP Request semantic validation errors in the Request Entity (Request Body).
 
   license:
     name: Apache License 2.0
