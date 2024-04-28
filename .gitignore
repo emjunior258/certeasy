@@ -12,3 +12,5 @@ certeasy-backend-app/target
 certeasy-backend-app/bin
 certeasy-rest/*.cer
 certeasy-rest/*.der
+certeasy_api_tests/target
+*.pyc
