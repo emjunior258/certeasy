@@ -1,4 +1,4 @@
-package org.certeasy.backend.restful;
+package org.certeasy.backend;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.quarkus.runtime.annotations.RegisterForReflection;

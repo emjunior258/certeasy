@@ -8,31 +8,37 @@ import java.util.Set;
 
 public final class ProblemResponse {
 
-    public static Response constraintViolation(Violation violation){
-        return Response.status(422).entity(new ConstraintViolationProblem(violation))
-                .type(MediaType.APPLICATION_JSON_TYPE)
-                .build();
-    }
 
-    public static Response badRequest(String message){
-        Problem problem = new Problem();
-        problem.setDetail(message);
-        problem.setStatus(400);
-        problem.setTitle("Bad Request");
-        problem.setType("/problems/bad-request");
+    public static Response badRequest(String message, Violation violation){
+        BadRequestProblem problem = new BadRequestProblem(message, violation);
         return Response.status(400).entity(problem)
                 .type(MediaType.APPLICATION_JSON_TYPE)
                 .build();
     }
 
-    public static Response constraintViolations(Set<Violation> violations){
-        return Response.status(422).entity(new ConstraintViolationProblem(violations))
+    public static Response badQueryParameter(Violation violation){
+        BadRequestProblem problem = new BadRequestProblem(BadRequestProblem.INVALID_QUERY_PARAMETER, violation);
+        return Response.status(400).entity(problem)
                 .type(MediaType.APPLICATION_JSON_TYPE)
                 .build();
     }
 
-    public static Response badRequestConstraintViolations(Set<Violation> violations){
-        return Response.status(400).entity(new ConstraintViolationProblem(violations))
+    public static Response badPathParameter(Violation violation){
+        BadRequestProblem problem = new BadRequestProblem(BadRequestProblem.INVALID_PATH_PARAMETER, violation);
+        return Response.status(400).entity(problem)
+                .type(MediaType.APPLICATION_JSON_TYPE)
+                .build();
+    }
+
+    public static Response badRequest(String message){
+        BadRequestProblem problem = new BadRequestProblem(message, null);
+        return Response.status(400).entity(problem)
+                .type(MediaType.APPLICATION_JSON_TYPE)
+                .build();
+    }
+
+    public static Response unprocessableEntity(Set<Violation> violations){
+        return Response.status(422).entity(new UnprocessableEntityProblem(violations))
                 .type(MediaType.APPLICATION_JSON_TYPE)
                 .build();
     }

@@ -10,21 +10,21 @@ import java.util.Set;
 
 @JsonPropertyOrder({ "type", "title", "status", "detail", "violations" })
 @RegisterForReflection
-public class ConstraintViolationProblem extends Problem {
+public class UnprocessableEntityProblem extends Problem {
 
     private Set<Violation> violations;
 
-    public ConstraintViolationProblem(){
+    public UnprocessableEntityProblem(){
 
     }
 
-    public ConstraintViolationProblem(Violation violation){
+    public UnprocessableEntityProblem(Violation violation){
         this(Set.of(violation));
     }
 
-    public ConstraintViolationProblem(Set<Violation> violations){
-        super("/problems/constraint-violation","Constraint Violation", 422,
-                "The request violates one or more constraints");
+    public UnprocessableEntityProblem(Set<Violation> violations){
+        super("/problems/unprocessable-entity","Unprocessable Entity", 422,
+                "The request body violates one or more constraints");
         if(violations==null || violations.isEmpty())
             throw new IllegalArgumentException("violations must not be null or empty");
         this.violations = Collections.unmodifiableSet(violations);

@@ -1,6 +1,7 @@
 package org.certeasy.backend.common;
 
 import org.certeasy.CertEasyContext;
+import org.certeasy.backend.certs.IssuedCertType;
 import org.certeasy.backend.common.problem.BadRequestProblem;
 import org.certeasy.backend.common.problem.Problem;
 import org.certeasy.backend.common.problem.ProblemResponse;
@@ -13,6 +14,7 @@ import org.jboss.logging.Logger;
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -65,7 +67,9 @@ public abstract class BaseResource {
 
     protected Optional<Response> checkIssuerId(String issuerId){
         if(issuerId==null || issuerId.isEmpty() || issuerId.isBlank() || !ID_PATTERN.matcher(issuerId).matches())
-            return Optional.of(ProblemResponse.badRequest("path.issuerId does not match regular expression: "+ ID_REGEX));
+            return Optional.of(ProblemResponse.badPathParameter(
+                    new Violation("path.issuerId", ViolationType.PATTERN,
+                        "path.issuerId does not match regular expression: "+ ID_REGEX)));
         else return Optional.empty();
     }
 

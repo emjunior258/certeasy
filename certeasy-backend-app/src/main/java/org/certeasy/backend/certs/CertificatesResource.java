@@ -8,8 +8,7 @@ import org.certeasy.backend.common.CertPEM;
 import org.certeasy.backend.common.OrganizationInfo;
 import org.certeasy.backend.common.SubCaSpec;
 import org.certeasy.backend.common.cert.NotFoundProblem;
-import org.certeasy.backend.common.problem.BadRequestProblem;
-import org.certeasy.backend.common.problem.ConstraintViolationProblem;
+import org.certeasy.backend.common.problem.UnprocessableEntityProblem;
 import org.certeasy.backend.common.problem.Problem;
 import org.certeasy.backend.common.problem.ProblemResponse;
 import org.certeasy.backend.common.validation.ValidationPath;
@@ -35,7 +34,6 @@ public class CertificatesResource extends BaseResource {
 
     private static final Logger LOGGER = Logger.getLogger(CertificatesResource.class);
 
-
     @GET
     public Response list(@PathParam("issuerId") String issuerId, @QueryParam("type") String type){
         Optional<Response> badIssuerIdResponse = checkIssuerId(issuerId);
@@ -47,9 +45,10 @@ public class CertificatesResource extends BaseResource {
            try {
                issuedCertType = IssuedCertType.valueOf(type);
            }catch (IllegalArgumentException ex){
-               return Response.status(400).entity(new ConstraintViolationProblem(
-                       new Violation("query.type", ViolationType.ENUM, "type MUST be one of: " + Arrays.toString(IssuedCertType.values()))))
-                       .build();
+               return ProblemResponse.badQueryParameter(
+                       new Violation("query.type", ViolationType.ENUM,
+                               "type MUST be one of: " + Arrays.toString(IssuedCertType
+                                       .values())));
            }
         }
         IssuedCertType finalIssuedCertType = issuedCertType;
@@ -72,7 +71,7 @@ public class CertificatesResource extends BaseResource {
 
         Set<Violation> violationSet = spec.validate(ValidationPath.of("body"));
         if(!violationSet.isEmpty())
-            return Response.status(422).entity(new ConstraintViolationProblem(violationSet))
+            return Response.status(422).entity(new UnprocessableEntityProblem(violationSet))
                     .build();
         return this.checkIssuerExistsThen(issuerId, (issuer) -> {
             TLSServerSubject subject = new TLSServerSubject(
@@ -100,7 +99,7 @@ public class CertificatesResource extends BaseResource {
 
         Set<Violation> violationSet = spec.validate(ValidationPath.of("body"));
         if(!violationSet.isEmpty())
-            return Response.status(422).entity(new ConstraintViolationProblem(violationSet))
+            return Response.status(422).entity(new UnprocessableEntityProblem(violationSet))
                     .build();
         return this.checkIssuerExistsThen(issuerId, (issuer) -> {
             PersonalIdentitySubject subject = new PersonalIdentitySubject(
@@ -128,22 +127,11 @@ public class CertificatesResource extends BaseResource {
 
         Set<Violation> violationSet = spec.validate(ValidationPath.of("body"));
         if(!violationSet.isEmpty())
-            return Response.status(422).entity(new ConstraintViolationProblem(violationSet))
+            return Response.status(422).entity(new UnprocessableEntityProblem(violationSet))
                     .build();
         return this.checkIssuerExistsThen(issuerId, (issuer) -> {
             EmploymentInfo organizationInfo = spec.getEmployment();
-            OrganizationBinding binding = new OrganizationBinding(
-                    organizationInfo.getOrganizationName(),
-                    organizationInfo.getDepartment(),
-                    organizationInfo.getJobTitle());
-            EmployeeIdentitySubject subject = new EmployeeIdentitySubject(
-                    new PersonName(spec.getName(), spec.getSurname()),
-                    spec.getGeographicAddressInfo().
-                            toGeographicAddress(),
-                    spec.getTelephone(),
-                    organizationInfo.getEmailAddress(),
-                    organizationInfo.getUsername(),
-                    binding);
+            EmployeeIdentitySubject subject = getEmployeeIdentitySubject(spec, organizationInfo);
             EmployeeCertificateSpec personalCertificateSpec = new EmployeeCertificateSpec(subject,
                     KeyStrength.valueOf(spec.getKeyStrength()),
                     spec.getValidity().toDateRange());
@@ -151,6 +139,22 @@ public class CertificatesResource extends BaseResource {
             return Response.ok(new IssuedCert(certificate.getSerial()))
                     .build();
         });
+    }
+
+    private static EmployeeIdentitySubject getEmployeeIdentitySubject(EmployeeCertSpec spec, EmploymentInfo organizationInfo) {
+        OrganizationBinding binding = new OrganizationBinding(
+                organizationInfo.getOrganizationName(),
+                organizationInfo.getDepartment(),
+                organizationInfo.getJobTitle());
+        EmployeeIdentitySubject subject = new EmployeeIdentitySubject(
+                new PersonName(spec.getName(), spec.getSurname()),
+                spec.getGeographicAddressInfo().
+                        toGeographicAddress(),
+                spec.getTelephone(),
+                organizationInfo.getEmailAddress(),
+                organizationInfo.getUsername(),
+                binding);
+        return subject;
     }
 
     @POST
@@ -162,7 +166,7 @@ public class CertificatesResource extends BaseResource {
 
         Set<Violation> violationSet = spec.validate(ValidationPath.of("body"));
         if(!violationSet.isEmpty())
-            return Response.status(422).entity(new ConstraintViolationProblem(violationSet))
+            return Response.status(422).entity(new UnprocessableEntityProblem(violationSet))
                     .build();
         return this.checkIssuerExistsThen(issuerId, issuer -> {
             String organizationName = null;
@@ -249,17 +253,17 @@ public class CertificatesResource extends BaseResource {
     }
 
     private Optional<Response> checkSerial(String serial){
-        if(serial==null || serial.isEmpty() || serial.isBlank() || !ID_PATTERN.matcher(serial).matches())
-            return Optional.of(ProblemResponse.badRequest("path.serial does not match regular expression: "+ ID_REGEX));
-        return Optional.empty();
+        if(serial==null || serial.isEmpty() || serial.isBlank() || !ID_PATTERN.matcher(serial).matches()){
+            return Optional.of(ProblemResponse.badPathParameter(
+                    new Violation("path.serial", ViolationType.PATTERN,
+                            "path.serial does not match regular expression: "+ ID_REGEX)));
+        } else return Optional.empty();
     }
 
     private Response checkCertExistsThen(CertIssuer issuer, String serial, StoredCertOperation operation) {
-        if(serial.isBlank()) {
-            LOGGER.warn("The serial is null or empty");
-            return ProblemResponse.fromProblem(
-                    new BadRequestProblem("The serial cannot be null or empty"));
-        }
+        if(serial.isBlank())
+            throw new IllegalArgumentException("The serial is null or empty");
+
         Optional<StoredCert> issuedCertOptional = issuer.getIssuedCert(serial);
         if(issuedCertOptional.isEmpty()){
             return ProblemResponse.fromProblem(new NotFoundProblem(

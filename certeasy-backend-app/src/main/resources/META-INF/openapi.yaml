@@ -315,62 +315,6 @@ paths:
         500:
           $ref: "#/components/responses/ServerError"
 
-
-  /issuers/{issuerId}/certificates/custom/attributes:
-    get:
-      summary: List Distinguished Name attributes
-      operationId: listCertAttributes
-      description: Get List of attributes that may be used on the Certificate Subject Distinguished name. The attributes returned by this operation are expected to be used only when isuing custom certificates.
-      tags:
-        - Certificates
-      parameters:
-        - $ref: "#/components/parameters/IssuerId"
-      responses:
-        '200':
-          description: An array of attributes
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    key:
-                      type: string
-                      description: Unique identifier of the attribute
-                      example: "common-name"
-                    display_name:
-                      type: string
-                      description: The name to be displayed on User interface
-                      example: Common Name
-                    description:
-                      type: string
-                      description: The purpose/intent of the attribute
-                      example: The name used to refer to the subject
-                    repeatable:
-                      type: boolean
-                      description: Indicates wether the attribute may appear multiple times in a distinguished name
-                      example: false
-                    max_items:
-                      type: integer
-                      description: Maximum number of items allowed. Applicable only when attribute is multivalue
-                      example: 3
-                    required:
-                      type: boolean
-                      description: Indicates whether the attribute is required
-                      example: true
-                  required:
-                    - key
-                    - display_name
-                    - description
-                    - repeatable
-                    - required
-                minItems: 1
-        400:
-          $ref: '#/components/responses/IssuersBadRequest'
-        500:
-          $ref: "#/components/responses/ServerError"
-
   /issuers/{issuerId}/certificates/custom:
     post:
       summary: Issue Customized Certificate
@@ -551,6 +495,7 @@ components:
         issuer_id:
           type: string
           description: Unique ID of the issuer
+          example: ef687021-caac-41c9-bebc-9b0fc72fcf8e
 
     SubjectAlternativeName:
       type: object
@@ -1187,13 +1132,24 @@ components:
             A human readable explanation specific to this occurrence of the
             problem.
           example: Connection to database timed out
-        instance:
-          type: string
-          format: uri
-          description: |
-            An absolute URI that identifies the specific occurrence of the problem.
-            It may or may not yield further information if dereferenced.
-    
+
+
+    BadRequestProblem:
+      allOf:
+        - $ref: "#/components/schemas/Problem"
+        - type: object
+          readOnly: true
+          description: Represents a Bad Request problem
+          properties:
+            violation:
+              $ref: "#/components/schemas/ConstraintViolation"
+          required:
+            - type
+            - title
+            - status
+            - detail
+            - violation
+
 
     ConstraintViolation:
       description: Represents a violation of a constraint
@@ -1227,10 +1183,11 @@ components:
         - type
         - message
     
-    ConstraintViolationProblem:
+    BodyConstraintViolationsProblem:
       allOf:
         - $ref: "#/components/schemas/Problem"
         - type: object
+          readOnly: true
           properties:
             violations:
               type: array
@@ -1240,6 +1197,7 @@ components:
             - type
             - title
             - detail
+            - status
             - violations
 
 
@@ -1265,16 +1223,16 @@ components:
   responses:
 
     IssuerSpecConstraintViolation:
-      description: Body Constraint violation
+      description: Unprocessable Entity
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Problem'
+            $ref: '#/components/schemas/BodyConstraintViolationsProblem'
           examples:
             invalid-body:
               value:
-                type: /problems/constraint-violation
-                title: Constraint Violation
+                type: /problems/unprocessable-entity
+                title: Unprocessable Entity
                 detail: The request body contains one or more constraint violations
                 status: 422
                 violations:
@@ -1286,17 +1244,17 @@ components:
                     message: address must not be null nor empty
 
     IssuerConstraintViolation:
-      description: Body Constraint violation
+      description: Unprocessable Entity
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Problem'
+            $ref: '#/components/schemas/BodyConstraintViolationsProblem'
           examples:
             cert-file-not-ca:
               value:
-                type: /problems/constraint-violation
-                title: Constraint Violation
-                detail: The request contains one or more constraint violations
+                type: /problems/unprocessable-entity
+                title: Unprocessable Entity
+                detail: The request body contains one or more constraint violations
                 status: 422
                 violations:
                   - field: body.name
@@ -1304,18 +1262,18 @@ components:
                     message: name must not be null nor empty
     
     IssuerCertRefConstraintViolation:
-      description: Body Constraint violation
+      description: Unprocessable Entity
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Problem'
+            $ref: '#/components/schemas/BodyConstraintViolationsProblem'
           examples:
 
             invalid-body:
               value:
-                type: /problems/constraint-violation
-                title: Constraint Violation
-                detail: The request contains one or more constraint violations
+                type: /problems/unprocessable-entity
+                title: Unprocessable Entity
+                detail: The request body contains one or more constraint violations
                 status: 422
                 violations:
                   - field: body.issuer_id
@@ -1327,9 +1285,9 @@ components:
 
             cert-not-found:
               value:
-                type: /problems/constraint-violation
-                title: Constraint Violation
-                detail: The request contains one or more constraint violations
+                type: /problems/unprocessable-entity
+                title: Unprocessable Entity
+                detail: The request body contains one or more constraint violations
                 status: 422
                 violations:
                   - field: body.serial
@@ -1339,9 +1297,9 @@ components:
 
             issuer-not-found:
               value:
-                type: /problems/constraint-violation
-                title: Constraint Violation
-                detail: The request contains one or more constraint violations
+                type: /problems/unprocessable-entity
+                title: Unprocessable Entity
+                detail: The request body contains one or more constraint violations
                 status: 422
                 violations:
                   - field: body.issuer_id
@@ -1351,9 +1309,9 @@ components:
 
             cert-not-ca:
               value:
-                type: /problems/constraint-violation
-                title: Constraint Violation
-                detail: The request contains one or more constraint violations
+                type: /problems/unprocessable-entity
+                title: Unprocessable Entity
+                detail: The request body contains one or more constraint violations
                 status: 422
                 violations:
                   - field: body.issuer_id
@@ -1363,17 +1321,17 @@ components:
 
 
     IssuerPemConstraintViolation:
-      description: Body Constraint violation
+      description: Unprocessable Entity
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Problem'
+            $ref: '#/components/schemas/BodyConstraintViolationsProblem'
           examples:
             cert-file-not-ca:
               value:
-                type: /problems/constraint-violation
-                title: Constraint Violation
-                detail: The request contains one or more constraint violations
+                type: /problems/unprocessable-entity
+                title: Unprocessable Entity
+                detail: The request body contains one or more constraint violations
                 status: 422
                 violations:
                   - field: body.pem.cert_file
@@ -1382,9 +1340,9 @@ components:
                     message: cert_file does not have a CA basic constraints
             invalid-key-file-format:
               value:
-                type: /problems/constraint-violation
-                title: Constraint Violation
-                detail: The request contains one or more constraint violations
+                type: /problems/unprocessable-entity
+                title: Unprocessable Entity
+                detail: The request body contains one or more constraint violations
                 status: 422
                 violations:
                   - field: body.pem.key_file
@@ -1392,9 +1350,9 @@ components:
                     message: key_file is not valid PEM encoded private key
             invalid-cert-file-format:
               value:
-                type: /problems/constraint-violation
-                title: Constraint Violation
-                detail: The request contains one or more constraint violations
+                type: /problems/unprocessable-entity
+                title: Unprocessable Entity
+                detail: The request body contains one or more constraint violations
                 status: 422
                 violations:
                   - field: body.pem.cert_file
@@ -1406,14 +1364,18 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Problem'
+            $ref: '#/components/schemas/BadRequestProblem'
           examples:
             bad-issuerId:
               value:
                 type: /problems/bad-request
                 title: Bad Request
-                detail: path.issuerId does not match regular expression
+                detail: Invalid path parameter
                 status: 400
+                violation:
+                  field: path.issuerId
+                  type: pattern
+                  message: path.issuerId does not match regular expression
             generic:
               value:
                 type: /problems/bad-request
@@ -1432,14 +1394,22 @@ components:
               value:
                 type: /problems/bad-request
                 title: Bad Request
-                detail: path.serial does not match regular expression
+                detail: Invalid path parameter
                 status: 400
+                violation:
+                  field: path.serial
+                  type: pattern
+                  message: path.serial does not match regular expression
             bad-issuerId:
               value:
                 type: /problems/bad-request
                 title: Bad Request
-                detail: path.issuerId does not match regular expression
+                detail: Invalid path parameter
                 status: 400
+                violation:
+                  field: path.issuerId
+                  type: pattern
+                  message: path.issuerId does not match regular expression
             generic:
               value:
                 type: /problems/bad-request
@@ -1476,14 +1446,14 @@ components:
             detail: An internal server error occurred
 
     ConstraintViolation:
-      description: Body Constraint violation
+      description: Unprocessable Entity
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ConstraintViolationProblem'
+            $ref: '#/components/schemas/BodyConstraintViolationsProblem'
           example:
-            type: /problems/constraint-violation
-            title: Constraint Violation
+            type: /problems/unprocessable-entity
+            title: Unprocessable Entity
             detail: The request body contains one or more constraint violations
             status: 422
             violations:
@@ -1493,12 +1463,16 @@ components:
               - field: body.groups
                 message: must not contain more than 4 addresses
                 type: length
+
+
     IssuerCreatedSuccessfully:
       description: Issuer Created successfully
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/CreatedIssuer'
+
+
     IssuerDuplication:
       description: Issuer Duplication
       content:
@@ -1510,6 +1484,9 @@ components:
             title: Issuer Duplication
             detail: There is already an issuer with the provided Distinguished Name
             status: 409
+
+
+
     IssuerIDTaken:
       description: Issuer ID taken
       content:
@@ -1521,12 +1498,15 @@ components:
             title: Issuer ID Taken
             detail: There is already an issuerId with the provided ID
             status: 409
+
+
+
     BadRequest:
       description: Bad Request
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Problem'
+            $ref: '#/components/schemas/BadRequestProblem'
           example:
             type: /problems/bad-request
             title: Bad Request

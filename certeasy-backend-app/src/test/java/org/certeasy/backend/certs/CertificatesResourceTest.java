@@ -7,7 +7,7 @@ import org.certeasy.backend.BaseRestTest;
 import org.certeasy.backend.common.SubCaSpec;
 import org.certeasy.backend.common.cert.CertValidity;
 import org.certeasy.backend.common.cert.GeographicAddressInfo;
-import org.certeasy.backend.common.problem.ConstraintViolationProblem;
+import org.certeasy.backend.common.problem.UnprocessableEntityProblem;
 import org.certeasy.backend.common.validation.Violation;
 import org.certeasy.backend.common.validation.ViolationType;
 import org.certeasy.backend.issuer.CertIssuer;
@@ -122,7 +122,7 @@ class CertificatesResourceTest extends BaseRestTest {
                 .then()
                 .body("type",equalTo("/problems/bad-request"))
                 .body("title",equalTo("Bad Request"))
-                .body("detail",startsWith("path.issuerId does not match regular expression"))
+                .body("violation.message", startsWith("path.issuerId does not match regular expression"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .statusCode(400);
 
@@ -135,7 +135,7 @@ class CertificatesResourceTest extends BaseRestTest {
                 .then()
                 .body("type",equalTo("/problems/bad-request"))
                 .body("title",equalTo("Bad Request"))
-                .body("detail",startsWith("path.issuerId does not match regular expression"))
+                .body("violation.message", startsWith("path.issuerId does not match regular expression"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .statusCode(400);
 
@@ -148,7 +148,7 @@ class CertificatesResourceTest extends BaseRestTest {
                 .then()
                 .body("type",equalTo("/problems/bad-request"))
                 .body("title",equalTo("Bad Request"))
-                .body("detail",startsWith("path.serial does not match regular expression"))
+                .body("violation.message", startsWith("path.serial does not match regular expression"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .statusCode(400);
 
@@ -161,7 +161,7 @@ class CertificatesResourceTest extends BaseRestTest {
                 .then()
                 .body("type",equalTo("/problems/bad-request"))
                 .body("title",equalTo("Bad Request"))
-                .body("detail",startsWith("path.serial does not match regular expression"))
+                .body("violation.message", startsWith("path.serial does not match regular expression"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .statusCode(400);
 
@@ -200,13 +200,13 @@ class CertificatesResourceTest extends BaseRestTest {
                 Month.DECEMBER, 31))));
         spec.setOrganization("Certeasy Inc");
 
-        ConstraintViolationProblem problem = given().contentType(MediaType.APPLICATION_JSON)
+        UnprocessableEntityProblem problem = given().contentType(MediaType.APPLICATION_JSON)
                 .body(spec)
                 .post(String.format("/api/issuers/%s/certificates/tls-server", certIssuer.getId()))
                 .then()
                 .log().all()
                 .statusCode(422)
-                .extract().body().as(ConstraintViolationProblem.class);
+                .extract().body().as(UnprocessableEntityProblem.class);
 
         Set<Violation> violations = problem.getViolations();
         assertEquals(5, violations.size());
@@ -501,12 +501,12 @@ class CertificatesResourceTest extends BaseRestTest {
         spec.setValidity(new CertValidity(new DateRange(LocalDate.of(3010,
                 Month.DECEMBER, 31))));
 
-        ConstraintViolationProblem problem = given().contentType(MediaType.APPLICATION_JSON)
+        UnprocessableEntityProblem problem = given().contentType(MediaType.APPLICATION_JSON)
                 .body(spec)
                 .post(String.format("/api/issuers/%s/certificates/employee", certIssuer.getId()))
                 .then()
                 .statusCode(422)
-                .extract().body().as(ConstraintViolationProblem.class);
+                .extract().body().as(UnprocessableEntityProblem.class);
 
 
         Set<Violation> violations = problem.getViolations();
@@ -542,12 +542,12 @@ class CertificatesResourceTest extends BaseRestTest {
         spec.setValidity(new CertValidity(new DateRange(LocalDate.of(3010,
                 Month.DECEMBER, 31))));
 
-        ConstraintViolationProblem problem = given().contentType(MediaType.APPLICATION_JSON)
+        UnprocessableEntityProblem problem = given().contentType(MediaType.APPLICATION_JSON)
                 .body(spec)
                 .post(String.format("/api/issuers/%s/certificates/employee", certIssuer.getId()))
                 .then()
                 .statusCode(422)
-                .extract().body().as(ConstraintViolationProblem.class);
+                .extract().body().as(UnprocessableEntityProblem.class);
 
 
         Set<Violation> violations = problem.getViolations();
@@ -932,6 +932,7 @@ class CertificatesResourceTest extends BaseRestTest {
                 .then()
                 .statusCode(204);
         assertEquals(1, certIssuer.listCerts().size());
+
 
     }
 
