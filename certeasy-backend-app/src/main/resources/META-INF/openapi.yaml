@@ -27,7 +27,7 @@ info:
     * Sub-CA - a certificate that can sign other certificates
     * Personal - a certificate that contains personal information
     * Employee - a certificate that contains personal information associated to an organization
-    * Custom - a certificate with arbitrary Distinguished Name attributes with arbitrary extensions
+    * Custom - a certificate with arbitrary Distinguished Name attributes with chosen extensions (Key Usage, Extended Key Usage, Alternative Names).
     
     ## Functionality Notes
     
@@ -52,11 +52,11 @@ info:
       Certificates are issued from a direct specification of the attributes that the certificates is expected to have and NOT from a CSR. The intent was to eliminate
       the need of CSR generation, thus reducing friction to generate a certificate. Support for CSR based generation may or may not be added in the future.
     
-      ## API Design
-      ### Validation errors
-      This API uses both the `400` and `422` status codes for validation errors:
-      * `400` - Reports HTTP Request syntax errors and also reports semantic errors for `path` & `query` parameter validation errors
-      * `422` - Reports HTTP Request semantic validation errors in the Request Body.
+    ## API Design
+    ### Validation Responses
+    This API uses both the `400` and `422` status codes for validation errors:
+    * `400` - Reports HTTP Request syntax errors and also reports semantic errors for `path` & `query` parameter validation errors
+    * `422` - Reports HTTP Request semantic validation errors in the Request Body.
 
   license:
     name: Apache License 2.0
@@ -921,24 +921,9 @@ components:
           description: A Request to generate a customized certificate
           properties:
             subject_distinguished_name:
-              type: array
-              description: Set of attributes that compose the Subject distinguished name. The order of the attributes matter
-              items:
-                type: object
-                description: A Relative Distinguished Name
-                properties:
-                  key:
-                    type: string
-                    description: The unique identifier of the attribute
-                    example: common-name
-                  value:
-                    type: string
-                    description: A value for the attribute
-                    example: example.com
-                required:
-                  - key
-                  - value
-                minItems: 1
+              type: string
+              description: Qualified name that uniquely identifies the subject of a certificate.
+              example: CN=John Smith, OU=Test, O=IBM, C=GB
             key_usage:
               type: array
               description: Defines the operations for which the  Certificate public key is intended to be used.
