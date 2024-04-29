@@ -14,7 +14,7 @@ on:
       - 'certeasy-core/**'
       - 'certeasy-bouncycastle/**'
       - 'certeasy-backend-app/**'
-      - 'certeasy_api_tests/**'
+      - 'certeasy-api-tests/**'
       - 'certeasy-console-app/**'
       - '.github/workflows/unified-workflow.yaml'
   push:
@@ -22,7 +22,7 @@ on:
       - 'certeasy-core/**'
       - 'certeasy-bouncycastle/**'
       - 'certeasy-backend-app/**'
-      - 'certeasy_api_tests/**'
+      - 'certeasy-api-tests/**'
       - 'certeasy-console-app/**'
       - '.github/workflows/unified-workflow.yaml'
 
@@ -271,21 +271,21 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install -r certeasy_api_tests/requirements.txt
+          pip install -r certeasy-api-tests/requirements.txt
       - name: Run tests
-        run: pytest certeasy_api_tests/src/tests --junitxml=certeasy_api_tests/target/report.xml
+        run: pytest certeasy-api-tests/src/tests --junitxml=certeasy-api-tests/target/report.xml
         continue-on-error: true
       - name: Package Test Reports
         uses: actions/upload-artifact@v3
         with:
           name: target
           path: |
-            certeasy_api_tests/target
+            certeasy-api-tests/target
       - name: Report test results
         uses: dorny/test-reporter@v1.6.0
         with:
           name: Integration Test Results
-          path: certeasy_api_tests/target/report.xml
+          path: certeasy-api-tests/target/report.xml
           fail-on-error: 'false'
           reporter: java-junit
 
