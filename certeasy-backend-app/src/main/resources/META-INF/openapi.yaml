@@ -19,7 +19,13 @@ info:
     A Sub-CA is a certificate authority that had its certificate signed by another CA.
     
     ### Certificate
-    Represents An X509 V3 Certificate.
+    Represents An X509 V3 Certificate. 
+    
+    
+    ### Certificates Issuance
+    Certificates are issued from a direct specification of the attributes that the certificates is expected to have and NOT from a CSR. The intent was to eliminate
+    the need of CSR generation, thus reducing friction to generate a certificate. Support for CSR based generation may or may not be added in the future.
+    
     
   
     ## HTTP Statuses
