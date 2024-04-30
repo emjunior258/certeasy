@@ -349,7 +349,8 @@ paths:
     post:
       summary: Issue Customized Certificate
       operationId: issueCustomCert
-      description: Issues a new Customized Certificate. An RSA Key-pair will be generated and used for the Certificate.
+      description: |
+        Issues a new Customized Certificate. An RSA Key-pair will be generated and used for the Certificate.
       tags:
         - Certificates
       parameters:
@@ -922,7 +923,24 @@ components:
           properties:
             subject_distinguished_name:
               type: string
-              description: Qualified name that uniquely identifies the subject of a certificate.
+              description: | 
+                Qualified name that uniquely identifies the subject of a certificate.
+                The following attributes are supported:
+                
+                * CN (Common Name)
+                * T (Title)
+                * initials (Initials)
+                * G (Given Name)
+                * SN (Surname)
+                * telephoneNumber (Telephone Number)
+                * UID (Unique ID)
+                * O (Organization)
+                * OU (Organization Unit)
+                * C (Country Name)
+                * ST (State or province)
+                * L (Locality)
+                * STREET (Street)
+                * DC (Domain Component)
               example: CN=John Smith, OU=Test, O=IBM, C=GB
             key_usage:
               type: array
