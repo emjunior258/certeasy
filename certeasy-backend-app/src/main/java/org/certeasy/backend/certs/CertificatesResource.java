@@ -86,7 +86,6 @@ public class CertificatesResource extends BaseResource {
             Certificate certificate = issuer.issueCert(tlsServerCertificateSpec);
             return Response.ok(new IssuedCert(certificate.getSerial()))
                     .build();
-
         });
     }
 

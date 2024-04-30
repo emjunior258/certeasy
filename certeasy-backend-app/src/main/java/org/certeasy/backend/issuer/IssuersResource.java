@@ -3,6 +3,7 @@ package org.certeasy.backend.issuer;
 import org.certeasy.*;
 import org.certeasy.backend.common.BaseResource;
 import org.certeasy.backend.common.CertPEM;
+import org.certeasy.backend.common.OrganizationInfo;
 import org.certeasy.backend.common.SubCaSpec;
 import org.certeasy.backend.common.problem.UnprocessableEntityProblem;
 import org.certeasy.backend.common.problem.ProblemResponse;
@@ -81,10 +82,7 @@ public class IssuersResource extends BaseResource {
         Set<Violation> violationSet = spec.validate(ValidationPath.of("body"));
         if(!violationSet.isEmpty())
             return ProblemResponse.unprocessableEntity(violationSet);
-        CertificateAuthoritySubject subject = new CertificateAuthoritySubject(
-                spec.getName(),
-                spec.getGeographicAddressInfo().
-                        toGeographicAddress());
+        CertificateAuthoritySubject subject = getCertificateAuthoritySubject(spec);
         CertificateAuthoritySpec authoritySpec = new CertificateAuthoritySpec(subject, spec.getPathLength(),
                 KeyStrength.valueOf(spec.getKeyStrength()),
                 spec.getValidity().toDateRange());
@@ -95,6 +93,20 @@ public class IssuersResource extends BaseResource {
         }catch (IssuerDuplicationException ex){
             return Response.status(409).entity(ex.asProblem()).build();
         }
+    }
+
+    private static CertificateAuthoritySubject getCertificateAuthoritySubject(SubCaSpec spec) {
+        OrganizationInfo organizationInfo = spec.getOrganizationInfo();
+        String organizationName = null;
+        String organizationUnit = null;
+        if(organizationInfo != null) {
+            organizationName = organizationInfo.organizationName();
+            organizationUnit = organizationInfo.organizationUnit();
+        }
+        return new CertificateAuthoritySubject(
+                spec.getName(),
+                spec.getGeographicAddressInfo().
+                        toGeographicAddress(), organizationName, organizationUnit);
     }
 
     @POST
@@ -125,7 +137,6 @@ public class IssuersResource extends BaseResource {
                                 "expired", "certificate has already expired"
                         ))).build();
             }
-
             CertIssuer issuer = registry().add(certificate);
             return Response.ok(new CreatedIssuerInfo(issuer.getId())).build();
         }catch (IllegalCertPemException ex) {
