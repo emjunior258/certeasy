@@ -245,7 +245,7 @@ jobs:
     permissions:
       contents: read
       packages: write
-    needs: [ "build-binary" ]
+    needs: [ "build-binary", "build-image"]
     outputs:
       image_tag: ${{ steps.meta.outputs.tags }}
     steps:
