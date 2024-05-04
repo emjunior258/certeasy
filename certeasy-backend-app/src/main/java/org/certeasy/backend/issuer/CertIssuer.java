@@ -145,6 +145,15 @@ public class CertIssuer {
         LOGGER.info("Issued certificate with serial: {}", issuedCert.getSerial());
         this.store.put(issuedCert);
         if(spec.getBasicConstraints().ca()) {
+            Set<KeyUsage> keyUsageSet = spec.getKeyUsages();
+            if(keyUsageSet.contains(KeyUsage.SIGN_CRL) && keyUsageSet.contains(KeyUsage.CERTIFICATE_SIGN)){
+                Optional<ExtendedKeyUsages> optionalExtendedKeyUsages = spec.getExtendedKeyUsages();
+                if(optionalExtendedKeyUsages.isPresent()){
+                    ExtendedKeyUsages extendedKeyUsages = optionalExtendedKeyUsages.get();
+                    if(extendedKeyUsages.effect() == ExtendedKeyUsageEffect.ENFORCE)
+                        return issuedCert;
+                }
+            }else return issuedCert;
             LOGGER.info("Creating issuer for issued certificate: "+certificate.getSerial());
             this.registry.add(issuedCert);
         }

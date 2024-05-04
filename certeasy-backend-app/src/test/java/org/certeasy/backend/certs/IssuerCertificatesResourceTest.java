@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @QuarkusTest
 @TestProfile(MemoryPersistenceProfile.class)
-class CertificatesResourceTest extends BaseRestTest {
+class IssuerCertificatesResourceTest extends BaseRestTest {
 
     @Inject
     IssuerRegistry registry;
@@ -43,7 +43,7 @@ class CertificatesResourceTest extends BaseRestTest {
     private CertificateAuthoritySpec certificateAuthoritySpec;
     private PersonalCertificateSpec personalCertificateSpec;
 
-    public CertificatesResourceTest(){
+    public IssuerCertificatesResourceTest(){
         GeographicAddress geographicAddress = new GeographicAddress("ZA",
                 "Nelspruit",
                 "Mpumalanga",
@@ -88,14 +88,14 @@ class CertificatesResourceTest extends BaseRestTest {
         assertEquals(2, certInfos.length);
 
         CertificateSummaryInfo cert0 = certInfos[0];
-        assertEquals("Root", cert0.name());
-        assertEquals(authorityCert.getSerial(), cert0.serial());
-        assertEquals(IssuedCertType.CA, cert0.type());
+        assertEquals("Root", cert0.getName());
+        assertEquals(authorityCert.getSerial(), cert0.getName());
+        assertEquals(IssuedCertType.CA, cert0.getType());
 
         CertificateSummaryInfo cert1 = certInfos[1];
-        assertEquals("John Doe", cert1.name());
-        assertEquals(personCertificate.getSerial(), cert1.serial());
-        assertEquals(IssuedCertType.PERSONAL, cert1.type());
+        assertEquals("John Doe", cert1.getName());
+        assertEquals(personCertificate.getSerial(), cert1.getSerial());
+        assertEquals(IssuedCertType.PERSONAL, cert1.getType());
 
     }
 

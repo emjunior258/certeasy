@@ -5,6 +5,7 @@ import org.certeasy.DistinguishedName;
 import org.certeasy.ExtendedKeyUsages;
 import org.certeasy.backend.common.cert.BasicConstraintsInfo;
 import org.certeasy.backend.common.cert.SubjectAltNameInfo;
+import org.certeasy.backend.issuer.CertIssuer;
 
 import java.util.Optional;
 import java.util.Set;
@@ -13,9 +14,18 @@ import java.util.stream.Collectors;
 public class CertificateConverter {
 
     public static CertificateSummaryInfo toSummaryInfo(Certificate certificate){
-        return new CertificateSummaryInfo(certificate.getDistinguishedName().getCommonName(),
+        return toSummaryInfo(certificate, null);
+    }
+
+    public static CertificateSummaryInfo toSummaryInfo(Certificate certificate, CertIssuer issuer){
+        if(issuer != null)
+            return new ExtendedCertificateSummaryInfo(certificate.getDistinguishedName().getCommonName(),
                 certificate.getSerial(),
-                IssuedCertType.which(certificate));
+                IssuedCertType.which(certificate), issuer.getId());
+        else
+            return new CertificateSummaryInfo(certificate.getDistinguishedName().getCommonName(),
+                    certificate.getSerial(),
+                    IssuedCertType.which(certificate));
     }
 
     public static CertificateDetailsInfo toDetailsInfo(Certificate certificate) {

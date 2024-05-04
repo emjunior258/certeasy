@@ -238,6 +238,56 @@ jobs:
           name: image-tar
           path: /tmp/${{ env.IMAGE_NAME }}.tar
 
+  run-api-tests:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      checks: write
+    needs: ["build-image"]
+    env:
+      DOCKER_IMAGE_NAME: ${{ needs.build-image.outputs.image_tag }}
+    steps:
+      - uses: actions/checkout@v3
+        name: Git checkout
+      - name: Download certeasy-binary
+        uses: actions/download-artifact@v3
+        with:
+          name: certeasy-binary
+          path: ./
+      - name: Download image tar file
+        uses: actions/download-artifact@v3
+        with:
+          name: image-tar
+          path: /tmp
+      - name: Load docker image tar
+        run: |
+            docker load --input /tmp/${{ env.IMAGE_NAME }}.tar
+            docker image ls -a
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r certeasy_api_tests/requirements.txt
+      - name: Run tests
+        run: pytest certeasy_api_tests/src/tests --junitxml=certeasy_api_tests/target/report.xml
+        continue-on-error: true
+      - name: Package Test Reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: target
+          path: |
+            certeasy_api_tests/target
+      - name: Report test results
+        uses: dorny/test-reporter@v1.6.0
+        with:
+          name: Integration Test Results
+          path: certeasy_api_tests/target/report.xml
+          fail-on-error: 'false'
+          reporter: java-junit
 
   publish-develop-image:
     runs-on: ubuntu-latest
@@ -245,7 +295,7 @@ jobs:
     permissions:
       contents: read
       packages: write
-    needs: [ "build-binary" ]
+    needs: [ "build-binary", "run-api-tests" ]
     outputs:
       image_tag: ${{ steps.meta.outputs.tags }}
     steps:
@@ -334,7 +384,7 @@ jobs:
     permissions:
       contents: read
       packages: write
-    needs: [ "build-binary", "release-core", "release-bouncycastle" ]
+    needs: [ "build-binary", "run-api-tests", "release-core", "release-bouncycastle" ]
     outputs:
       image_tag: ${{ steps.meta.outputs.tags }}
     steps:

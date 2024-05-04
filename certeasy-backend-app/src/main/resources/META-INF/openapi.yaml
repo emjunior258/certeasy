@@ -27,7 +27,7 @@ info:
     * Sub-CA - a certificate that can sign other certificates
     * Personal - a certificate that contains personal information
     * Employee - a certificate that contains personal information associated to an organization
-    * Custom - a certificate with arbitrary Distinguished Name attributes with chosen extensions (Key Usage, Extended Key Usage, Alternative Names).
+    * Custom - a certificate with arbitrary Distinguished Name attributes with chosen extensions (Basic Constraint, Key Usage, Extended Key Usage, Subject Alternative Names).
     
     ## Functionality Notes
     
@@ -409,6 +409,27 @@ paths:
         500:
           $ref: "#/components/responses/ServerError"
 
+  /certificates:
+    get:
+      summary: List all Certificates
+      operationId: listAllCerts
+      description: List all certificates issued/managed by the certeasy server
+      tags:
+        - Certificates
+      responses:
+        200:
+          description: Certificates List Retrieved Successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ExtendedIssuedCertSummary'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        500:
+          $ref: "#/components/responses/ServerError"
+
   /issuers/{issuerId}/certificates/{serial}:
     get:
       summary: Get Certificate Information
@@ -553,17 +574,17 @@ components:
 
     KeyUsage:
       type: string
-      description: Represents an peration for which the  Certificate public key is intended to be used.
+      description: Represents an operation for which the  Certificate public key is intended to be used.
       enum:
-        - DigitalSignature
-        - KeyEncipherment
-        - DataEncipherment
-        - KeyAgreement
-        - DecipherOnly
-        - EncipherOnly
-        - CertificateSign
-        - SignCRL
-        - NonRepudiation
+        - DIGITAL_SIGNATURE
+        - KEY_ENCIPHERMENT
+        - DATA_ENCIPHERMENT
+        - KEY_AGREEMENT
+        - DECIPHER_ONLY
+        - ENCIPHER_ONLY
+        - CERTIFICATE_SIGN
+        - SIGN_CRL
+        - NON_REPUDIATION
 
     ExtendedKeyUsage:
       type: string
@@ -627,6 +648,7 @@ components:
     IssuedCertSummary:
       type: object
       description: A summary of a certificate issued by this server
+      readOnly: true
       properties:
         name:
           type: string
@@ -645,10 +667,18 @@ components:
             - EMPLOYEE
             - CUSTOM
           description: The type of certificate
-      required:
-        - name
-        - serial
-        - type
+
+    ExtendedIssuedCertSummary:
+      allOf:
+        - $ref: '#/components/schemas/IssuedCertSummary'
+        - type: object
+          readOnly: true
+          properties:
+            issuer_id:
+              type: string
+              description: Unique identifier of the issuer that owns the certificate
+              example: e6852694-6bc2-495e-8122-b1b9c4961d1c
+
 
     OrganizationInfo:
       type: object
@@ -678,7 +708,7 @@ components:
           type: integer
           description: The maximum depth of CAs that may exist below this CA. This limit is NOT enforced when issuing a sub-ca certificate.
           default: 0
-          minimum: 0
+          minimum: -1
       required:
         - ca
 
@@ -919,7 +949,12 @@ components:
       allOf:
         - $ref: "#/components/schemas/BaseCertificateRequest"
         - type: object
-          description: A Request to generate a customized certificate
+          description: | 
+            A Request to generate a customized certificate. 
+            An issuer is automatically created when the following conditions are met:
+              * `basic_constraint.ca=true`
+              * `key_usage` contains `[CERTIFICATE_SIGN, SIGN_CRL]` 
+              * `extended_key_usage=null` OR `extended_key_usage.critical=false`
           properties:
             subject_distinguished_name:
               type: string
@@ -941,29 +976,45 @@ components:
                 * L (Locality)
                 * STREET (Street)
                 * DC (Domain Component)
+                
+                Any unknown attribute will be silently ignored/skipped.
               example: CN=John Smith, OU=Test, O=IBM, C=GB
+
+            basic_constraints:
+                $ref: "#/components/schemas/BasicConstraints"
+
             key_usage:
               type: array
               description: Defines the operations for which the  Certificate public key is intended to be used.
               items:
                 $ref: '#/components/schemas/KeyUsage'
+              example: ["NON_REPUDIATION", "DIGITAL_SIGNATURE", "DATA_ENCIPHERMENT"]
               minItems: 1
+
             extended_key_usage:
-              type: array
-              description: A second degree of restriction in terms of how the public key of a Certificate is intended to be used. The extended key usage is not about the operations that can be performed with the key, it is instead about the context in which those operations can be performed.
-              items:
-                $ref: '#/components/schemas/ExtendedKeyUsage'
-              minItems: 1
-            strict_extended_key_usage:
-              type: boolean
-              description: Defines whether the Extended Key Usage extension should be critial or not
-              default: false
+              type: object
+              description: Defines the Extended Key Usage extension
+              properties:
+                allowed_usages:
+                  type: array
+                  description: The actual usages that are being allowed
+                  items:
+                    $ref: '#/components/schemas/ExtendedKeyUsage'
+                  example: ["TLS_WEB_SERVER_AUTH", "SIGN_CODE"]
+                critical:
+                  type: boolean
+                  description: Defines whether the Extended Key Usage extension should be critical or not
+                  example: true
+
+              required:
+                - usages
+                - critical
+
             subject_alt_names:
               type: array
               description: The subject alternative names to associate to the certificate
               items:
                 $ref: '#/components/schemas/SubjectAlternativeName'
-
 
           required:
             - validity

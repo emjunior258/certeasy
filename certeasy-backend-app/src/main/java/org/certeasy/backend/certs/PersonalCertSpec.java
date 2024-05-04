@@ -1,14 +1,14 @@
 package org.certeasy.backend.certs;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.certeasy.backend.common.BaseCertSpec;
+import org.certeasy.backend.common.GeographicCertSpec;
 import org.certeasy.backend.common.validation.ValidationPath;
 import org.certeasy.backend.common.validation.Validator;
 import org.certeasy.backend.common.validation.Violation;
 
 import java.util.Set;
 
-public class PersonalCertSpec extends BaseCertSpec {
+public class PersonalCertSpec extends GeographicCertSpec {
 
     private String name;
     private String surname;
