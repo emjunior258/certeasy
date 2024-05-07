@@ -89,7 +89,7 @@ class IssuerCertificatesResourceTest extends BaseRestTest {
 
         CertificateSummaryInfo cert0 = certInfos[0];
         assertEquals("Root", cert0.getName());
-        assertEquals(authorityCert.getSerial(), cert0.getName());
+        assertEquals(authorityCert.getSerial(), cert0.getSerial());
         assertEquals(IssuedCertType.CA, cert0.getType());
 
         CertificateSummaryInfo cert1 = certInfos[1];

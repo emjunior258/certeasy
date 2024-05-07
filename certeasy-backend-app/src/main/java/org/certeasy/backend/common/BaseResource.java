@@ -1,6 +1,7 @@
 package org.certeasy.backend.common;
 
 import org.certeasy.CertEasyContext;
+import org.certeasy.backend.Result;
 import org.certeasy.backend.certs.IssuedCertType;
 import org.certeasy.backend.common.problem.BadRequestProblem;
 import org.certeasy.backend.common.problem.Problem;
@@ -18,6 +19,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
 public abstract class BaseResource {
@@ -42,7 +45,7 @@ public abstract class BaseResource {
         return this.context;
     }
 
-    public Response checkIssuerExistsThen(String issuerId, IssuerOperation operation){
+    protected Response checkIssuerExistsThen(String issuerId, IssuerOperation operation){
         if(issuerId.isBlank()){
             LOGGER.warn("The serial is null or empty");
             return ProblemResponse.fromProblem(
@@ -71,6 +74,16 @@ public abstract class BaseResource {
                     new Violation("path.issuerId", ViolationType.PATTERN,
                         "path.issuerId does not match regular expression: "+ ID_REGEX)));
         else return Optional.empty();
+    }
+
+    protected Result<IssuedCertType, Violation> checkCertType(String type){
+        try {
+            return Result.okResult (IssuedCertType.valueOf(type));
+        }catch (IllegalArgumentException ex){
+            return Result.errorResult(new Violation("query.type", ViolationType.ENUM,
+                    "type MUST be one of: " + Arrays.toString(IssuedCertType
+                            .values())));
+        }
     }
 
 }

@@ -416,6 +416,19 @@ paths:
       description: List all certificates issued/managed by the certeasy server
       tags:
         - Certificates
+      parameters:
+        - $ref: "#/components/parameters/IssuerId"
+        - name: type
+          in: query
+          schema:
+            type: string
+            description: The type of certificates to be selected
+            enum:
+              - CA
+              - TLS_SERVER
+              - PERSONAL
+              - EMPLOYEE
+              - CUSTOM
       responses:
         200:
           description: Certificates List Retrieved Successfully
@@ -426,7 +439,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/ExtendedIssuedCertSummary'
         400:
-          $ref: '#/components/responses/BadRequest'
+          $ref: '#/components/responses/AllCertsBadRequest'
         500:
           $ref: "#/components/responses/ServerError"
 
@@ -1442,6 +1455,30 @@ components:
                   - field: body.pem.cert_file
                     type: format
                     message: cert_file is not valid PEM encoded certificate
+
+    AllCertsBadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BadRequestProblem'
+          examples:
+            bad-issuerId:
+              value:
+                type: /problems/bad-request
+                title: Bad Request
+                detail: Invalid query parameter
+                status: 400
+                violation:
+                  field: query.type
+                  type: pattern
+                  message: certificate type does not match regular expression
+            generic:
+              value:
+                type: /problems/bad-request
+                title: Bad Request
+                detail: Incorrect HTTP Request format
+                status: 400
 
     IssuersBadRequest:
       description: Bad Request
