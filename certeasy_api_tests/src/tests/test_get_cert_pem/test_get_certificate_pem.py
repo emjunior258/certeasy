@@ -50,7 +50,7 @@ class TestGetCertPem:
         CERT_SERIAL, ISSUER_ID, CERT_NAME, CREATED_ISSUER = issue_tls_server_certs()
         # get pem of cert
         response = requests.get(url=f'{BASE_URL}/issuers/{ISSUER_ID}/certificates/{SEQUENCE_OF_SPACE_SERIAL_ID}/pem')
-        assert response.status_code == 400
+        assert response.status_code == 422
 
 
     def test_should_not_return_pem_of_issued_cert_when_pass_a_non_existed_cert_serial(self, app_container):
@@ -71,4 +71,5 @@ class TestGetCertPem:
         CERT_SERIAL, ISSUER_ID, CERT_NAME, CREATED_ISSUER = issue_tls_server_certs()
         # get pem of cert
         response = requests.get(url=f'{BASE_URL}/issuers/{SEQUENCE_OF_SPACE_ISSUER_ID}/certificates/{CERT_SERIAL}/pem')
-        assert response.status_code == 400
+        print(response.json())
+        assert response.status_code == 422

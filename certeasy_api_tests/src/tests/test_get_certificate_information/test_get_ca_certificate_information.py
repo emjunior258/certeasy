@@ -11,9 +11,10 @@ class TestGetCertInformation:
         get_cert_serial = requests.get(url=f'{BASE_URL}/issuers')
         CERT_SERIAL = get_cert_serial.json()[0]['serial']
         response = requests.get(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/{CERT_SERIAL}')
+        print(response.text)
         assert response.status_code == 200
         assert len(response.json()) == 11
-        print(response.text)
+
 
     def test_should_return_the_correct_cert_name_after_get_information_of_issued_ca_certs(self, app_container):
         ISSUER_ID = create_issuer_from_spec()
