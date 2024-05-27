@@ -273,7 +273,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:feat-issue-tls-server-cert
+          tags: ${{ steps.meta.outputs.tags }}
 #          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:develop
           labels: ${{ steps.meta.outputs.labels }}
 
