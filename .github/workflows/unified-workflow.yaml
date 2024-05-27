@@ -241,7 +241,7 @@ jobs:
 
   publish-develop-image:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+#    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
     permissions:
       contents: read
       packages: write
@@ -279,7 +279,7 @@ jobs:
 
   release-core:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+#    if: github.ref == 'refs/heads/main'
     needs: [ "publish-develop-image" ]
     defaults:
       run:
@@ -305,7 +305,7 @@ jobs:
 
   release-bouncycastle:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+#    if: github.ref == 'refs/heads/main'
     needs: [ "publish-develop-image", "release-core" ]
     defaults:
       run:
@@ -330,7 +330,7 @@ jobs:
 
   release-image:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+#    if: github.ref == 'refs/heads/main'
     permissions:
       contents: read
       packages: write
