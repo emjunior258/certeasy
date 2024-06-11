@@ -77,97 +77,95 @@
           </div>
         </template>
         <template v-if="activeTab === 'certificates'">
-          <div>
-            <TheModal
-              :key="selectedTreeNode"
-              :issuer="selectedTreeNode"
-              @toggleSidebar="toggleSidebar"
-              v-if="selectedTreeNode && isSidebarOpen"
-            />
-            <div class="px-16 flex justify-between mt-12 mb-6 items-end">
-              <div
-                class="w-full border border-primary px-5 py-3 rounded-lg bg-lightBlue flex justify-between"
-              >
-                <div class="flex items-center gap-1">
-                  <IssuerIcon class="w-6 h-6" />
-                  <span class="text-primary font-normal"> All Issuers </span>
-                </div>
-                <ChevronDown />
-              </div>
-            </div>
-            <div class="px-16 flex justify-between mt-8 mb-5 items-end">
-              <div class="flex gap-5">
-                <div
-                  class="border border-primary px-4 py-2 rounded-lg bg-lightBlue flex justify-between gap-2 items-center relative hover:cursor-pointer"
-                  @click="filterCertsIsOpen = !filterCertsIsOpen"
-                >
-                  <span class="font-normal"> All </span>
-                  <ChevronDown :class="{ 'rotate-180': filterCertsIsOpen }" />
-                  <ul
-                    class="absolute top-12 left-0 bg-white rounded-lg shadow-xl p-5 min-w-[264px]"
-                    v-if="filterCertsIsOpen"
-                  >
-                    <li
-                      class="px-5 py-2 rounded-lg hover:bg-lightBlue hover:cursor-pointer"
-                    >
-                      All
-                    </li>
-                    <li
-                      class="px-5 py-2 rounded-lg hover:bg-lightBlue hover:cursor-pointer"
-                    >
-                      <ShieldIcon class="inline align-top mr-1" />
-                      CA
-                    </li>
-                    <li
-                      class="px-5 py-2 rounded-lg hover:bg-lightBlue hover:cursor-pointer"
-                    >
-                      <PadlockerIcon class="inline align-top mr-1" />
-                      TLS Server
-                    </li>
-                    <li
-                      class="px-5 py-2 rounded-lg hover:bg-lightBlue hover:cursor-pointer"
-                    >
-                      <PersonIcon class="inline align-top mr-1" />
-                      Personal
-                    </li>
-                    <li
-                      class="px-5 py-2 rounded-lg hover:bg-lightBlue hover:cursor-pointer"
-                    >
-                      <BriefcaseIcon class="inline align-top mr-1" />
-                      Employee
-                    </li>
-                    <li
-                      class="px-5 py-2 rounded-lg hover:bg-lightBlue hover:cursor-pointer"
-                    >
-                      <EditIcon class="inline align-top mr-1" />
-                      Custom
-                    </li>
-                  </ul>
-                </div>
-                <form class="flex">
-                  <input
-                    type="text"
-                    class="h-full border border-primary rounded-l-lg pl-4 w-[350px]"
-                    placeholder="Search Certicate"
-                  />
-                  <button class="h-full bg-primary rounded-r-lg p-2">
-                    <Search />
-                  </button>
-                </form>
-              </div>
-              <IconActionButton :buttonProps="buttonProp2" />
-            </div>
+          <TheModal
+            :key="selectedTreeNode"
+            :issuer="selectedTreeNode"
+            @toggleSidebar="toggleSidebar"
+            v-if="selectedTreeNode && isSidebarOpen"
+          />
+          <div class="px-16 flex justify-between mt-12 mb-6 items-end">
             <div
-              class="pl-16 mr-4 pr-8 overflow-y-auto max-h-[calc(100%-268px)] gutter-stable"
+              class="w-full border border-primary px-5 py-3 rounded-lg bg-lightBlue flex justify-between"
             >
-              <IssuersList
-                v-if="certificatesList.length > 0"
-                :issuersList="certificatesList"
-              />
-              <IssuerCardNoContent
-                v-if="!isLoading && certificatesList.length === 0"
-              />
+              <div class="flex items-center gap-1">
+                <IssuerIcon class="w-6 h-6" />
+                <span class="text-primary font-normal"> All Issuers </span>
+              </div>
+              <ChevronDown />
             </div>
+          </div>
+          <div class="px-16 flex justify-between mt-8 mb-5 items-end">
+            <div class="flex gap-5">
+              <div
+                class="border border-primary px-4 py-2 rounded-lg bg-lightBlue flex justify-between gap-2 items-center relative hover:cursor-pointer"
+                @click="filterCertsIsOpen = !filterCertsIsOpen"
+              >
+                <span class="font-normal"> All </span>
+                <ChevronDown :class="{ 'rotate-180': filterCertsIsOpen }" />
+                <ul
+                  class="absolute top-12 left-0 bg-white rounded-lg shadow-xl p-5 min-w-[264px]"
+                  v-if="filterCertsIsOpen"
+                >
+                  <li
+                    class="px-5 py-2 rounded-lg hover:bg-lightBlue hover:cursor-pointer"
+                  >
+                    All
+                  </li>
+                  <li
+                    class="px-5 py-2 rounded-lg hover:bg-lightBlue hover:cursor-pointer"
+                  >
+                    <ShieldIcon class="inline align-top mr-1" />
+                    CA
+                  </li>
+                  <li
+                    class="px-5 py-2 rounded-lg hover:bg-lightBlue hover:cursor-pointer"
+                  >
+                    <PadlockerIcon class="inline align-top mr-1" />
+                    TLS Server
+                  </li>
+                  <li
+                    class="px-5 py-2 rounded-lg hover:bg-lightBlue hover:cursor-pointer"
+                  >
+                    <PersonIcon class="inline align-top mr-1" />
+                    Personal
+                  </li>
+                  <li
+                    class="px-5 py-2 rounded-lg hover:bg-lightBlue hover:cursor-pointer"
+                  >
+                    <BriefcaseIcon class="inline align-top mr-1" />
+                    Employee
+                  </li>
+                  <li
+                    class="px-5 py-2 rounded-lg hover:bg-lightBlue hover:cursor-pointer"
+                  >
+                    <EditIcon class="inline align-top mr-1" />
+                    Custom
+                  </li>
+                </ul>
+              </div>
+              <form class="flex">
+                <input
+                  type="text"
+                  class="h-full border border-primary rounded-l-lg pl-4 w-[350px]"
+                  placeholder="Search Certicate"
+                />
+                <button class="h-full bg-primary rounded-r-lg p-2">
+                  <Search />
+                </button>
+              </form>
+            </div>
+            <IconActionButton :buttonProps="buttonProp2" />
+          </div>
+          <div
+            class="pl-16 mr-4 pr-8 overflow-y-auto max-h-[calc(100%-268px)] gutter-stable"
+          >
+            <IssuersList
+              v-if="certificatesList.length > 0"
+              :issuersList="certificatesList"
+            />
+            <IssuerCardNoContent
+              v-if="!isLoading && certificatesList.length === 0"
+            />
           </div>
         </template>
         <TheFooter class="absolute bottom-0 left-0 px-16" />
