@@ -2,8 +2,8 @@
   <button
     class="rounded-lg py-2 px-4 min-h-[41px] border border-primary"
     :class="{
-      'bg-primary': buttonProps.active && !buttonProps.disabled,
-      'text-white': buttonProps.active && !buttonProps.disabled,
+      'bg-lightBlue': buttonProps.active && !buttonProps.disabled,
+      'text-primary': buttonProps.active && !buttonProps.disabled,
       'text-black-0.6': buttonProps.disabled,
     }"
     type="button"
@@ -20,7 +20,6 @@
       :class="{ 'ml-2': buttonProps.icon }"
     >
       {{ buttonProps.text }}
-      {{ buttonProps.amount >= 0 && `(${buttonProps.amount})` }}
     </span>
   </button>
 </template>

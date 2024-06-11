@@ -9,19 +9,19 @@
 </template>
 
 <script setup>
-import TreeNode from "@/components/TreeNode.vue";
+import TreeNode from '@/components/TreeNode.vue'
 
 const { getChildren, selectNode } = defineProps([
-  "treeData",
-  "getChildren",
-  "selectNode",
-]);
+  'treeData',
+  'getChildren',
+  'selectNode',
+])
 
 const getChild = (id) => {
-  getChildren(id);
-};
+  getChildren(id)
+}
 
 const handleSelectNode = (id) => {
-  selectNode(id);
-};
+  selectNode(id)
+}
 </script>

@@ -1,4 +1,3 @@
-wwwwwwww
 <template>
   <div>
     <NavComponent
@@ -39,23 +38,10 @@ wwwwwwww
           <div class="px-16 flex justify-between mt-12 mb-6 items-end pb-6">
             <div class="font-light text-lg">
               <IconTextButton
-                :buttonProps="buttonProp"
-                @handleClick="navigateToRoute('/')"
-                class="mr-6 last:mr-0"
-              />
-              <IconTextButton
-                :buttonProps="buttonProp3"
-                @handleClick="navigateToRoute('/')"
-                class="mr-6 last:mr-0"
-              />
-              <IconTextButton
-                :buttonProps="buttonProp3"
-                @handleClick="navigateToRoute('/')"
-                class="mr-6 last:mr-0"
-              />
-              <IconTextButton
-                :buttonProps="buttonProp3"
-                @handleClick="navigateToRoute('/')"
+                v-for="filterButton in filterButtons"
+                :key="filterButton.id"
+                :buttonProps="filterButton"
+                @handleClick="navigateToRoute(filterButton.query)"
                 class="mr-6 last:mr-0"
               />
             </div>
@@ -67,104 +53,131 @@ wwwwwwww
           <div
             class="pl-16 mr-4 pr-8 overflow-y-auto max-h-[calc(100%-220px)] gutter-stable"
           >
+            <div
+              v-if="
+                currentRoute === 'TREE' && issuersList && issuersList.length > 0
+              "
+              class="px-16"
+            >
+              <TheTree
+                :treeData="treeData"
+                :getChildren="getChildren"
+                :selectNode="handleSelectNode"
+                v-for="treeData in issuersList"
+                :key="treeData.id"
+              />
+            </div>
             <IssuersList
-              v-if="issuersList.length > 0"
+              v-if="issuersList.length > 0 && currentRoute !== 'TREE'"
               :issuersList="issuersList"
             />
-            <IssuerCardNoContent v-if="issuersList.length === 0" />
+            <IssuerCardNoContent
+              v-if="!isLoading && issuersList.length === 0"
+            />
           </div>
         </template>
         <template v-if="activeTab === 'certificates'">
-          <div class="px-16 flex justify-between mt-12 mb-6 items-end">
-            <div
-              class="w-full border border-primary px-5 py-3 rounded-lg bg-lightBlue flex justify-between"
-            >
-              <div class="flex items-center gap-1">
-                <IssuerIcon class="w-6 h-6" />
-                <span class="text-primary font-normal"> All Issuers </span>
-              </div>
-              <ChevronDown />
-            </div>
-          </div>
-          <div class="px-16 flex justify-between mt-8 mb-5 items-end">
-            <div class="flex gap-5">
-              <div
-                class="border border-primary px-4 py-2 rounded-lg bg-lightBlue flex justify-between gap-2 items-center relative hover:cursor-pointer"
-                @click="filterCertsIsOpen = !filterCertsIsOpen"
-              >
-                <span class="font-normal"> All </span>
-                <ChevronDown :class="{ 'rotate-180': filterCertsIsOpen }" />
-                <ul
-                  class="absolute top-12 left-0 bg-white rounded-lg shadow-xl p-5 min-w-[264px]"
-                  v-if="filterCertsIsOpen"
-                >
-                  <li
-                    class="px-5 py-2 rounded-lg hover:bg-lightBlue hover:cursor-pointer"
-                  >
-                    All
-                  </li>
-                  <li
-                    class="px-5 py-2 rounded-lg hover:bg-lightBlue hover:cursor-pointer"
-                  >
-                    <ShieldIcon class="inline align-top mr-1" />
-                    CA
-                  </li>
-                  <li
-                    class="px-5 py-2 rounded-lg hover:bg-lightBlue hover:cursor-pointer"
-                  >
-                    <PadlockerIcon class="inline align-top mr-1" />
-                    TLS Server
-                  </li>
-                  <li
-                    class="px-5 py-2 rounded-lg hover:bg-lightBlue hover:cursor-pointer"
-                  >
-                    <PersonIcon class="inline align-top mr-1" />
-                    Personal
-                  </li>
-                  <li
-                    class="px-5 py-2 rounded-lg hover:bg-lightBlue hover:cursor-pointer"
-                  >
-                    <BriefcaseIcon class="inline align-top mr-1" />
-                    Employee
-                  </li>
-                  <li
-                    class="px-5 py-2 rounded-lg hover:bg-lightBlue hover:cursor-pointer"
-                  >
-                    <EditIcon class="inline align-top mr-1" />
-                    Custom
-                  </li>
-                </ul>
-              </div>
-              <form class="flex">
-                <input
-                  type="text"
-                  class="h-full border border-primary rounded-l-lg pl-4 w-[350px]"
-                  placeholder="Search Certicate"
-                />
-                <button class="h-full bg-primary rounded-r-lg p-2">
-                  <Search />
-                </button>
-              </form>
-            </div>
-            <IconActionButton :buttonProps="buttonProp2" />
-          </div>
-          <div
-            class="pl-16 mr-4 pr-8 overflow-y-auto max-h-[calc(100%-268px)] gutter-stable"
-          >
-            <IssuersList
-              v-if="certificatesList.length > 0"
-              :issuersList="certificatesList"
+          <div>
+            <TheModal
+              :key="selectedTreeNode"
+              :issuer="selectedTreeNode"
+              @toggleSidebar="toggleSidebar"
+              v-if="selectedTreeNode && isSidebarOpen"
             />
-            <IssuerCardNoContent v-if="certificatesList.length === 0" />
+            <div class="px-16 flex justify-between mt-12 mb-6 items-end">
+              <div
+                class="w-full border border-primary px-5 py-3 rounded-lg bg-lightBlue flex justify-between"
+              >
+                <div class="flex items-center gap-1">
+                  <IssuerIcon class="w-6 h-6" />
+                  <span class="text-primary font-normal"> All Issuers </span>
+                </div>
+                <ChevronDown />
+              </div>
+            </div>
+            <div class="px-16 flex justify-between mt-8 mb-5 items-end">
+              <div class="flex gap-5">
+                <div
+                  class="border border-primary px-4 py-2 rounded-lg bg-lightBlue flex justify-between gap-2 items-center relative hover:cursor-pointer"
+                  @click="filterCertsIsOpen = !filterCertsIsOpen"
+                >
+                  <span class="font-normal"> All </span>
+                  <ChevronDown :class="{ 'rotate-180': filterCertsIsOpen }" />
+                  <ul
+                    class="absolute top-12 left-0 bg-white rounded-lg shadow-xl p-5 min-w-[264px]"
+                    v-if="filterCertsIsOpen"
+                  >
+                    <li
+                      class="px-5 py-2 rounded-lg hover:bg-lightBlue hover:cursor-pointer"
+                    >
+                      All
+                    </li>
+                    <li
+                      class="px-5 py-2 rounded-lg hover:bg-lightBlue hover:cursor-pointer"
+                    >
+                      <ShieldIcon class="inline align-top mr-1" />
+                      CA
+                    </li>
+                    <li
+                      class="px-5 py-2 rounded-lg hover:bg-lightBlue hover:cursor-pointer"
+                    >
+                      <PadlockerIcon class="inline align-top mr-1" />
+                      TLS Server
+                    </li>
+                    <li
+                      class="px-5 py-2 rounded-lg hover:bg-lightBlue hover:cursor-pointer"
+                    >
+                      <PersonIcon class="inline align-top mr-1" />
+                      Personal
+                    </li>
+                    <li
+                      class="px-5 py-2 rounded-lg hover:bg-lightBlue hover:cursor-pointer"
+                    >
+                      <BriefcaseIcon class="inline align-top mr-1" />
+                      Employee
+                    </li>
+                    <li
+                      class="px-5 py-2 rounded-lg hover:bg-lightBlue hover:cursor-pointer"
+                    >
+                      <EditIcon class="inline align-top mr-1" />
+                      Custom
+                    </li>
+                  </ul>
+                </div>
+                <form class="flex">
+                  <input
+                    type="text"
+                    class="h-full border border-primary rounded-l-lg pl-4 w-[350px]"
+                    placeholder="Search Certicate"
+                  />
+                  <button class="h-full bg-primary rounded-r-lg p-2">
+                    <Search />
+                  </button>
+                </form>
+              </div>
+              <IconActionButton :buttonProps="buttonProp2" />
+            </div>
+            <div
+              class="pl-16 mr-4 pr-8 overflow-y-auto max-h-[calc(100%-268px)] gutter-stable"
+            >
+              <IssuersList
+                v-if="certificatesList.length > 0"
+                :issuersList="certificatesList"
+              />
+              <IssuerCardNoContent
+                v-if="!isLoading && certificatesList.length === 0"
+              />
+            </div>
           </div>
         </template>
-        <CertificatesTab />
         <TheFooter class="absolute bottom-0 left-0 px-16" />
       </div>
     </div>
   </div>
 </template>
 <script setup>
+import { ref, onMounted, computed, shallowRef } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import AddFileIcon from '@/assets/icons/AddFileIcon.vue'
 import NavComponent from '@/components/NavComponent.vue'
 import api from '@/config/config'
@@ -175,8 +188,10 @@ import Issuer from '@/assets/icons/Issuer.vue'
 import Certificate from '../assets/icons/Certificate.vue'
 import IconActionButton from '@/components/buttons/IconActionButton.vue'
 import IconTextButton from '@/components/buttons/IconTextButton.vue'
+import TheTree from '@/components/TheTree.vue'
 import IssuersList from '@/components/IssuersList.vue'
 import IssuerCardNoContent from '@/components/IssuerCardNoContent.vue'
+import ImportFileIcon from '@/assets/icons/ImportFileIcon.vue'
 import TreeIcon from '@/assets/icons/TreeIcon.vue'
 import ChevronDown from '@/assets/icons/ChevronDown.vue'
 import Search from '@/assets/icons/Search.vue'
@@ -187,11 +202,17 @@ import PersonIcon from '@/assets/icons/PersonIcon.vue'
 import BriefcaseIcon from '@/assets/icons/BriefcaseIcon.vue'
 import EditIcon from '@/assets/icons/EditIcon.vue'
 import IssuerIcon from '@/assets/IssuerIcon.vue'
-import { onMounted, ref } from 'vue'
+import TheModal from '@/components/TheModal.vue'
+import StorageIcon from '@/assets/icons/StorageIcon.vue'
+import SubStorageIcon from '@/assets/icons/SubStorageIcon.vue'
+
 const cogIcon = CogIcon
 const apiIcon = ApiIcon
+const importFileIcon = ImportFileIcon
 const addFileIcon = AddFileIcon
 const treeIcon = TreeIcon
+const storageIcon = StorageIcon
+const subStorageIcon = SubStorageIcon
 const logo = {
   imgSrc: imgSrc,
   alt: 'Certeasy',
@@ -201,15 +222,54 @@ const certificatesList = ref([])
 const isLoading = ref(true)
 const activeTab = ref('issuers')
 const filterCertsIsOpen = ref(false)
+const router = useRouter()
+const route = useRoute()
 
-const buttonProp = {
-  id: 0,
-  text: 'All',
-  amount: 0,
-  active: false,
-  disabled: false,
-  query: '',
+const setActiveButton = (type) => {
+  filterButtons.value = filterButtons.value.map((item) => {
+    return { ...item, active: type === item.query ? true : false }
+  })
 }
+
+const currentRoute = computed(() => route.query.type)
+
+const filterButtons = shallowRef([
+  {
+    id: 0,
+    text: 'All',
+
+    active: false,
+    disabled: issuersList.value.length,
+    query: '',
+  },
+  {
+    id: 1,
+    icon: storageIcon,
+    iconAlt: 'storage',
+    text: 'Root',
+    active: false,
+    disabled: false,
+    query: 'ROOT',
+  },
+  {
+    id: 2,
+    icon: subStorageIcon,
+    iconAlt: 'sub-storage',
+    text: 'Sub',
+    active: false,
+    disabled: false,
+    query: 'SUB_CA',
+  },
+  {
+    id: 3,
+    icon: treeIcon,
+    iconAlt: 'tree',
+    text: 'Tree',
+    active: false,
+    disabled: false,
+    query: 'TREE',
+  },
+])
 
 const buttonProp2 = {
   id: 0,
@@ -217,21 +277,13 @@ const buttonProp2 = {
   text: 'New Root CA',
 }
 
-const buttonProp3 = {
-  id: 3,
-  icon: treeIcon,
-  iconAlt: 'tree',
-  text: 'Tree',
-  active: false,
-  disabled: false,
-  query: 'TREE',
-}
 const buttonProp4 = {
-  id: 0,
-  icon: addFileIcon,
-  text: 'New Root CA',
+  id: 1,
+  icon: importFileIcon,
+  text: 'Import CA',
   outlined: true,
 }
+
 const navLinks = [
   {
     id: 0,
@@ -249,9 +301,85 @@ const navLinks = [
   },
 ]
 
-const fetchIssuer = async (url) => {
+const fetchChildren = async (node) => {
   try {
-    isLoading.value = true
+    const res = await api.get(`issuers/${node.id}/children`)
+    const data = await res
+    node.children = data.data
+  } catch (error) {
+    console.error('Error fetching data', error)
+  }
+}
+
+function findNodeInTrees(nodes, targetId) {
+  for (const node of nodes) {
+    if (node.id === targetId) {
+      return node
+    } else if (node.children) {
+      const foundInChildren = findNodeInTrees(node.children, targetId)
+      if (foundInChildren) {
+        return foundInChildren
+      }
+    }
+  }
+  return null
+}
+
+const getChildren = (id) => {
+  const node = findNodeInTrees(issuersList.value, id)
+  fetchChildren(node)
+}
+
+const handleSelectNode = (id) => {
+  if (
+    selectedTreeNode.value &&
+    selectedTreeNode.value.id &&
+    selectedTreeNode.value.id !== id
+  ) {
+    unselectTreeNode()
+  }
+
+  if (
+    (currentRoute.value === 'TREE' && !selectedTreeNode.value) ||
+    (currentRoute.value === 'TREE' &&
+      selectedTreeNode.value &&
+      selectedTreeNode.value.id &&
+      selectedTreeNode.value.id !== id)
+  ) {
+    const node = findNodeInTrees(issuersList.value, id)
+    selectedTreeNode.value = node
+    node.active = true
+  }
+
+  if (!currentRoute.value) {
+    const node = issuersList.value.find((item) => item.id === id)
+    selectedTreeNode.value = node
+    node.active = true
+  } else if (currentRoute.value !== 'TREE') {
+    const node = issuersList.value.find((item) => item.id === id)
+    selectedTreeNode.value = node
+    node.active = true
+  }
+
+  if (!isSidebarOpen.value) {
+    toggleSidebar()
+  }
+}
+
+const navigateToRoute = async (query) => {
+  router.push({ name: 'issuers', query: query ? { type: query } : '' })
+  fetchIssuer(
+    `/issuers${
+      query ? (query === 'TREE' ? '?type=ROOT' : '?type=' + query) : ''
+    }`
+  )
+
+  setActiveButton(query)
+}
+
+const fetchIssuer = async (url) => {
+  isLoading.value = true
+  try {
     const res = await api.get(url)
     const data = await res
     issuersList.value = data.data
@@ -276,8 +404,17 @@ const fetchCertificates = async () => {
 }
 
 onMounted(() => {
-  fetchIssuer('/issuers')
+  fetchIssuer(
+    `/issuers${
+      currentRoute.value
+        ? currentRoute.value === 'TREE'
+          ? '?type=ROOT'
+          : '?type=' + currentRoute.value
+        : ''
+    }`
+  )
   fetchCertificates()
+  setActiveButton(route.query.type ? route.query.type : '')
 })
 </script>
 

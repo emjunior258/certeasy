@@ -19,7 +19,7 @@
             {{ issuer.name }}
           </h3>
           <span
-            class="rounded text-[0.5rem] py-1 px-2 bg-purple font-base capitalize w-fit leading-2"
+            class="rounded text-[0.5rem] font-medium py-1 px-2 bg-lightBlue capitalize w-fit leading-3"
             >{{ issuer.type }}</span
           >
         </div>

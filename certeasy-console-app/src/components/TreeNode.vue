@@ -1,21 +1,20 @@
 <template>
   <li
-    class="node-tab"
-    :class="isParent && 'node-parent-tab'"
+    :class="{ 'node-parent-tab': isParent, 'node-tab': item.type !== 'ROOT' }"
   >
     <div
-      class="flex items-center gap-[14px] font-light mb-1"
-      :class="{ 'ml-[30px]': !isParent }"
+      class="flex items-center gap-2 font-light mb-1"
+      :class="{ 'ml-8': !isParent }"
     >
       <span
         @click="toggle(item)"
-        class="border border-primary text-primary font-semibold rounded w-4 h-4 flex items-center justify-center"
+        class="border border-primary text-primary font-semibold rounded w-6 h-6 flex items-center justify-center"
         v-if="isParent"
-        >{{ item.isOpen ? "-" : "+" }}</span
+        >{{ item.isOpen ? '-' : '+' }}</span
       >
       <div
         @click="handleSelectNode(item)"
-        class="flex items-center gap-2 text-sm py-0.5"
+        class="flex items-center gap-2 text-sm py-0.5 text-text font-normal"
         :class="{
           'bg-primary-0.08': item.active,
           'border-primary-0.6': item.active,
@@ -29,7 +28,7 @@
         <img
           src="@/assets/avatar-placeholder.svg"
           alt="issuer"
-          class="h-4 w-4 rounded-[2px] border-primary-0.6"
+          class="h-6 w-6 rounded-[2px] border-primary-0.6"
         />
         {{ item.name }}
       </div>
@@ -50,37 +49,37 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref } from 'vue'
 
 const { item, getChildren, selectNode } = defineProps([
-  "item",
-  "getChildren",
-  "selectNode",
-]);
+  'item',
+  'getChildren',
+  'selectNode',
+])
 
-const isParent = ref(false);
+const isParent = ref(false)
 
 if (item.children_count && item.children_count > 0) {
-  isParent.value = true;
+  isParent.value = true
 }
 
 const toggle = (node) => {
   if (isParent.value) {
     if (!node.isOpen) {
-      node.isOpen = true;
+      node.isOpen = true
     } else {
-      node.isOpen = !node.isOpen;
+      node.isOpen = !node.isOpen
     }
   }
 
   if (isParent.value && !node.children) {
-    getChildren(node.id);
+    getChildren(node.id)
   }
-};
+}
 
 const handleSelectNode = (node) => {
-  selectNode(node.id);
-};
+  selectNode(node.id)
+}
 </script>
 
 <style scoped>
@@ -95,13 +94,13 @@ const handleSelectNode = (node) => {
   position: relative;
 }
 .root ul::before {
-  content: "";
+  content: '';
   position: absolute;
-  left: 8px;
-  top: -9px;
+  left: 12px;
+  top: -6px;
   width: 0;
   height: 100%;
-  border-left: 1px solid #c0c0c0;
+  border-left: 1px solid #0433bf;
   z-index: -2;
 }
 
@@ -110,28 +109,28 @@ const handleSelectNode = (node) => {
 }
 
 .node-tab::before {
-  content: "";
+  content: '';
   position: absolute;
-  left: -22px;
-  top: -4px;
-  width: 52px;
-  height: 16px;
-  border-left: 1px solid #c0c0c0;
-  border-bottom: 1px solid #c0c0c0;
+  left: -18px;
+  top: 4px;
+  width: 50px;
+  height: 11px;
+  border-left: 1px solid #0433bf;
+  border-bottom: 1px solid #0433bf;
   border-radius: 0 0 0 4px;
 }
 
 .node-parent-tab::before {
-  width: 22px;
+  width: 18px;
 }
 
 .root ul li:last-child:after {
-  content: "";
+  content: '';
   position: absolute;
   width: 1px;
-  left: -22px;
+  left: -18px;
   background: #fff;
-  top: 9px;
+  top: 4px;
   bottom: 0;
   z-index: -1;
 }

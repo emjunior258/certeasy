@@ -15,7 +15,7 @@
       :is="buttonProps.icon"
       class="inline mr-2 w-6 h-auto"
     />
-    {{ buttonProps.text }}
+    <span class="align-middle">{{ buttonProps.text }}</span>
   </button>
 </template>
 
