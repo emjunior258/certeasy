@@ -8,7 +8,7 @@
     >
       <span
         @click="toggle(item)"
-        class="border border-primary text-primary font-semibold rounded w-6 h-6 flex items-center justify-center"
+        class="border border-primary text-primary rounded w-6 h-6 flex items-center justify-center text-3xl font-light"
         v-if="isParent"
         >{{ item.isOpen ? '-' : '+' }}</span
       >
