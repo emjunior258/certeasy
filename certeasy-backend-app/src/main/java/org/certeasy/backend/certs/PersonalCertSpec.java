@@ -74,6 +74,16 @@ public class PersonalCertSpec extends GeographicCertSpec {
         validator.string("telephone", telephone)
                 .lengthGreaterThan(0)
                 .lengthLessThan(255);
+
+        if (emailAddresses != null && !emailAddresses.isEmpty()){
+            int index = 0;
+            for (String email : emailAddresses) {
+                validator.string(String.format("email_address[%d]", index), email)
+                        .lengthGreaterThan(0)
+                        .email()
+                        .lengthLessThan(255);
+            }
+        }
         return violationSet;
     }
 }
