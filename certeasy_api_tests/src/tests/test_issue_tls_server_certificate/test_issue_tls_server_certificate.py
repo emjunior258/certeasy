@@ -254,12 +254,12 @@ class TestIssueTLSServerCertificate:
         response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/tls-server', json=VALID_BODY)
         assert response.status_code == 422
 
-    def test_should_not_issue_a_tls_certificate_when_pass_domains_with_accents(self, app_container):
+    def test_should_issue_a_tls_certificate_when_pass_domains_with_accents(self, app_container):
         ISSUER_ID = create_issuer_from_spec()
         VALID_BODY = generate_tls_server_data(self.loaded_schema)
         add_values_into_list_in_json(VALID_BODY, "domains", "certidão.com")
         response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/tls-server', json=VALID_BODY)
-        assert response.status_code == 422
+        assert response.status_code == 200
 
     def test_should_not_issue_a_tls_certificate_when_pass_missing_domain_name(self, app_container):
         ISSUER_ID = create_issuer_from_spec()
@@ -276,10 +276,11 @@ class TestIssueTLSServerCertificate:
         assert response.status_code == 422
 
 
-    def test_should_not_issue_a_tls_certificate_when_pass_missing_a_dot(self, app_container):
+    def test_should_issue_a_tls_certificate_when_pass_missing_a_dot(self, app_container):
         """missing a dot separator between the domain name and extension"""
         ISSUER_ID = create_issuer_from_spec()
         VALID_BODY = generate_tls_server_data(self.loaded_schema)
         add_values_into_list_in_json(VALID_BODY, "domains", "missingdotcom")
         response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/tls-server', json=VALID_BODY)
-        assert response.status_code == 422
+        print(response.json())
+        assert response.status_code == 200

@@ -19,12 +19,14 @@ class TestListPersonalIssuedCerts:
         CERT_SERIAL, ISSUER_ID, CERT_NAME, CA_NAME = issue_personal_certs()
         PARAMS = {"type": "PERSONAL"}
         response = requests.get(url=f'{BASE_URL}/issuers/{ISSUER_ID}/certificates', params=PARAMS)
+        print(response.json())
         assert response.json()[0]["type"] == "PERSONAL"
 
     def test_should_return_correct_cert_name_when_get_issued_personal(self, app_container):
         CERT_SERIAL, ISSUER_ID, CERT_NAME, CA_NAME = issue_personal_certs()
         PARAMS = {"type": "PERSONAL"}
         response = requests.get(url=f'{BASE_URL}/issuers/{ISSUER_ID}/certificates', params=PARAMS)
+        print(response.json())
         assert response.json()[0]["name"] == CERT_NAME
 
     def test_should_return_correct_cert_serial_when_get_issued_personal(self, app_container):
@@ -32,12 +34,14 @@ class TestListPersonalIssuedCerts:
         PARAMS = {"type": "PERSONAL"}
         response = requests.get(url=f'{BASE_URL}/issuers/{ISSUER_ID}/certificates', params=PARAMS)
         print(response.json())
+        print(response.json())
         assert response.json()[0]["serial"] == CERT_SERIAL
 
     def test_should_not_return_issued_tls_server_details_when_pass_personal_type(self, app_container):
         CERT_SERIAL, ISSUER_ID, CERT_NAME, CA_NAME = issue_personal_certs()
         PARAMS = {"type": "TLS_SERVER"}
         response = requests.get(url=f'{BASE_URL}/issuers/{ISSUER_ID}/certificates', params=PARAMS)
+        print(response.json())
         print(response.json())
         assert len(response.json()) == 0
 

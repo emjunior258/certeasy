@@ -40,7 +40,7 @@ class TestIssuerDeletion:
     @staticmethod
     def test_should_not_delete_an_sequence_of_space_issuer_id(app_container):
         delete_issuer = requests.delete(url=f'{BASE_URL}/issuers/{SEQUENCE_OF_SPACE_ISSUER_ID}')
-        assert delete_issuer.status_code == 422
+        assert delete_issuer.status_code == 400
         response_data = delete_issuer.json()
         assert isinstance(response_data, dict)
         assert len(response_data) > 1

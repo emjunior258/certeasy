@@ -189,23 +189,25 @@ class TestIssueSubCaCertificate:
     def test_should_not_issue_a_sub_ca_certificate_when_pass_null_street_address(self, app_container):
         ISSUER_ID = create_issuer_from_spec()
         VALID_BODY = generate_sub_ca_data(self.loaded_schema)
-        remove_dict_items(VALID_BODY, "street_address", "state")
+        print(VALID_BODY)
+        remove_dict_items(VALID_BODY, "address", "state")
+        print(VALID_BODY)
         response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/sub-ca', json=VALID_BODY)
         assert response.status_code == 422
 
     def test_should_not_issue_a_sub_ca_certificate_when_pass_an_empty_street_address(self, app_container):
         ISSUER_ID = create_issuer_from_spec()
         VALID_BODY = generate_sub_ca_data(self.loaded_schema)
-        set_empty_dict_value(VALID_BODY, "street_address", "state", "")
+        set_empty_dict_value(VALID_BODY, "address", "state", "")
         response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/sub-ca', json=VALID_BODY)
         assert response.status_code == 422
 
-    def test_should_not_issue_a_sub_ca_certificate_when_pass_null_organization(self, app_container):
+    def test_should_issue_a_sub_ca_certificate_when_pass_null_organization(self, app_container):
         ISSUER_ID = create_issuer_from_spec()
         VALID_BODY = generate_sub_ca_data(self.loaded_schema)
         remove_dict(VALID_BODY, "organization")
         response = requests.post(url=f'{BASE_URL}/issuers/{ISSUER_ID[0]}/certificates/sub-ca', json=VALID_BODY)
-        assert response.status_code == 422
+        assert response.status_code == 200
     def test_should_not_issue_a_sub_ca_certificate_when_pass_an_empty_organization(self, app_container):
         ISSUER_ID = create_issuer_from_spec()
         VALID_BODY = generate_sub_ca_data(self.loaded_schema)

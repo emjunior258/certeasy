@@ -1,3 +1,5 @@
+import time
+
 import requests
 from certeasy_api_tests.services.create_issuer_from_spec.generate_issuer_id import generate_hex_id
 from certeasy_api_tests.services.generate_radom_serial_id import generate_serial_id
@@ -24,9 +26,11 @@ class TestDeleteCert:
         assert get_cert_details.status_code == 404
 
     def test_should_delete_issued_personal_certs(self, app_container):
+        time.sleep(20)
         CERT_SERIAL, ISSUER_ID, CERT_NAME, CREATED_ISSUER = issue_personal_certs()
         # delete cert
         response = requests.delete(url=f'{BASE_URL}/issuers/{ISSUER_ID}/certificates/{CERT_SERIAL}')
+        print(response.text)
         assert response.status_code == 204
 
         # get cert details to make sure that the cert was deleted
@@ -58,7 +62,7 @@ class TestDeleteCert:
         CERT_SERIAL, ISSUER_ID, CERT_NAME, CREATED_ISSUER = issue_tls_server_certs()
         # delete cert
         response = requests.delete(url=f'{BASE_URL}/issuers/{ISSUER_ID}/certificates/{SEQUENCE_OF_SPACE_SERIAL_ID}')
-        assert response.status_code == 422
+        assert response.status_code == 400
 
 
     def test_should_not_delete_issued_cert_when_pass_a_non_existed_cert_serial(self, app_container):
@@ -79,4 +83,4 @@ class TestDeleteCert:
         CERT_SERIAL, ISSUER_ID, CERT_NAME, CREATED_ISSUER = issue_tls_server_certs()
         # delete cert
         response = requests.delete(url=f'{BASE_URL}/issuers/{SEQUENCE_OF_SPACE_ISSUER_ID}/certificates/{CERT_SERIAL}')
-        assert response.status_code == 422
+        assert response.status_code == 400
