@@ -70,7 +70,7 @@ public class BouncyCastleCertGenerator implements CertificateGenerator {
         X500Name subjectName = toX500Name(spec.getSubject().getDistinguishedName());
 
         Date validityStartDate = Date.from(spec.getValidityPeriod().start().atTime(0,0).atZone(ZoneId.systemDefault()).toInstant());
-        Date validityEndDate = Date.from(spec.getValidityPeriod().start().atTime(23,59).atZone(ZoneId.systemDefault()).toInstant());
+        Date validityEndDate = Date.from(spec.getValidityPeriod().end().atTime(23,59).atZone(ZoneId.systemDefault()).toInstant());
 
         JcaX509v3CertificateBuilder builder = new JcaX509v3CertificateBuilder(issuerName, serialNumber, validityStartDate, validityEndDate,
                 subjectName, keyPair.getPublic());

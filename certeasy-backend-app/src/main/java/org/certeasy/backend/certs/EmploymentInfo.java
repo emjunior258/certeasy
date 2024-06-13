@@ -75,6 +75,7 @@ public class EmploymentInfo implements Validable {
                 .lengthLessThan(255);
         validator.string("email_address", emailAddress)
                 .lengthGreaterThan(0)
+                .email()
                 .lengthLessThan(255);
         validator.string("username", username)
                 .lengthGreaterThan(0)

@@ -1,14 +1,14 @@
 package org.certeasy.backend.certs;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.certeasy.backend.common.BaseCertSpec;
+import org.certeasy.backend.common.GeographicCertSpec;
 import org.certeasy.backend.common.validation.ValidationPath;
 import org.certeasy.backend.common.validation.Validator;
 import org.certeasy.backend.common.validation.Violation;
 
 import java.util.Set;
 
-public class PersonalCertSpec extends BaseCertSpec {
+public class PersonalCertSpec extends GeographicCertSpec {
 
     private String name;
     private String surname;
@@ -74,6 +74,16 @@ public class PersonalCertSpec extends BaseCertSpec {
         validator.string("telephone", telephone)
                 .lengthGreaterThan(0)
                 .lengthLessThan(255);
+
+        if (emailAddresses != null && !emailAddresses.isEmpty()){
+            int index = 0;
+            for (String email : emailAddresses) {
+                validator.string(String.format("email_address[%d]", index), email)
+                        .lengthGreaterThan(0)
+                        .email()
+                        .lengthLessThan(255);
+            }
+        }
         return violationSet;
     }
 }

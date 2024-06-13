@@ -26,7 +26,7 @@ public enum IssuedCertType {
             if(extendedKeyUsages.usages().contains(ExtendedKeyUsage.TLS_WEB_SERVER_AUTH))
                 matchedTypes.add(IssuedCertType.TLS_SERVER);
         });
-        if(matchedTypes.size() > 1)
+        if(matchedTypes.size() != 1)
             return IssuedCertType.CUSTOM;
         return matchedTypes.iterator().next();
     }
