@@ -29,7 +29,7 @@ def generate_expired_certs_with_ca():
     ).serial_number(x509.random_serial_number()).not_valid_before(
         datetime.utcnow() - timedelta(days=365)  # Set not_valid_before to the past
     ).not_valid_after(
-        datetime.utcnow() - timedelta(days=1)  # Set not_valid_after to the past
+        datetime.utcnow() - timedelta(days=200)  # Set not_valid_after to the past
     ).add_extension(
         x509.BasicConstraints(ca=True, path_length=None), critical=False,
     ).sign(private_key, hashes.SHA256(), default_backend())

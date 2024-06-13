@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.deser.DeserializationProblemHandler;
-import org.certeasy.backend.common.problem.ConstraintViolationProblem;
+import org.certeasy.backend.common.problem.UnprocessableEntityProblem;
 import org.certeasy.backend.common.problem.ProblemException;
 import org.certeasy.backend.common.validation.Violation;
 
@@ -14,7 +14,7 @@ public class JacksonDeserializationProblemHandler extends DeserializationProblem
 
     public boolean handleUnknownProperty(DeserializationContext ctxt, JsonParser p, JsonDeserializer<?> deserializer, Object beanOrClass, String propertyName) throws IOException {
         throw new ProblemException(
-                new ConstraintViolationProblem(
+                new UnprocessableEntityProblem(
                         new Violation( "body", "schema", "The request body contains properties that are not defined in the schema")
                 )
         );

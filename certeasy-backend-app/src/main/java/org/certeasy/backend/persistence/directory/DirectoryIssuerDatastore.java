@@ -67,7 +67,7 @@ public class DirectoryIssuerDatastore implements IssuerDatastore {
 
     @Override
     public Optional<StoredCert> getCert(String serial){
-        if(serial==null || serial.isEmpty())
+        if(serial==null || serial.isEmpty() || serial.isBlank())
             throw new IllegalArgumentException("serial MUST not be null nor empty");
         LOGGER.info("Getting certificate with serial {}", serial);
         this.scanIfNotYet();
@@ -81,7 +81,7 @@ public class DirectoryIssuerDatastore implements IssuerDatastore {
 
     @Override
     public void deleteCert(String serial){
-        if(serial==null || serial.isEmpty())
+        if(serial==null || serial.isEmpty() || serial.isBlank())
             throw new IllegalArgumentException("serial MUST not be null nor empty");
         LOGGER.info("Delete certificate with serial {}", serial);
         DirectoryStoredCert storedCert = (DirectoryStoredCert) cache.get(serial);
@@ -111,7 +111,7 @@ public class DirectoryIssuerDatastore implements IssuerDatastore {
 
     @Override
     public void putIssuerCertSerial(String serial) throws IssuerDatastoreException {
-        if(serial==null || serial.isEmpty())
+        if(serial==null || serial.isEmpty() || serial.isBlank())
             throw new IllegalArgumentException("serial MUST not be null nor empty");
         if(!serialFile.exists()){
             try {

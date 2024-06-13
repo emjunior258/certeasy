@@ -3,8 +3,9 @@ package org.certeasy.backend.issuer;
 import org.certeasy.*;
 import org.certeasy.backend.common.BaseResource;
 import org.certeasy.backend.common.CertPEM;
+import org.certeasy.backend.common.OrganizationInfo;
 import org.certeasy.backend.common.SubCaSpec;
-import org.certeasy.backend.common.problem.ConstraintViolationProblem;
+import org.certeasy.backend.common.problem.UnprocessableEntityProblem;
 import org.certeasy.backend.common.problem.ProblemResponse;
 import org.certeasy.backend.common.problem.ServerErrorProblem;
 import org.certeasy.backend.common.validation.ValidationPath;
@@ -38,7 +39,7 @@ public class IssuersResource extends BaseResource {
             try {
                 issuerType = IssuerType.valueOf(type);
             }catch (IllegalArgumentException ex){
-                ConstraintViolationProblem problem = new ConstraintViolationProblem(new Violation("query.type", ViolationType.ENUM, null, "type MUST be one of: "+ Arrays.toString(IssuerType.values())));
+                UnprocessableEntityProblem problem = new UnprocessableEntityProblem(new Violation("query.type", ViolationType.ENUM, null, "type MUST be one of: "+ Arrays.toString(IssuerType.values())));
                 return Response.status(422).entity(problem).build();
             }
         }
@@ -80,11 +81,8 @@ public class IssuersResource extends BaseResource {
     public Response createFromSpec(SubCaSpec spec){
         Set<Violation> violationSet = spec.validate(ValidationPath.of("body"));
         if(!violationSet.isEmpty())
-            return ProblemResponse.constraintViolations(violationSet);
-        CertificateAuthoritySubject subject = new CertificateAuthoritySubject(
-                spec.getName(),
-                spec.getGeographicAddressInfo().
-                        toGeographicAddress());
+            return ProblemResponse.unprocessableEntity(violationSet);
+        CertificateAuthoritySubject subject = getCertificateAuthoritySubject(spec);
         CertificateAuthoritySpec authoritySpec = new CertificateAuthoritySpec(subject, spec.getPathLength(),
                 KeyStrength.valueOf(spec.getKeyStrength()),
                 spec.getValidity().toDateRange());
@@ -97,13 +95,27 @@ public class IssuersResource extends BaseResource {
         }
     }
 
+    private static CertificateAuthoritySubject getCertificateAuthoritySubject(SubCaSpec spec) {
+        OrganizationInfo organizationInfo = spec.getOrganizationInfo();
+        String organizationName = null;
+        String organizationUnit = null;
+        if(organizationInfo != null) {
+            organizationName = organizationInfo.organizationName();
+            organizationUnit = organizationInfo.organizationUnit();
+        }
+        return new CertificateAuthoritySubject(
+                spec.getName(),
+                spec.getGeographicAddressInfo().
+                        toGeographicAddress(), organizationName, organizationUnit);
+    }
+
     @POST
     @Path("/cert-pem")
     public Response createFromPem(CertPEM pem){
         Set<Violation> violationSet = pem.validate(ValidationPath.of("body"));
         if(!violationSet.isEmpty()) {
             LOGGER.debug(String.format("%d constraint violations found", violationSet.size()));
-            return ProblemResponse.constraintViolations(violationSet);
+            return ProblemResponse.unprocessableEntity(violationSet);
         }
         try{
             Certificate certificate = context().pemCoder().decodeCertificate(pem.certFile(),
@@ -111,7 +123,7 @@ public class IssuersResource extends BaseResource {
             BasicConstraints basicConstraints = certificate.getBasicConstraints();
             if(basicConstraints==null || !basicConstraints.ca()) {
                 LOGGER.debug("Basic constraints extension missing on certificate");
-                return Response.status(422).entity(new ConstraintViolationProblem(
+                return Response.status(422).entity(new UnprocessableEntityProblem(
                         new Violation("body.pem.cert_file", ViolationType.STATE,
                                 "not_ca", "cert_file is does not have CA basic constraint"
                         ))).build();
@@ -120,23 +132,22 @@ public class IssuersResource extends BaseResource {
             DateRange dateRange = certificate.getValidityPeriod();
             //Expired already
             if(dateRange.end().isBefore(LocalDate.now())){
-                return Response.status(422).entity(new ConstraintViolationProblem(
+                return Response.status(422).entity(new UnprocessableEntityProblem(
                         new Violation("body.pem.cert_file", ViolationType.STATE,
                                 "expired", "certificate has already expired"
                         ))).build();
             }
-
             CertIssuer issuer = registry().add(certificate);
             return Response.ok(new CreatedIssuerInfo(issuer.getId())).build();
         }catch (IllegalCertPemException ex) {
             LOGGER.debug("Certificate not a valid PEM", ex);
-            return Response.status(422).entity(new ConstraintViolationProblem(
+            return Response.status(422).entity(new UnprocessableEntityProblem(
                     new Violation("body.pem.cert_file", ViolationType.FORMAT,
                             "cert_file is NOT a valid PEM encoded certificate"
                     ))).build();
         }catch (IllegalPrivateKeyPemException ex){
             LOGGER.debug("Key not a valid PEM", ex);
-            return Response.status(422).entity(new ConstraintViolationProblem(
+            return Response.status(422).entity(new UnprocessableEntityProblem(
                     new Violation("body.pem.key_file", ViolationType.FORMAT,
                             "key_file is NOT a valid PEM encoded private key"
                     ))).build();

@@ -1,0 +1,18 @@
+{
+  "name": "my-sub-ca-name",
+  "key_strength": "certificate-key-strength",
+  "validity": {
+        "from": "validity-from",
+        "until": "validity-until"
+    },
+  "address": {
+        "country": "address-country",
+        "state": "address-state",
+        "locality": "address-locality",
+        "street_address": "street-address"
+    },
+  "organization": {
+    "organization_name": "organization-name",
+    "organization_unit": "organization-unit"
+  }
+}

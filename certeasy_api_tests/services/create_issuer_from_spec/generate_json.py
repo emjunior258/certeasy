@@ -1,6 +1,7 @@
 import json
 import os
-from certeasy_api_tests.services.create_issuer_from_spec.generate_json_values import generate_name, generate_key_strength, generate_path_length, \
+from certeasy_api_tests.services.create_issuer_from_spec.generate_json_values import generate_name, \
+    generate_key_strength, generate_path_length, \
     generate_validity, \
     generate_address
 
@@ -45,12 +46,3 @@ def load_schema(schema_path):
     with open(absolute_schema_path, "r") as schema_file:
         schema = json.load(schema_file)
     return schema
-
-
-# modify_json_values(generated_json, "from", None)
-# modify_json_values(generated_json, "key_strength", "     ")
-# modify_dict_in_json(generated_json, "address")
-# remove_key_from_dict(generated_json, "address")
-# remove_dict_items(generated_json, "validity", "until")
-
-

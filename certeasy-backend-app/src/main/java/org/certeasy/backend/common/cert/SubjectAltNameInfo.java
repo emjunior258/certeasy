@@ -17,4 +17,5 @@ public record SubjectAltNameInfo(SubjectAlternativeNameType type, String value) 
         this(name.type(), name.value());
     }
 
+
 }

@@ -13,6 +13,16 @@ def turn_empty_dict_in_json(json_data, key):
         json_data[key] = {}
 
 
+def turn_empty_list_in_json(json_data, key):
+    if key in json_data and isinstance(json_data[key], list):
+        json_data[key] = []
+
+
+def add_values_into_list_in_json(json_data, key, values):
+    if key in json_data and isinstance(json_data[key], list):
+        json_data[key] = [values]
+
+
 def remove_dict(json_data, key_to_remove):
     if key_to_remove in json_data:
         del json_data[key_to_remove]

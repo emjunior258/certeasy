@@ -1,12 +1,13 @@
 import requests
-from certeasy_api_tests.services.file_reader import file_reader
+
 from certeasy_api_tests.services.create_issuer_from_spec.generate_json import generate_issuer_json
 from certeasy_api_tests.services.create_issuer_from_spec.generate_json_values import generate_invalid_validity_dates
 from certeasy_api_tests.services.create_issuer_from_spec.modify_issuer_spec import modify_json_values, \
     turn_empty_dict_in_json, remove_dict, \
     set_empty_dict_value, remove_dict_items
-from certeasy_api_tests.src.config import BASE_URL
+from certeasy_api_tests.services.file_reader import file_reader
 from certeasy_api_tests.services.start_docker_image import app_container
+from certeasy_api_tests.src.config import BASE_URL
 
 
 class TestCreateIssuerFromSpec:

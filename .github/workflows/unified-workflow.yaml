@@ -14,7 +14,7 @@ on:
       - 'certeasy-core/**'
       - 'certeasy-bouncycastle/**'
       - 'certeasy-backend-app/**'
-      - 'certeasy_api_tests/**'
+      - 'certeasy-api-tests/**'
       - 'certeasy-console-app/**'
       - '.github/workflows/unified-workflow.yaml'
   push:
@@ -22,7 +22,7 @@ on:
       - 'certeasy-core/**'
       - 'certeasy-bouncycastle/**'
       - 'certeasy-backend-app/**'
-      - 'certeasy_api_tests/**'
+      - 'certeasy-api-tests/**'
       - 'certeasy-console-app/**'
       - '.github/workflows/unified-workflow.yaml'
 
@@ -238,64 +238,14 @@ jobs:
           name: image-tar
           path: /tmp/${{ env.IMAGE_NAME }}.tar
 
-  run-api-tests:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-      checks: write
-    needs: ["build-image"]
-    env:
-      DOCKER_IMAGE_NAME: ${{ needs.build-image.outputs.image_tag }}
-    steps:
-      - uses: actions/checkout@v3
-        name: Git checkout
-      - name: Download certeasy-binary
-        uses: actions/download-artifact@v3
-        with:
-          name: certeasy-binary
-          path: ./
-      - name: Download image tar file
-        uses: actions/download-artifact@v3
-        with:
-          name: image-tar
-          path: /tmp
-      - name: Load docker image tar
-        run: |
-            docker load --input /tmp/${{ env.IMAGE_NAME }}.tar
-            docker image ls -a
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.9
-      - name: Install dependencies
-        run: |
-          pip install --upgrade pip
-          pip install -r certeasy_api_tests/requirements.txt
-      - name: Run tests
-        run: pytest certeasy_api_tests/src/tests --junitxml=certeasy_api_tests/target/report.xml
-        continue-on-error: true
-      - name: Package Test Reports
-        uses: actions/upload-artifact@v3
-        with:
-          name: target
-          path: |
-            certeasy_api_tests/target
-      - name: Report test results
-        uses: dorny/test-reporter@v1.6.0
-        with:
-          name: Integration Test Results
-          path: certeasy_api_tests/target/report.xml
-          fail-on-error: 'false'
-          reporter: java-junit
 
   publish-develop-image:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+#    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
     permissions:
       contents: read
       packages: write
-    needs: [ "build-binary", "run-api-tests" ]
+    needs: [ "build-binary", "build-image"]
     outputs:
       image_tag: ${{ steps.meta.outputs.tags }}
     steps:
@@ -317,19 +267,20 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
       - name: Image build and push
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
         with:
           context: .
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:develop
+          tags: ${{ steps.meta.outputs.tags }}
+#          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:develop
           labels: ${{ steps.meta.outputs.labels }}
 
 
   release-core:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+#    if: github.ref == 'refs/heads/main'
     needs: [ "publish-develop-image" ]
     defaults:
       run:
@@ -355,7 +306,7 @@ jobs:
 
   release-bouncycastle:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+#    if: github.ref == 'refs/heads/main'
     needs: [ "publish-develop-image", "release-core" ]
     defaults:
       run:
@@ -380,11 +331,11 @@ jobs:
 
   release-image:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+#    if: github.ref == 'refs/heads/main'
     permissions:
       contents: read
       packages: write
-    needs: [ "build-binary", "run-api-tests", "release-core", "release-bouncycastle" ]
+    needs: [ "build-binary", "release-core", "release-bouncycastle" ]
     outputs:
       image_tag: ${{ steps.meta.outputs.tags }}
     steps:

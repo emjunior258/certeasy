@@ -15,8 +15,6 @@ import org.certeasy.backend.common.CertPEM;
 import org.certeasy.backend.common.SubCaSpec;
 import org.certeasy.backend.common.cert.CertValidity;
 import org.certeasy.backend.common.cert.GeographicAddressInfo;
-import org.certeasy.backend.common.problem.ConstraintViolationProblem;
-import org.certeasy.backend.common.validation.Violation;
 import org.certeasy.backend.persistence.IssuerRegistry;
 import org.certeasy.backend.persistence.MapIssuerRegistry;
 import org.certeasy.backend.persistence.MemoryPersistenceProfile;
@@ -125,23 +123,27 @@ class IssuersResourceTest extends BaseRestTest {
     @DisplayName("deleteIssuer() must fail when issuer empty")
     void deleteIssuer_must_fail_when_issuer_empty(){
 
-        given().delete("/dummy")
-                .then()
-                .statusCode(404);
-        given().delete("/DUMMY")
-                .then()
-                .statusCode(422)
-                .body("violations[0].message", containsString("issuerId does not match regular expression"));
-
-        given().delete(" ")
-                .then()
-                .statusCode(405)
-                .log().all();
-
         given().delete()
                 .then()
                 .statusCode(405)
                 .log().all();
+
+    }
+
+
+    @Test
+    @DisplayName("deleteIssuer() must fail when issuerId does not match Regex")
+    void deleteIssuer_must_fail_when_issuerId_does_not_match_regex(){
+
+        given().delete("/dummy")
+                .then()
+                .statusCode(404);
+
+        given().delete("/DUMMY")
+                .then()
+                .statusCode(400)
+                .body("violation.message", containsString("path.issuerId does not match regular expression"));
+
 
     }
 
@@ -240,10 +242,10 @@ class IssuersResourceTest extends BaseRestTest {
                 .post("/cert-pem")
                 .then()
                 .statusCode(422)
-                .body("type", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getType()))
-                .body("title", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getTitle()))
-                .body("detail", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getDetail()))
-                .body("status", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getStatus()))
+                .body("type", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getType()))
+                .body("title", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getTitle()))
+                .body("detail", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getDetail()))
+                .body("status", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getStatus()))
                 .body("violations", hasSize(1))
                 .body("violations[0].field", equalTo("body.pem.cert_file"))
                 .body("violations[0].type", equalTo("state"))
@@ -267,10 +269,10 @@ class IssuersResourceTest extends BaseRestTest {
                 .post("/cert-pem")
                 .then()
                 .statusCode(422)
-                .body("type", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getType()))
-                .body("title", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getTitle()))
-                .body("detail", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getDetail()))
-                .body("status", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getStatus()))
+                .body("type", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getType()))
+                .body("title", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getTitle()))
+                .body("detail", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getDetail()))
+                .body("status", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getStatus()))
                 .body("violations", hasSize(1))
                 .body("violations[0].field", equalTo("body.pem.cert_file"))
                 .body("violations[0].type", equalTo("format"))
@@ -294,10 +296,10 @@ class IssuersResourceTest extends BaseRestTest {
                 .post("/cert-pem")
                 .then()
                 .statusCode(422)
-                .body("type", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getType()))
-                .body("title", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getTitle()))
-                .body("detail", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getDetail()))
-                .body("status", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getStatus()))
+                .body("type", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getType()))
+                .body("title", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getTitle()))
+                .body("detail", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getDetail()))
+                .body("status", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getStatus()))
                 .body("violations", hasSize(1))
                 .body("violations[0].field", equalTo("body.pem.key_file"))
                 .body("violations[0].type", equalTo("format"))
@@ -352,9 +354,9 @@ class IssuersResourceTest extends BaseRestTest {
                 .post("/cert-pem")
                 .then()
                 .statusCode(422)
-                .body("type", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getType()))
-                .body("title", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getTitle()))
-                .body("status", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getStatus()))
+                .body("type", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getType()))
+                .body("title", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getTitle()))
+                .body("status", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getStatus()))
                 .extract().body().jsonPath().setRootPath("violations[0]");
 
 
@@ -435,10 +437,10 @@ class IssuersResourceTest extends BaseRestTest {
                 .post("/cert-spec")
                 .then()
                 .statusCode(422)
-                .body("type", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getType()))
-                .body("title", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getTitle()))
-                .body("detail", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getDetail()))
-                .body("status", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getStatus()))
+                .body("type", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getType()))
+                .body("title", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getTitle()))
+                .body("detail", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getDetail()))
+                .body("status", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getStatus()))
                 .body("violations", hasSize(1))
                 .body("violations[0].field", equalTo("body.validity"))
                 .body("violations[0].type", equalTo("required"))
@@ -465,10 +467,10 @@ class IssuersResourceTest extends BaseRestTest {
                 .post("/cert-spec")
                 .then()
                 .statusCode(422)
-                .body("type", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getType()))
-                .body("title", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getTitle()))
-                .body("detail", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getDetail()))
-                .body("status", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getStatus()))
+                .body("type", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getType()))
+                .body("title", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getTitle()))
+                .body("detail", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getDetail()))
+                .body("status", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getStatus()))
                 .body("violations", hasSize(1))
                 .body("violations[0].field", equalTo("body.validity.until"))
                 .body("violations[0].type", equalTo("state"))
@@ -495,10 +497,10 @@ class IssuersResourceTest extends BaseRestTest {
                 .post("/cert-spec")
                 .then()
                 .statusCode(422)
-                .body("type", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getType()))
-                .body("title", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getTitle()))
-                .body("detail", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getDetail()))
-                .body("status", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getStatus()))
+                .body("type", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getType()))
+                .body("title", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getTitle()))
+                .body("detail", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getDetail()))
+                .body("status", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getStatus()))
                 .body("violations", hasSize(1))
                 .body("violations[0].field", equalTo("body.key_strength"))
                 .body("violations[0].type", equalTo("required"))
@@ -524,10 +526,10 @@ class IssuersResourceTest extends BaseRestTest {
                 .post("/cert-spec")
                 .then()
                 .statusCode(422)
-                .body("type", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getType()))
-                .body("title", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getTitle()))
-                .body("detail", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getDetail()))
-                .body("status", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getStatus()))
+                .body("type", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getType()))
+                .body("title", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getTitle()))
+                .body("detail", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getDetail()))
+                .body("status", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getStatus()))
                 .body("violations", hasSize(1))
                 .body("violations[0].field", equalTo("body.address"))
                 .body("violations[0].type", equalTo("required"))
@@ -555,10 +557,10 @@ class IssuersResourceTest extends BaseRestTest {
                 .post("/cert-spec")
                 .then()
                 .statusCode(422)
-                .body("type", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getType()))
-                .body("title", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getTitle()))
-                .body("detail", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getDetail()))
-                .body("status", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getStatus()))
+                .body("type", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getType()))
+                .body("title", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getTitle()))
+                .body("detail", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getDetail()))
+                .body("status", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getStatus()))
                 .body("violations", hasSize(1))
                 .body("violations[0].field", equalTo("body.path_length"))
                 .body("violations[0].type", equalTo("range"))
@@ -584,10 +586,10 @@ class IssuersResourceTest extends BaseRestTest {
                 .post("/cert-spec")
                 .then()
                 .statusCode(422)
-                .body("type", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getType()))
-                .body("title", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getTitle()))
-                .body("detail", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getDetail()))
-                .body("status", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getStatus()))
+                .body("type", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getType()))
+                .body("title", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getTitle()))
+                .body("detail", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getDetail()))
+                .body("status", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getStatus()))
                 .body("violations", hasSize(1))
                 .body("violations[0].field", equalTo("body.name"))
                 .body("violations[0].type", equalTo("required"))
@@ -601,10 +603,10 @@ class IssuersResourceTest extends BaseRestTest {
                 .post("/cert-spec")
                 .then()
                 .statusCode(422)
-                .body("type", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getType()))
-                .body("title", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getTitle()))
-                .body("detail", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getDetail()))
-                .body("status", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getStatus()))
+                .body("type", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getType()))
+                .body("title", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getTitle()))
+                .body("detail", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getDetail()))
+                .body("status", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getStatus()))
                 .body("violations", hasSize(1))
                 .body("violations[0].field", equalTo("body.name"))
                 .body("violations[0].type", equalTo("required"))
@@ -621,10 +623,10 @@ class IssuersResourceTest extends BaseRestTest {
                 .post("/cert-spec")
                 .then()
                 .statusCode(422)
-                .body("type", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getType()))
-                .body("title", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getTitle()))
-                .body("detail", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getDetail()))
-                .body("status", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getStatus()))
+                .body("type", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getType()))
+                .body("title", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getTitle()))
+                .body("detail", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getDetail()))
+                .body("status", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getStatus()))
                 .body("violations", hasSize(1))
                 .body("violations[0].field", equalTo("body.name"))
                 .body("violations[0].type", equalTo("length"))
@@ -716,10 +718,10 @@ class IssuersResourceTest extends BaseRestTest {
                 .queryParam("type", "Garbage")
                 .get().then()
                 .statusCode(422)
-                .body("type", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getType()))
-                .body("title", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getTitle()))
-                .body("detail", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getDetail()))
-                .body("status", equalTo(ProblemTemplate.CONSTRAINT_VIOLATION.getStatus()))
+                .body("type", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getType()))
+                .body("title", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getTitle()))
+                .body("detail", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getDetail()))
+                .body("status", equalTo(ProblemTemplate.UNPROCESSABLE_ENTITY.getStatus()))
                 .body("violations", hasSize(1))
                 .body("violations[0].field", equalTo("query.type"))
                 .body("violations[0].type", equalTo("enum"))

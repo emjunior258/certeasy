@@ -7,7 +7,7 @@ import org.certeasy.backend.common.validation.ViolationType;
 
 import java.util.Set;
 
-public abstract class BaseCaCertSpec extends BaseCertSpec {
+public abstract class BaseCaCertSpec extends GeographicCertSpec {
 
     @JsonProperty("path_length")
     private int pathLength;
