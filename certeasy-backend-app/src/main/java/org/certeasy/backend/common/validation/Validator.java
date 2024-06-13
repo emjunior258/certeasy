@@ -73,7 +73,7 @@ public class Validator {
         }
 
         public StringValidation email() {
-            final Pattern emailPattern = Pattern.compile("^[a-zA-Z0-9_+&*-] + (?:\\\\.[a-zA-Z0-9_+&*-] + )*@(?:[a-zA-Z0-9-]+\\\\.) + [a-zA-Z]{2,7}");
+            final Pattern emailPattern = Pattern.compile("^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$");
             if(value != null &&  !emailPattern.matcher(value).matches())
                 Validator.this.violations.add(new Violation(path, fieldName, ViolationType.FORMAT, "must have a valid format"));
             return this;

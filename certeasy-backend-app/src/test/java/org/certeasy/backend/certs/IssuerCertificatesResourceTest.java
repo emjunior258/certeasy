@@ -551,7 +551,7 @@ class IssuerCertificatesResourceTest extends BaseRestTest {
 
 
         Set<Violation> violations = problem.getViolations();
-        assertEquals(4, violations.size());
+        assertEquals(5, violations.size());
 
         Violation organizationNameViolation = violations.stream().filter(it -> it.field().equals("body.employment.organization_name")).findAny().orElseThrow();
         assertEquals("organization_name must have length greater than 0", organizationNameViolation.message());
