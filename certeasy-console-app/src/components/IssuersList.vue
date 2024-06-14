@@ -10,10 +10,10 @@
   </ul>
 </template>
 <script setup>
-import IssuerCard from "@/components/IssuerCard.vue";
-const { selectNode } = defineProps(["issuersList", "selectNode"]);
+import IssuerCard from '@/components/IssuerCard.vue'
+const { selectNode } = defineProps(['issuersList', 'selectNode'])
 
 const handleSelectNode = (id) => {
-  selectNode(id);
-};
+  selectNode(id)
+}
 </script>

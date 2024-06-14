@@ -70,6 +70,7 @@
             <IssuersList
               v-if="issuersList.length > 0 && currentRoute !== 'TREE'"
               :issuersList="issuersList"
+              :selectNode="handleSelectNode"
             />
             <IssuerCardNoContent
               v-if="!isLoading && issuersList.length === 0"
@@ -168,6 +169,25 @@
             />
           </div>
         </template>
+        <section>
+          <Transition name="slide">
+            <TheSidebar
+              :key="selectedTreeNode"
+              :issuer="selectedTreeNode"
+              @toggleSidebar="toggleSidebar"
+              v-if="selectedTreeNode && isSidebarOpen"
+            />
+          </Transition>
+          <!-- <Transition name="slide">
+            <ConfirmDialog
+              :key="1"
+              :certId="1"
+              @toggleDialog="toggleDialog"
+              @deleteCert="deleteCert"
+              v-if="selectedTreeNode && isSidebarOpen"
+            />
+          </Transition> -->
+        </section>
         <TheFooter class="absolute bottom-0 left-0 px-16" />
       </div>
     </div>
@@ -203,6 +223,8 @@ import IssuerIcon from '@/assets/IssuerIcon.vue'
 import TheModal from '@/components/TheModal.vue'
 import StorageIcon from '@/assets/icons/StorageIcon.vue'
 import SubStorageIcon from '@/assets/icons/SubStorageIcon.vue'
+import TheSidebar from '@/components/TheSidebar.vue'
+import ConfirmDialog from '@/components/ConfirmDialog.vue'
 
 const cogIcon = CogIcon
 const apiIcon = ApiIcon
@@ -217,11 +239,40 @@ const logo = {
 }
 const issuersList = ref([])
 const certificatesList = ref([])
+const isSidebarOpen = ref(false)
 const isLoading = ref(true)
 const activeTab = ref('issuers')
 const filterCertsIsOpen = ref(false)
 const router = useRouter()
 const route = useRoute()
+const selectedTreeNode = ref(null)
+const isDialogOpen = ref(false)
+
+const toggleSidebar = () => {
+  isSidebarOpen.value = !isSidebarOpen.value
+  if (selectedTreeNode && !isSidebarOpen.value) {
+    unselectTreeNode()
+    selectedTreeNode.value = null
+  }
+}
+
+const toggleDialog = () => {
+  isDialogOpen.value = !isDialogOpen.value
+}
+
+const deleteCert = (certId, serial) => {
+  isDialogOpen.value = !isDialogOpen.value
+}
+
+const unselectTreeNode = () => {
+  let node
+  if (selectedTreeNode.value)
+    node = findNodeInTrees(issuersList.value, selectedTreeNode.value.id)
+  if (node) delete node.active
+  issuersList.value.forEach((item) => {
+    delete item.active
+  })
+}
 
 const setActiveButton = (type) => {
   filterButtons.value = filterButtons.value.map((item) => {
@@ -421,16 +472,18 @@ onMounted(() => {
   height: calc(100vh - 68px);
 }
 .slide-enter-active {
-  transition: transform 0.8s ease-in-out;
+  transition: all 0.3s ease-in-out;
 }
 
 .slide-leave-active {
-  transition: transform 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
+  transition-delay: 0.25s;
 }
 
 .slide-enter-from,
 .slide-leave-to {
-  transform: translate(500px);
+  transform: translateY(30px);
+  opacity: 0;
 }
 
 .gutter-stable {

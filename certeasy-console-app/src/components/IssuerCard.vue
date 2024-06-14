@@ -1,13 +1,13 @@
 <template>
   <li
-    class="border border-gray-200 rounded-lg shadow-xs px-5 py-3 mb-2 hover:text-primary"
+    class="border border-gray-200 rounded-lg shadow-xs px-5 py-3 mb-2 hover:bg-lightBlue60 cursor-pointer"
     :class="true && 'shadow-xs'"
+    @click="handleSelectNode(issuer)"
   >
     <div class="flex justify-between">
       <div
-        class="flex gap-6 cursor-pointer"
+        class="flex gap-6"
         :class="true && 'text-primary'"
-        @click="handleSelectNode(issuer)"
       >
         <img
           src="../assets/avatar-placeholder.svg"
@@ -31,7 +31,10 @@
             alt="download"
           />
         </button>
-        <button class="rounded border-red-0.6 bg-red-light">
+        <button
+          class="rounded border-red-0.6 bg-red-light relative z-5"
+          @click="console.log('log')"
+        >
           <img
             src="../assets/icons/trash.svg"
             alt="delete"
@@ -43,10 +46,9 @@
 </template>
 
 <script setup>
-const { issuer } = defineProps(['issuer'])
-// const { selectNode } = defineProps(["selectNode", "issuer"]);
+const { selectNode, issuer } = defineProps(['selectNode', 'issuer'])
 
-// const handleSelectNode = (node) => {
-//   selectNode(node.id);
-// };
+const handleSelectNode = (node) => {
+  selectNode(node.id)
+}
 </script>

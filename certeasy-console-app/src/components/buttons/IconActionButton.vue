@@ -1,6 +1,6 @@
 <template>
   <button
-    class="rounded-lg py-3 px-6 font-normal leading-4 text-base"
+    class="rounded-lg py-[6px] px-2 font-normal leading-4 text-base"
     :class="{
       'text-white': !buttonProps.outlined,
       'text-primary': buttonProps.outlined,
@@ -13,7 +13,11 @@
   >
     <component
       :is="buttonProps.icon"
-      class="inline mr-2 w-6 h-auto"
+      :class="{
+        'w-[14px]': buttonProps.iconSize,
+        'h-[14px]': buttonProps.iconSize,
+      }"
+      class="inline mr-2 h-auto w-6"
     />
     <span class="align-middle">{{ buttonProps.text }}</span>
   </button>
