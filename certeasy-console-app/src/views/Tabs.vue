@@ -71,6 +71,7 @@
               v-if="issuersList.length > 0 && currentRoute !== 'TREE'"
               :issuersList="issuersList"
               :selectNode="handleSelectNode"
+              :deleteIssuer="toggleConfirm"
             />
             <IssuerCardNoContent
               v-if="!isLoading && issuersList.length === 0"
@@ -175,18 +176,19 @@
               :key="selectedTreeNode"
               :issuer="selectedTreeNode"
               @toggleSidebar="toggleSidebar"
+              @deleteIssuer="toggleConfirm"
               v-if="selectedTreeNode && isSidebarOpen"
             />
           </Transition>
-          <!-- <Transition name="slide">
+          <Transition name="slide">
             <ConfirmDialog
               :key="1"
               :certId="1"
-              @toggleDialog="toggleDialog"
+              @toggleDialog="toggleConfirm"
               @deleteCert="deleteCert"
-              v-if="selectedTreeNode && isSidebarOpen"
+              v-if="isDialogOpen"
             />
-          </Transition> -->
+          </Transition>
         </section>
         <TheFooter class="absolute bottom-0 left-0 px-16" />
       </div>
@@ -255,13 +257,37 @@ const toggleSidebar = () => {
     selectedTreeNode.value = null
   }
 }
-
-const toggleDialog = () => {
+const toggleConfirm = (id) => {
   isDialogOpen.value = !isDialogOpen.value
+  if (isDialogOpen.value) {
+    if (!selectedTreeNode.value) {
+      selectedTreeNode.value = { id }
+    }
+  } else {
+    const countProps = Object.keys(selectedTreeNode.value).length
+    if (countProps === 1) {
+      unselectTreeNode()
+    }
+  }
 }
-
-const deleteCert = (certId, serial) => {
-  isDialogOpen.value = !isDialogOpen.value
+const deleteCert = async () => {
+  isLoading.value = true
+  try {
+    await api.delete(`/issuers/${selectedTreeNode.value.id}`)
+    await fetchIssuer(
+      `/issuers${
+        currentRoute.value
+          ? currentRoute.value === 'TREE'
+            ? '?type=ROOT'
+            : '?type=' + currentRoute.value
+          : ''
+      }`
+    )
+  } catch (error) {
+    console.error('Error fetching issuer', error)
+  } finally {
+    isLoading.value = false
+  }
 }
 
 const unselectTreeNode = () => {
@@ -416,8 +442,9 @@ const handleSelectNode = (id) => {
 }
 
 const navigateToRoute = async (query) => {
+  toggleSidebar()
   router.push({ name: 'issuers', query: query ? { type: query } : '' })
-  fetchIssuer(
+  await fetchIssuer(
     `/issuers${
       query ? (query === 'TREE' ? '?type=ROOT' : '?type=' + query) : ''
     }`

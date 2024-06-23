@@ -1,67 +1,70 @@
 <template>
-  <div
-    class="shadow-md w-[560px] h-fit max-h-[80%] max-w-[50%] fixed top-[50%] right-[50%] translate-x-[50%] translate-y-[-50%] bg-white z-50 overflow-y-auto rounded-lg"
-  >
-    <div class="p-8">
-      <button
-        @click="$emit('toggleSidebar')"
-        class="cursor-pointer text-primary text-md block ml-auto mb-3"
-      >
-        <CloseIcon />
-      </button>
-      <div class="flex justify-between items-center">
-        <span>
-          <img
-            src="@/assets/avatar-placeholder.svg"
-            alt="avatar"
-            class="w-[24px] h-[24px] rounded inline-block align-middle mr-2"
+  <div class="fixed top-0 left-0 w-screen h-screen z-50">
+    <div
+      class="shadow-md w-[560px] h-fit max-h-[80%] max-w-[50%] fixed top-[50%] right-[50%] translate-x-[50%] translate-y-[-50%] bg-white z-50 overflow-y-auto rounded-lg"
+    >
+      <div class="p-8">
+        <button
+          @click="$emit('toggleSidebar')"
+          class="cursor-pointer text-primary text-md block ml-auto mb-3"
+        >
+          <CloseIcon />
+        </button>
+        <div class="flex justify-between items-center">
+          <span>
+            <img
+              src="@/assets/avatar-placeholder.svg"
+              alt="avatar"
+              class="w-[24px] h-[24px] rounded inline-block align-middle mr-2"
+            />
+            <h2
+              class="text-base text-text font-semibold mb-1 inline align-middle"
+            >
+              {{ issuer && issuer.name }}
+            </h2>
+          </span>
+        </div>
+        <div class="flex items-center gap-3 mt-2 mb-4">
+          <TheBadge
+            :text="issuer && issuer.type === 'SUB_CA' ? 'SUB' : issuer.type"
           />
-          <h2
-            class="text-base text-text font-semibold mb-1 inline align-middle"
-          >
-            {{ issuer && issuer.name }}
-          </h2>
-        </span>
-      </div>
-      <div class="flex items-center gap-3 mt-2 mb-4">
-        <TheBadge
-          :text="issuer && issuer.type === 'SUB_CA' ? 'SUB' : issuer.type"
+          <p class="text-[8px] font-normal text-black-0.4 flex items-center ga">
+            <CopyIcon class="inline text-primary w-4 h-4" />
+            {{ issuer && issuer.id }}
+          </p>
+          <DownIcon class="inline mr-2 text-primary" /><TheSquaredBadge
+            class="mr-2"
+            :text="issuer && issuer.children_count"
+          />
+        </div>
+
+        <IssuerDetails
+          class="mb-4"
+          heading="Distinguished Name"
+          :details="issuer && childDN"
         />
-        <p class="text-[8px] font-normal text-black-0.4 flex items-center ga">
-          <CopyIcon class="inline text-primary w-4 h-4" />
-          {{ issuer && issuer.id }}
-        </p>
-        <DownIcon class="inline mr-2 text-primary" /><TheSquaredBadge
-          class="mr-2"
-          :text="issuer && issuer.children_count"
+
+        <IssuerDetails
+          class="mb-4"
+          heading="Parent"
+          :details="details"
+          v-if="issuer.type !== 'ROOT'"
         />
-      </div>
 
-      <IssuerDetails
-        class="mb-4"
-        heading="Distinguished Name"
-        :details="issuer && childDN"
-      />
-
-      <IssuerDetails
-        class="mb-4"
-        heading="Parent"
-        :details="details"
-        v-if="issuer.type !== 'ROOT'"
-      />
-
-      <div class="flex flex-wrap gap-2 mb-8">
+        <div class="flex flex-wrap gap-2 mb-8">
+          <IconActionButton
+            v-for="actionButton in actionButtons"
+            :key="actionButton.id"
+            :buttonProps="actionButton"
+            class="text-[9px] px-[8px] py-[6px]"
+          />
+        </div>
         <IconActionButton
-          v-for="actionButton in actionButtons"
-          :key="actionButton.id"
-          :buttonProps="actionButton"
-          class="text-[9px] px-[8px] py-[6px]"
+          :buttonProps="deleteButton"
+          @click="$emit('deleteIssuer')"
+          class="text-[9px] px-[8px] py-[6px] bg-red"
         />
       </div>
-      <IconActionButton
-        :buttonProps="deleteButton"
-        class="text-[9px] px-[8px] py-[6px] bg-red"
-      />
     </div>
   </div>
 </template>

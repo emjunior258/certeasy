@@ -32,8 +32,8 @@
           />
         </button>
         <button
-          class="rounded border-red-0.6 bg-red-light relative z-5"
-          @click="console.log('log')"
+          class="rounded border-red-0.6 bg-red-light"
+          @click.stop="handleDeleteIssuer(issuer)"
         >
           <img
             src="../assets/icons/trash.svg"
@@ -46,7 +46,14 @@
 </template>
 
 <script setup>
-const { selectNode, issuer } = defineProps(['selectNode', 'issuer'])
+const { selectNode, issuer, deleteIssuer } = defineProps([
+  'selectNode',
+  'issuer',
+  'deleteIssuer',
+])
+const handleDeleteIssuer = (issuer) => {
+  deleteIssuer(issuer.id)
+}
 
 const handleSelectNode = (node) => {
   selectNode(node.id)
