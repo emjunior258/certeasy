@@ -1,6 +1,6 @@
 <template>
   <button
-    class="rounded-lg py-[6px] px-2 font-normal leading-4 text-base"
+    class="rounded-lg py-4 px-4 font-normal leading-4 text-base"
     :class="{
       'text-white': !buttonProps.outlined,
       'text-primary': buttonProps.outlined,

@@ -57,7 +57,6 @@
               v-if="
                 currentRoute === 'TREE' && issuersList && issuersList.length > 0
               "
-              class="px-16"
             >
               <TheTree
                 :treeData="treeData"
@@ -87,13 +86,39 @@
           />
           <div class="px-16 flex justify-between mt-12 mb-6 items-end">
             <div
-              class="w-full border border-primary px-5 py-3 rounded-lg bg-lightBlue flex justify-between"
+              class="w-full border border-primary px-5 py-3 rounded-lg bg-lightBlue flex justify-between relative"
+              :class="{ 'rounded-b-none': filterCertsIsOpen }"
+              @click="filterCertsIsOpen = !filterCertsIsOpen"
             >
               <div class="flex items-center gap-1">
                 <IssuerIcon class="w-6 h-6" />
                 <span class="text-primary font-normal"> All Issuers </span>
               </div>
               <ChevronDown />
+              <ul
+                class="absolute top-12 left-[-1px] bg-white border border-primary rounded-lg shadow-xl p-5 w-100-plus-2 rounded-t-none z-10"
+                v-if="filterCertsIsOpen"
+                @click.stop
+              >
+                <form class="flex mb-4">
+                  <input
+                    type="text"
+                    class="h-auto border border-primary rounded-l-lg pl-4 grow"
+                    placeholder="Search Issuers"
+                  />
+                  <button class="h-full bg-primary rounded-r-lg p-2">
+                    <Search />
+                  </button>
+                </form>
+                <TheTreeTwo
+                  :treeData="treeData"
+                  :getChildren="getChildren"
+                  :selectNode="handleSelectNode"
+                  :noLines="true"
+                  v-for="treeData in issuersList"
+                  :key="treeData.id"
+                />
+              </ul>
             </div>
           </div>
           <div class="px-16 flex justify-between mt-8 mb-5 items-end">
@@ -209,6 +234,7 @@ import Certificate from '../assets/icons/Certificate.vue'
 import IconActionButton from '@/components/buttons/IconActionButton.vue'
 import IconTextButton from '@/components/buttons/IconTextButton.vue'
 import TheTree from '@/components/TheTree.vue'
+import TheTreeTwo from '@/components/TheTreeTwo.vue'
 import IssuersList from '@/components/IssuersList.vue'
 import IssuerCardNoContent from '@/components/IssuerCardNoContent.vue'
 import ImportFileIcon from '@/assets/icons/ImportFileIcon.vue'
@@ -495,6 +521,9 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.w-100-plus-2 {
+  width: calc(100% + 2px);
+}
 .full-page-nav {
   height: calc(100vh - 68px);
 }

@@ -1,7 +1,5 @@
 <template>
-  <li
-    :class="{ 'node-parent-tab': isParent, 'node-tab': item.type !== 'ROOT' }"
-  >
+  <li :class="{}">
     <div
       class="flex items-center gap-2 font-light mb-1"
       :class="{ 'ml-8': !isParent }"
@@ -14,11 +12,11 @@
       >
       <div
         @click="handleSelectNode(item)"
-        class="flex items-center gap-2 text-sm py-0.5 text-text font-normal hover:bg-primary-0.08 hover:rounded"
+        class="flex items-center gap-2 text-sm py-0.5 px-1.5 text-text font-normal hover:bg-primary-0.08 hover:rounded"
         :class="{
           'bg-primary-0.08': item.active,
           rounded: item.active,
-          'px-1.5': item.active,
+
           'font-medium': item.active,
           'text-primary': item.active,
         }"
@@ -35,7 +33,7 @@
       v-show="item.isOpen"
       v-if="isParent"
     >
-      <TreeNode
+      <TreeNodeTwo
         v-for="child in item.children"
         :key="child.id"
         :item="child"
@@ -91,46 +89,9 @@ const handleSelectNode = (node) => {
 .root ul {
   position: relative;
 }
-.root ul::before {
-  content: '';
-  position: absolute;
-  left: 12px;
-  top: -6px;
-  width: 0;
-  height: 100%;
-  border-left: 1px solid #0433bf;
-  z-index: -2;
-}
 
 .root ul li {
   position: relative;
-}
-
-.node-tab::before {
-  content: '';
-  position: absolute;
-  left: -18px;
-  top: 4px;
-  width: 50px;
-  height: 11px;
-  border-left: 1px solid #0433bf;
-  border-bottom: 1px solid #0433bf;
-  border-radius: 0 0 0 4px;
-}
-
-.node-parent-tab::before {
-  width: 18px;
-}
-
-.root ul li:last-child:after {
-  content: '';
-  position: absolute;
-  width: 1px;
-  left: -18px;
-  background: #fff;
-  top: 4px;
-  bottom: 0;
-  z-index: -1;
 }
 
 li > div > div,

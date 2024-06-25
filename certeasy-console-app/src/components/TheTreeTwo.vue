@@ -1,6 +1,6 @@
 <template>
   <ul class="root mb-6">
-    <TreeNode
+    <TreeNodeTwo
       :item="treeData"
       :getChildren="getChild"
       :selectNode="handleSelectNode"
@@ -10,7 +10,7 @@
 </template>
 
 <script setup>
-import TreeNode from '@/components/TreeNode.vue'
+import TreeNodeTwo from '@/components/TreeNodeTwo.vue'
 
 const { getChildren, selectNode, noLines } = defineProps([
   'treeData',
