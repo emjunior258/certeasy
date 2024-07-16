@@ -1,30 +1,44 @@
-# React + TypeScript + Vite
+# Certeasy Console Application
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The easiest certificate authority for development and experiments.
 
-Currently, two official plugins are available:
+## Requirements
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Bellow are the requirements in order to contribute or build this project:
 
-## Expanding the ESLint configuration
+- `NodeJs >= 18`
+- `pnpm >= 9`
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+> **ℹ️ Note**  
+> We recommend to use `corepack` to install `pnpm` in your development machine by using the `corepack enable` command.
 
-- Configure the top-level `parserOptions` property like this:
+## Project structure
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json', './tsconfig.app.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
+| Path             | Description |
+| ---------------- | ----------- |
+| `src`            | Source code |
+| `src/components` |             |
+| `src/pages`      |             |
+| `src/providers`  |             |
+| `src/assets`     |             |
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+## Setting up your development environment
+
+1. Open a new terminal window
+2. Clone the repository
+3. Go to the `certeasy-console-app project`
+   ```sh
+   cd certeasy/certeasy-console-app
+   ```
+4. Install dependencies
+   ```sh
+   pnpm install
+   ```
+
+## Starting the development server
+
+Assuming that you have already [set up you development environment](#setting-up-your-development-environment), run `pnpm dev` to start the development server.
+
+## Building the application
+
+Assuming that you have already [set up you development environment](#setting-up-your-development-environment), run `pnpm build` to build the final bundle of application.
