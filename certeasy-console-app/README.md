@@ -35,10 +35,10 @@ Bellow are the requirements in order to contribute or build this project:
    pnpm install
    ```
 
-## Starting the development server
+### Starting the development server
 
 Assuming that you have already [set up you development environment](#setting-up-your-development-environment), run `pnpm dev` to start the development server.
 
-## Building the application
+### Building the application
 
 Assuming that you have already [set up you development environment](#setting-up-your-development-environment), run `pnpm build` to build the final bundle of application.
