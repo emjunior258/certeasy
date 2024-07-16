@@ -14,13 +14,13 @@ Bellow are the requirements in order to contribute or build this project:
 
 ## Project structure
 
-| Path             | Description |
-| ---------------- | ----------- |
-| `src`            | Source code |
-| `src/components` |             |
-| `src/pages`      |             |
-| `src/providers`  |             |
-| `src/assets`     |             |
+| Path             | Description                                                                                                                                 |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src`            | Source code                                                                                                                                 |
+| `src/components` |                                                                                                                                             |
+| `src/pages`      | File-system based router built on concepts of pages. When a file is added to the `pages` directory it's automatically available as a route. |
+| `src/providers`  |                                                                                                                                             |
+| `src/assets`     |                                                                                                                                             |
 
 ## Setting up your development environment
 
