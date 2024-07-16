@@ -1,68 +1,30 @@
-# Certeasy Console App
-The easiest certificate authority for development and experiments
+# React + TypeScript + Vite
 
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## Project structure
-- [`src`](#src)
-  - [`assets`](#assets)
-  - [`components`](#components)
-  - [`views`](#views)
-  - [`config`](#config)
-  - [`router`](#router)
-  - [`services`](#services)
-  - [`store`](#store)
-  - [`main.js`](#mainjs)
-- [`tests`](#tests)
+Currently, two official plugins are available:
 
-### `src`
-Source 
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-### `assets`
-Images
+## Expanding the ESLint configuration
 
-### `components`
-Shared components folder.
+If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
 
+- Configure the top-level `parserOptions` property like this:
 
-### `config`
-App config files.
-
-
-### `views`
-Page wrapper components(Pages) and Local components.
-
-### `router`
-Router instance and routing declaration.
-- `index` - router initialization.
-
-### `store`
-App store with separate modules.
-
-
-### `main.js`
-Root app initialization file.
-
-
-## Build Setup
-```
-npm install
+```js
+export default {
+  // other rules...
+  parserOptions: {
+    ecmaVersion: 'latest',
+    sourceType: 'module',
+    project: ['./tsconfig.json', './tsconfig.node.json', './tsconfig.app.json'],
+    tsconfigRootDir: __dirname,
+  },
+}
 ```
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Run your end-to-end tests
-```
-npm run test:e2e
-```
-
-### Lints and fixes files
-```
-npm run lint
+- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
+- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
+- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
