@@ -224,6 +224,7 @@ jobs:
         with:
           projectBaseDir: certeasy-console-app
           args: >
+            -Dsonar.organization=talk-code-github
             -Dsonar.projectKey=certeasy-frontend
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
