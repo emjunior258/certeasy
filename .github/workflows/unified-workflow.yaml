@@ -218,7 +218,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install
       - name: Run tests
-        run: pnpm test
+        run: pnpm test -- --coverage
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         with:
@@ -226,6 +226,7 @@ jobs:
           args: >
             -Dsonar.organization=talk-code-github
             -Dsonar.projectKey=certeasy-frontend
+            -Dsonar.testExecutionReportPaths=coverage/sonar-report.xml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
           SONAR_TOKEN: ${{ secrets.SONAR_FRONTEND_TOKEN }}

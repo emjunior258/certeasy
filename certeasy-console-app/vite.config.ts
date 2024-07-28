@@ -10,5 +10,9 @@ export default defineConfig({
   test: {
     environment: 'happy-dom',
     setupFiles: './tests/setup.ts',
+    reporters: ['vitest-sonar-reporter'],
+    outputFile: {
+      'vitest-sonar-reporter': 'coverage/sonar-report.xml',
+    }
   }
 })
