@@ -200,7 +200,7 @@ jobs:
           path: |
             certeasy-backend-app/target/certeasy-backend-app-**-runner
 
-  build_console_app:
+  build-console-app:
     needs: []
     runs-on: ubuntu-latest
     defaults:
@@ -217,23 +217,22 @@ jobs:
         run: corepack enable && corepack prepare pnpm@latest --activate
       - name: Install dependencies
         run: pnpm install
-      - name: Run tests
-      #   run: pnpm test
-      # - name: Build console application
+        #   run: pnpm test
+        # - name: Build console application
+      - name: Build certeasy console application
         run: pnpm build
       - name: Upload console application assets
         uses: actions/upload-artifact@v4
         with:
           name: console-application
-          path: ./dist
-
+          path: certeasy-console-app/dist
 
   build-image:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
-    needs: ["build-binary"]
+    needs: ["build-binary", "build-console-app"]
     outputs:
       image_tag: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:test
     steps:
@@ -243,6 +242,11 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: certeasy-binary
+      - name: Download certeasy-console assets
+        uses: actions/download-artifact@v4
+        with:
+          name: console-application
+          path: certeasy-console-app/dist
       - name: Make binary executable
         run: find . -name "*-runner" -exec chmod +x {} \;
       - name: Generate Image metadata

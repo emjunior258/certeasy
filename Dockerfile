@@ -4,7 +4,7 @@ WORKDIR /work/
 ENV CERTEASY_DATADIR=/work/data
 ENV QUARKUS_LOG_LEVEL=INFO
 COPY *-runner /work/app
-COPY certeasy-console-app /usr/share/nginx/html/
+COPY certeasy-console-app/dist /usr/share/nginx/html/
 COPY nginx.conf /etc/nginx/
 COPY startup.sh /work/
 RUN mkdir -p /work/data

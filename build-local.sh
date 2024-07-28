@@ -12,7 +12,8 @@ function build_nodejs_module () {
     pushd $1
     pnpm install
     pnpm build
-    cp -r ./dist "${BUILD_DIR}/$1"
+    mkdir -p cp -r "${BUILD_DIR}/$1"
+    cp -r ./dist "${BUILD_DIR}/$1/dist"
     popd
 }
 
