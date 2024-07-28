@@ -226,7 +226,8 @@ jobs:
           args: >
             -Dsonar.organization=talk-code-github
             -Dsonar.projectKey=certeasy-frontend
-            -Dsonar.testExecutionReportPaths=coverage/sonar-report.xml
+            -Dsonar.branch.name=${GITHUB_REF_NAME}
+            -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
           SONAR_TOKEN: ${{ secrets.SONAR_FRONTEND_TOKEN }}

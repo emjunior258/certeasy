@@ -6,13 +6,12 @@ import pages from 'vite-plugin-pages'
 export default defineConfig({
   plugins: [react(), pages()],
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-expect-error
+  // @ts-ignore
   test: {
     environment: 'happy-dom',
     setupFiles: './tests/setup.ts',
-    reporters: ['vitest-sonar-reporter'],
-    outputFile: {
-      'vitest-sonar-reporter': 'coverage/sonar-report.xml',
+    coverage: {
+      reporter: ["lcov"]
     }
   }
 })
