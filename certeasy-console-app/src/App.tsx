@@ -1,9 +1,9 @@
-import { Fragment, Suspense } from 'react'
+import { Suspense } from 'react'
 import { useRoutes } from 'react-router-dom'
 import { createGlobalStyle } from 'styled-components'
 import { theme } from './theme'
 import 'reset-css'
-import { Helmet } from 'react-helmet'
+import { Helmet, HelmetProvider } from 'react-helmet-async'
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -16,7 +16,7 @@ import routes from '~react-pages'
 
 export default function App() {
   return (
-    <Fragment>
+    <HelmetProvider>
       <GlobalStyle />
       <Helmet
         title='The easiest certificate authority'
@@ -25,6 +25,6 @@ export default function App() {
       <Suspense fallback={<p>Loading...</p>}>
         {useRoutes(routes)}
       </Suspense>
-    </Fragment>
+    </HelmetProvider>
   )
 }

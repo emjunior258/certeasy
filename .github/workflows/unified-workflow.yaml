@@ -217,8 +217,17 @@ jobs:
         run: corepack enable && corepack prepare pnpm@latest --activate
       - name: Install dependencies
         run: pnpm install
-        #   run: pnpm test
-        # - name: Build console application
+      - name: Run tests
+        run: pnpm test
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        with:
+          projectBaseDir: certeasy-console-app
+          args: >
+            -Dsonar.projectKey=certeasy-frontend
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+          SONAR_TOKEN: ${{ secrets.SONAR_FRONTEND_TOKEN }}
       - name: Build certeasy console application
         run: pnpm build
       - name: Upload console application assets
