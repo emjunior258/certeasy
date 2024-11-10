@@ -22,6 +22,11 @@ Bellow are the requirements in order to contribute or build this project:
 | `src/providers`  |                                                                                                                                             |
 | `src/assets`     |                                                                                                                                             |
 
+## Design Reference
+
+For design references, you can view the application's Figma design [here](https://www.figma.com/design/rGsbR1OMGuDyvWuPFD8XOb/Certeasy-%7C-DRAFT?node-id=0-1&node-type=canvas&t=k6Vr4fb9hP1ojMda-0).
+This includes the visual layouts and component guidelines that align with the Certeasy Console Application's user interface.
+
 ## Setting up your development environment
 
 1. Open a new terminal window
