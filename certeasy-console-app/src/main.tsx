@@ -15,7 +15,8 @@ async function enableMocking() {
   return worker.start()
 }
  
-await enableMocking().then(() => {
+void (async () => {
+  await enableMocking()
   ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
       <BrowserRouter>
@@ -23,4 +24,4 @@ await enableMocking().then(() => {
       </BrowserRouter>
     </React.StrictMode>,
   )  
-})
+})()

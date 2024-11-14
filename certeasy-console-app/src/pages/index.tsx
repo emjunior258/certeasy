@@ -1,11 +1,8 @@
 import { HardDrive } from "@/components/icons/hard-drive";
 import { HardDrives } from "@/components/icons/hard-drives";
-import { KeyShieldError } from "@/components/icons/key-shield-error";
 import { PaperCopy } from "@/components/icons/paper-copy";
 import { PaperPlus } from "@/components/icons/paper-plus";
-import { PlusSquare } from "@/components/icons/plus-square";
 import { Tree } from "@/components/icons/tree";
-import { EmptyState } from "@/components/ui/empty-state";
 import { FixedFilter } from "@/components/ui/fixed-filter";
 import { IssuersList } from "@/features/issuers/components/issuers-list";
 import { useIssuers, UseIssuersParams } from "@/hooks/issuers";

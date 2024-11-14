@@ -1,6 +1,6 @@
 import { TextProps, Text } from "@chakra-ui/react";
 
-interface PillProps extends TextProps {}
+type PillProps = TextProps
 
 export function Pill(props: PillProps) {
     return (

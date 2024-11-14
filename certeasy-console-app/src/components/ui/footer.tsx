@@ -1,7 +1,7 @@
 import { AlertCircle } from "@/components/icons/alert-circle";
 import { Github } from "@/components/icons/github";
 import { IconType } from "@/components/icons/types";
-import { Container, ContainerProps, HStack, Link, Text, LinkProps, Box } from "@chakra-ui/react";
+import { Container, ContainerProps, HStack, Link, Text, LinkProps } from "@chakra-ui/react";
 
 type FooterItemProps = Omit<LinkProps, 'asChild' | 'children'> & {
     label: string
