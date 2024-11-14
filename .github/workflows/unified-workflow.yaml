@@ -52,7 +52,7 @@ jobs:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             SONAR_TOKEN: ${{ secrets.SONAR_CORE_TOKEN }}
       - name: Archive Test Reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
             name: target
             path: |
@@ -71,7 +71,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_CORE_TOKEN }}
       - name: Upload certeasy-core
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: certeasy-core
           path: ~/.m2/repository/org/certeasy/certeasy-core
@@ -106,7 +106,7 @@ jobs:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             SONAR_TOKEN: ${{ secrets.SONAR_BOUNCYCASTLE_TOKEN }}
       - name: Archive Test Reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
             name: target
             path: |
@@ -124,7 +124,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload certeasy-bouncycastle
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: certeasy-bouncycastle
           path: ~/.m2/repository/org/certeasy/certeasy-bouncycastle
@@ -166,7 +166,7 @@ jobs:
           name: certeasy-core
           path: ~/.m2/repository/org/certeasy/certeasy-core
       - name: Download bouncycastle
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: certeasy-bouncycastle
           path: ~/.m2/repository/org/certeasy/certeasy-bouncycastle
@@ -176,7 +176,7 @@ jobs:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             SONAR_TOKEN: ${{ secrets.SONAR_BACKEND_TOKEN }}
       - name: Package Test Reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
             name: target
             path: |
@@ -194,7 +194,7 @@ jobs:
         run: |
           ./mvnw package -Pnative -Dquarkus.native.container-build=true -DskipTests
       - name: Upload certeasy-binary
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: certeasy-binary
           path: |
@@ -277,7 +277,7 @@ jobs:
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:test,${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:develop,${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TARGET_VERSION }}
           labels: ${{ steps.meta.outputs.labels }}
       - name: Upload image tar file
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: image-tar
           path: /tmp/${{ env.IMAGE_NAME }}.tar
@@ -320,7 +320,7 @@ jobs:
         run: pytest certeasy_api_tests/src/tests --junitxml=certeasy_api_tests/target/report.xml
         continue-on-error: true
       - name: Package Test Reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: target
           path: |
@@ -435,7 +435,7 @@ jobs:
       - uses: actions/checkout@v3
         name: Git checkout
       - name: Download certeasy-binary
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: certeasy-binary
       - name: Make binary executable
