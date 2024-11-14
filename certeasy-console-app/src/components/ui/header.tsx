@@ -11,8 +11,13 @@ export function Header() {
                 <HStack justify="space-between">
                     <Logo />
                     <NavMenu>
-                        <NavMenu.Item to="https://google.com" icon={OpenAPI} label="Open API" />
-                        <NavMenu.Item to="https://google.com" icon={Settings} label="Settings" />
+                        <NavMenu.Item
+                            target="_blank"
+                            referrerPolicy="no-referrer"
+                            to="https://github.com/emjunior258/certeasy/blob/develop/certeasy-backend-app/src/main/resources/META-INF/openapi.yaml"
+                            icon={OpenAPI} label="Open API"
+                        />
+                        <NavMenu.Item to="#" icon={Settings} label="Settings" />
                     </NavMenu>
                 </HStack>
             </Container>

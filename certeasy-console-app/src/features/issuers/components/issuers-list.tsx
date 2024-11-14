@@ -1,7 +1,10 @@
 import { Download } from "@/components/icons/download";
 import { KeyShield } from "@/components/icons/key-shield";
+import { KeyShieldError } from "@/components/icons/key-shield-error";
+import { PlusSquare } from "@/components/icons/plus-square";
 import { TrashCan } from "@/components/icons/trash-can";
 import { IconType } from "@/components/icons/types";
+import { EmptyState } from "@/components/ui/empty-state";
 import { Pill } from "@/components/ui/pill";
 import { Issuer } from "@/hooks/issuers";
 import { Button, ButtonProps, HStack, SimpleGrid, Text, VStack } from "@chakra-ui/react";
@@ -65,7 +68,7 @@ function IssuerListItem({ issuer }: IssuersListItemProps) {
                         <Pill>{typeMap[issuer.type] ?? issuer.type}</Pill>
                     </VStack>
                 </HStack>
-                <SimpleGrid columns={2} w="full" gap="2" sm={{ w: 'unset'}}>
+                <SimpleGrid columns={2} w="full" gap="2" sm={{ w: 'unset' }}>
                     <IssuerListItemAction icon={Download} color="primary" w="full" />
                     <IssuerListItemAction icon={TrashCan} color="red" w="full" />
                 </SimpleGrid>
@@ -79,6 +82,17 @@ interface IssuersListProps {
 }
 
 export function IssuersList({ issuers }: IssuersListProps) {
+    if (!issuers.length) return (
+        <EmptyState
+            icon={KeyShieldError}
+            title="No certificate issuers created yet!"
+            description="You can start by creating your first certificate issuer."
+            action={{
+                label: 'New Issuer',
+                icon: PlusSquare
+            }}
+        />
+    )
     return (
         <VStack asChild align="start">
             <ul>

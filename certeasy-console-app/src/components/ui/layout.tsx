@@ -10,7 +10,7 @@ export function Layout() {
             <Container maxWidth="1250px" flex={1}>
                 <Outlet />
             </Container>
-            <Footer py="7" />
+            <Footer mt="6" />
         </VStack>
     )
 }

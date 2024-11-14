@@ -1,7 +1,7 @@
 import { AlertCircle } from "@/components/icons/alert-circle";
 import { Github } from "@/components/icons/github";
 import { IconType } from "@/components/icons/types";
-import { Container, ContainerProps, HStack, Link, Text, LinkProps } from "@chakra-ui/react";
+import { Container, ContainerProps, HStack, Link, Text, LinkProps, Box } from "@chakra-ui/react";
 
 type FooterItemProps = Omit<LinkProps, 'asChild' | 'children'> & {
     label: string
@@ -28,6 +28,7 @@ export function Footer({ children, ...props }: FooterProps) {
         <Container asChild {...props} maxWidth="1250px">
             <footer>
                 <HStack
+                     py="7"
                     wrap="wrap"
                     asChild
                     role="navigation"
@@ -35,6 +36,8 @@ export function Footer({ children, ...props }: FooterProps) {
                     gapX="6"
                     justify="center"
                     sm={{ justifyContent: 'end' }}
+                    borderTopWidth="1px"
+                    borderTopColor="black/30"
                 >
                     <ul>
                         <FooterItem icon={Github} label="Read Documentation" href="https://github.com/emjunior258/certeasy" />
