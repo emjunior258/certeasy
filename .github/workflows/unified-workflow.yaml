@@ -54,7 +54,7 @@ jobs:
       - name: Archive Test Reports
         uses: actions/upload-artifact@v4
         with:
-            name: target
+            name: core-target
             path: |
                 certeasy-core/target/surefire-reports
                 certeasy-core/target/jacoco-report
@@ -108,7 +108,7 @@ jobs:
       - name: Archive Test Reports
         uses: actions/upload-artifact@v4
         with:
-            name: target
+            name: bouncycastle-target
             path: |
                 certeasy-bouncycastle/target/surefire-reports
                 certeasy-bouncycastle/target/jacoco-report
@@ -178,7 +178,7 @@ jobs:
       - name: Package Test Reports
         uses: actions/upload-artifact@v4
         with:
-            name: target
+            name: binary-target
             path: |
               certeasy-backend-app/target/surefire-reports
               certeasy-backend-app/target/jacoco-report
@@ -322,7 +322,7 @@ jobs:
       - name: Package Test Reports
         uses: actions/upload-artifact@v4
         with:
-          name: target
+          name: api-tests-target
           path: |
             certeasy_api_tests/target
       - name: Report test results
