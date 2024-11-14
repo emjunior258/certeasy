@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "prepare": "npx @chakra-ui/cli typegen src/theme.ts",
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
@@ -11,12 +12,15 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@chakra-ui/react": "^3.1.1",
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@radix-ui/react-slot": "^1.1.0",
+    "framer-motion": "^11.11.15",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router": "^6.25.0",
-    "react-router-dom": "^6.25.0",
-    "reset-css": "^5.0.2",
-    "styled-components": "^6.1.11"
+    "react-router-dom": "^6.25.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.4.8",
@@ -38,6 +42,7 @@
     "typescript": "^5.2.2",
     "vite": "^5.3.4",
     "vite-plugin-pages": "^0.32.3",
+    "vite-tsconfig-paths": "^5.1.2",
     "vitest": "^2.0.4",
     "vitest-sonar-reporter": "^2.0.0"
   }
