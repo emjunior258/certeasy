@@ -52,9 +52,9 @@ jobs:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             SONAR_TOKEN: ${{ secrets.SONAR_CORE_TOKEN }}
       - name: Archive Test Reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-            name: target
+            name: core-target
             path: |
                 certeasy-core/target/surefire-reports
                 certeasy-core/target/jacoco-report
@@ -71,7 +71,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_CORE_TOKEN }}
       - name: Upload certeasy-core
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: certeasy-core
           path: ~/.m2/repository/org/certeasy/certeasy-core
@@ -96,7 +96,7 @@ jobs:
           distribution: 'temurin'
           cache: maven
       - name: Download certeasy-core
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: certeasy-core
           path: ~/.m2/repository/org/certeasy/certeasy-core
@@ -106,9 +106,9 @@ jobs:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             SONAR_TOKEN: ${{ secrets.SONAR_BOUNCYCASTLE_TOKEN }}
       - name: Archive Test Reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-            name: target
+            name: bouncycastle-target
             path: |
                 certeasy-bouncycastle/target/surefire-reports
                 certeasy-bouncycastle/target/jacoco-report
@@ -124,7 +124,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload certeasy-bouncycastle
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: certeasy-bouncycastle
           path: ~/.m2/repository/org/certeasy/certeasy-bouncycastle
@@ -161,12 +161,12 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Download certeasy-core
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: certeasy-core
           path: ~/.m2/repository/org/certeasy/certeasy-core
       - name: Download bouncycastle
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: certeasy-bouncycastle
           path: ~/.m2/repository/org/certeasy/certeasy-bouncycastle
@@ -176,9 +176,9 @@ jobs:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             SONAR_TOKEN: ${{ secrets.SONAR_BACKEND_TOKEN }}
       - name: Package Test Reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-            name: target
+            name: binary-target
             path: |
               certeasy-backend-app/target/surefire-reports
               certeasy-backend-app/target/jacoco-report
@@ -194,27 +194,71 @@ jobs:
         run: |
           ./mvnw package -Pnative -Dquarkus.native.container-build=true -DskipTests
       - name: Upload certeasy-binary
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: certeasy-binary
           path: |
             certeasy-backend-app/target/certeasy-backend-app-**-runner
+
+  build-console-app:
+    needs: []
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./certeasy-console-app
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v3
+      - name: Setup NodeJs
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+      - name: Setup pnpm
+        run: corepack enable && corepack prepare pnpm@latest --activate
+      - name: Install dependencies
+        run: pnpm install
+      - name: Run tests
+        run: pnpm test -- --coverage
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        with:
+          projectBaseDir: certeasy-console-app
+          args: >
+            -Dsonar.organization=talk-code-github
+            -Dsonar.projectKey=certeasy-frontend
+            -Dsonar.branch.name=${GITHUB_REF_NAME}
+            -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+          SONAR_TOKEN: ${{ secrets.SONAR_FRONTEND_TOKEN }}
+      - name: Build certeasy console application
+        run: pnpm build
+      - name: Upload console application assets
+        uses: actions/upload-artifact@v4
+        with:
+          name: console-application
+          path: certeasy-console-app/dist
 
   build-image:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
-    needs: ["build-binary"]
+    needs: ["build-binary", "build-console-app"]
     outputs:
       image_tag: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:test
     steps:
       - uses: actions/checkout@v3
         name: Git checkout
       - name: Download certeasy-binary
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: certeasy-binary
+      - name: Download certeasy-console assets
+        uses: actions/download-artifact@v4
+        with:
+          name: console-application
+          path: certeasy-console-app/dist
       - name: Make binary executable
         run: find . -name "*-runner" -exec chmod +x {} \;
       - name: Generate Image metadata
@@ -233,7 +277,7 @@ jobs:
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:test,${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:develop,${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TARGET_VERSION }}
           labels: ${{ steps.meta.outputs.labels }}
       - name: Upload image tar file
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: image-tar
           path: /tmp/${{ env.IMAGE_NAME }}.tar
@@ -251,12 +295,12 @@ jobs:
       - uses: actions/checkout@v3
         name: Git checkout
       - name: Download certeasy-binary
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: certeasy-binary
           path: ./
       - name: Download image tar file
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: image-tar
           path: /tmp
@@ -276,9 +320,9 @@ jobs:
         run: pytest certeasy_api_tests/src/tests --junitxml=certeasy_api_tests/target/report.xml
         continue-on-error: true
       - name: Package Test Reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: target
+          name: api-tests-target
           path: |
             certeasy_api_tests/target
       - name: Report test results
@@ -302,7 +346,7 @@ jobs:
       - uses: actions/checkout@v3
         name: Git checkout
       - name: Download certeasy-binary
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: certeasy-binary
       - name: Make binary executable
@@ -391,7 +435,7 @@ jobs:
       - uses: actions/checkout@v3
         name: Git checkout
       - name: Download certeasy-binary
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: certeasy-binary
       - name: Make binary executable
