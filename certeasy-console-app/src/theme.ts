@@ -1,5 +1,7 @@
 import { defineConfig, createSystem, mergeConfigs, defaultConfig } from "@chakra-ui/react"
 
+console.log(defaultConfig)
+
 const config = mergeConfigs(
     defaultConfig,
     defineConfig({
@@ -22,7 +24,7 @@ const config = mergeConfigs(
                 fontWeights: {
                     light: { value: '300' },
                     normal: { value: '400' },
-                    semiBold: { value: '500' }
+                    semibold: { value: '500' }
                 },
                 fontSizes: {
                     xs: { value: '12px' },
