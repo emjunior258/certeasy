@@ -15,7 +15,7 @@ function FixedFilerItem({ icon: Icon, label, active, count, onClick }: FixedFile
     const bgColor: ButtonProps['color'] = active ? 'primary' : undefined
     return (
         <HStack asChild>
-            <Button variant="ghost" color={color} bgColor={bgColor} fontWeight="light" fontSize="lg" py="1" px="3.5" onClick={onClick}>
+            <Button data-active={`${active}`} variant="ghost" color={color} bgColor={bgColor} fontWeight="light" fontSize="lg" py="1" px="3.5" onClick={onClick}>
                 {Icon && <Icon color={iconColor} h="8" w="8" />}
                 <Text>{label}</Text>
                 {(typeof count === 'number') && <Text>({count})</Text>}

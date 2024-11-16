@@ -1,7 +1,5 @@
 import { defineConfig, createSystem, mergeConfigs, defaultConfig } from "@chakra-ui/react"
 
-console.log(defaultConfig)
-
 const config = mergeConfigs(
     defaultConfig,
     defineConfig({
