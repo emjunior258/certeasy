@@ -350,6 +350,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: certeasy-binary
+      - name: Download certeasy-console assets
+        uses: actions/download-artifact@v4
+        with:
+          name: console-application
+          path: certeasy-console-app/dist
       - name: Make binary executable
         run: find . -name "*-runner" -exec chmod +x {} \;
       - name: Registry login
