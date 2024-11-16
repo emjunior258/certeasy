@@ -1,5 +1,6 @@
 import { useMemo } from "react"
 import useSWR from "swr"
+import type { Issuer as IssuerType } from "@/types"
 
 const fetcher = async (url: string) => {
     url = `/api/${url.replace(/^\//, '')}`
@@ -7,19 +8,7 @@ const fetcher = async (url: string) => {
     return res.json()
 }
 
-export interface Issuer {
-    id: string
-    name: string
-    serial: string
-    type: "ROOT" | "SUB_CA"
-    dn: string
-    path_length: number,
-    parent?: {
-        id: string
-        name: string
-    },
-    children_count: number
-}
+export type Issuer = IssuerType
 
 export interface UseIssuersParams {
     type?: '' | Issuer['type']

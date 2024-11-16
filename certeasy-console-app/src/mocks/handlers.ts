@@ -1,4 +1,4 @@
-import { Issuer } from '@/hooks/issuers'
+import { Issuer } from '@/types'
 import { http, HttpResponse } from 'msw'
 
 const issuers = [
