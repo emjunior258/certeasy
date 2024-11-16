@@ -9,5 +9,5 @@
     "strict": true,
     "noEmit": true
   },
-  "include": ["vite.config.ts", "tests/*"]
+  "include": ["vite.config.ts", "tests/*", "src/mocks/server.ts"]
 }
